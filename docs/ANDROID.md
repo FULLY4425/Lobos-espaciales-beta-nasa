@@ -1,6 +1,6 @@
 # Probar e instalar en Android
 
-Lobos Espaciales incluye una **aplicación web progresiva (PWA)**: se puede instalar desde un navegador compatible, con icono propio y ventana independiente. No es un APK ni una aplicación publicada en Google Play.
+Lobos Espaciales incluye una **aplicación web progresiva (PWA)**: se puede instalar desde un navegador compatible, con icono propio y ventana independiente. Esta guía describe la PWA. También puedes instalar el **[APK de prueba](../downloads/LobosMarte-debug.apk)**; consulta [sus instrucciones](../android/README.md). Ninguna de las dos versiones está publicada en Google Play.
 
 ## Instalación desde un sitio HTTPS
 

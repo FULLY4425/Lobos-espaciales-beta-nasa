@@ -17,3 +17,7 @@ Siete pruebas unittest aprobadas: distancia, barreras sin datos, esquinas, pendi
 ## Android / PWA
 
 Chromium con emulación Pixel 7: manifiesto standalone e iconos accesibles; registro y control del service worker; cálculo de ruta de 1310 m mediante Python; recarga con red desactivada mostrando 718 objetivos; aviso sin conexión y rechazo explícito de cálculo sin servidor; sin desbordamiento horizontal ni errores JavaScript de página. Siete pruebas Python y distribución ejecutable generadas correctamente. No se probó un dispositivo físico, instalación real del sistema Android ni publicación en Google Play.
+
+## APK de prueba
+
+Compilado y firmado con SDK oficial; firmas v2/v3 verificadas con apksigner. Metadatos inspeccionados con aapt2. Archivos empaquetados comprobados: código DEX, datos de 718 objetivos, interfaz local sin registro PWA y puente de exportación. Suma SHA-256 disponible junto al APK. No probado en Android físico o emulador; integración de WebView, selector de documentos y conexión con el servidor pendiente de prueba en Android.

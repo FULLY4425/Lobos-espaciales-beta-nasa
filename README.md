@@ -16,7 +16,7 @@ Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTAL
 
 ## Android
 
-Incluye una versión instalable como **PWA**, con iconos, modo independiente y caché del mapa. [Cómo probar e instalar en Android](docs/ANDROID.md). La instalación requiere HTTPS; el cálculo y la exportación siguen ejecutándose en el servidor Python. No se distribuye un APK.
+Incluye una versión instalable como **PWA**, con iconos, modo independiente y caché del mapa. [Cómo probar e instalar en Android](docs/ANDROID.md). La instalación requiere HTTPS; el cálculo y la exportación siguen ejecutándose en el servidor Python. También hay un **[APK de prueba descargable](downloads/LobosMarte-debug.apk)** para Android 8.0 o posterior. [Instrucciones del APK](android/README.md).
 
 ## Ejecutar
 
