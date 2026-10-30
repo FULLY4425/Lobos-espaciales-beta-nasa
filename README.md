@@ -2,6 +2,14 @@
 
 Aplicación educativa en español para explorar **Glen Torridon, cráter Gale, Marte**, y planear una caminata científica con datos reales de NASA/PDS.
 
+## ¿De qué trata el proyecto?
+
+**Lobos Espaciales** busca mostrar cómo un astronauta podría planear una caminata científica en Marte. Inspirado en el reto de NASA Space Apps, reúne datos reales de Curiosity y Mars Reconnaissance Orbiter en un mapa de Glen Torridon, dentro del cráter Gale.
+
+El usuario puede explorar el relieve, conocer 718 objetivos científicos y seleccionar paradas para investigar vetas y nódulos: características de las rocas que ayudan a estudiar la historia del agua en la región. A partir de esas paradas, Python calcula recorridos considerando pendientes y estima distancias y tiempos con supuestos explícitos.
+
+La meta es conectar **exploración, planificación y ciencia** en una experiencia accesible. Es un prototipo educativo: no representa una misión humana existente, no certifica seguridad y no implica afiliación ni aprobación de NASA.
+
 ## Descargar y probar en tu computadora
 
 Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)**. Incluye descarga ZIP o Git, instalación de Python, inicio del servidor, una misión de ejemplo y soluciones a errores comunes.
