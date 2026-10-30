@@ -2,6 +2,10 @@
 
 Aplicación educativa en español para explorar **Glen Torridon, cráter Gale, Marte**, y planear una caminata científica con datos reales de NASA/PDS.
 
+## Descargar y probar en tu computadora
+
+Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)**. Incluye descarga ZIP o Git, instalación de Python, inicio del servidor, una misión de ejemplo y soluciones a errores comunes.
+
 ## Ejecutar
 
 Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
