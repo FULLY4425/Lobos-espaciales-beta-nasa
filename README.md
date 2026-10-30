@@ -14,6 +14,10 @@ La meta es conectar **exploración, planificación y ciencia** en una experienci
 
 Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)**. Incluye descarga ZIP o Git, instalación de Python, inicio del servidor, una misión de ejemplo y soluciones a errores comunes.
 
+## Android
+
+Incluye una versión instalable como **PWA**, con iconos, modo independiente y caché del mapa. [Cómo probar e instalar en Android](docs/ANDROID.md). La instalación requiere HTTPS; el cálculo y la exportación siguen ejecutándose en el servidor Python. No se distribuye un APK.
+
 ## Ejecutar
 
 Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
