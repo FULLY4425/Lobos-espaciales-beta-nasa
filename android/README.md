@@ -16,6 +16,10 @@ Descarga **[LobosMarte-debug.apk](../downloads/LobosMarte-debug.apk)** desde el 
 
 La app permite HTTP para desarrollo en una red privada. Usa HTTPS para conexiones públicas. No se almacena ninguna clave ni se permite introducir credenciales en la dirección. No abras puertos del router para esta prueba. Para vaciar el servidor configurado, guarda el campo sin texto.
 
+## Servidor Python en el mismo celular
+
+También puedes iniciar Python con Pydroid 3 o Termux en el propio Android y configurar `http://127.0.0.1:5173` en el APK. Consulta la [guía completa](../docs/PYTHON_EN_ANDROID.md) y sus limitaciones de conectividad. No requiere una computadora.
+
 ## Compilar
 
 Instala JDK 17+ y Android SDK con `platforms;android-35` y `build-tools;35.0.0`, aceptando las licencias de Android. Configura `ANDROID_SDK_ROOT` y ejecuta:

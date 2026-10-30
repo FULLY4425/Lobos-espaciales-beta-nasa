@@ -18,6 +18,10 @@ Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTAL
 
 Incluye una versión instalable como **PWA**, con iconos, modo independiente y caché del mapa. [Cómo probar e instalar en Android](docs/ANDROID.md). La instalación requiere HTTPS; el cálculo y la exportación siguen ejecutándose en el servidor Python. También hay un **[APK de prueba descargable](downloads/LobosMarte-debug.apk)** para Android 8.0 o posterior. [Instrucciones del APK](android/README.md).
 
+## Python directamente en el celular
+
+Puedes ejecutar el proyecto en Android con **Pydroid 3 o Termux**, sin computadora. Consulta la [guía de Python en Android](docs/PYTHON_EN_ANDROID.md), con instrucciones para abrirlo en el navegador o conectar el APK al servidor del mismo teléfono.
+
 ## Ejecutar
 
 Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
