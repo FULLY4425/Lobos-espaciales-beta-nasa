@@ -9,3 +9,7 @@
 - Capturas: `captura-escritorio.png`, `captura-movil.png`.
 
 Las pruebas no certifican transitabilidad, exactitud absoluta del terreno ni seguridad de una misión. La consulta de imágenes originales es un enlace al archivo; no se ha automatizado la asociación de fotos.
+
+## Migración a Python
+
+Siete pruebas unittest aprobadas: distancia, barreras sin datos, esquinas, pendientes y límites, 718 posiciones, misión real y entradas inválidas. La API Python entrega estado y rechaza objetivos desconocidos; no sirve server.py ni metadatos de Git. La interfaz usa peticiones asíncronas y descarta resultados cuando se cambia el plan durante el cálculo. El generador ahora empaqueta una aplicación Python, no una página exclusivamente estática.

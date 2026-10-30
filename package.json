@@ -1,1 +1,12 @@
-{"name":"lobos-espaciales","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node scripts/server.mjs","start":"node scripts/server.mjs","build":"node scripts/build.mjs","test":"node --test"},"engines":{"node":">=22"}}
+{
+  "name": "lobos-espaciales",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 server.py",
+    "start": "python3 server.py",
+    "build": "python3 scripts/build.py",
+    "test": "python3 -m unittest discover -s test -v"
+  }
+}

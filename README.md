@@ -4,14 +4,13 @@ Aplicación educativa en español para explorar **Glen Torridon, cráter Gale, M
 
 ## Ejecutar
 
-Requiere Node.js 22 o posterior. No usa dependencias de ejecución ni claves de API.
+Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
 
 ```sh
-npm ci
-npm run dev
+python3 server.py
 ```
 
-Abre el puerto 5173 en tu entorno de desarrollo. `PORT` permite cambiarlo. Para generar archivos estáticos: `npm run build`. Publica el contenido de `dist` desde la raíz de un dominio. `npm test` verifica navegación, obstáculos y datos reales.
+Abre el puerto 5173 en tu entorno de desarrollo. `PORT` permite cambiarlo. Para preparar una distribución: `python3 scripts/build.py`. Ejecuta `python3 server.py` dentro de `dist/`. Se requiere un servidor Python: el alojamiento exclusivamente estático ya no es suficiente. `python3 -m unittest discover -s test -v` verifica navegación, obstáculos, entradas y datos reales. Los comandos npm se conservan solo como atajos opcionales.
 
 ## Uso
 
@@ -46,3 +45,14 @@ Implementado: elevación, pendientes calculadas, observaciones químico-geológi
 No integrado: capa mineralógica CRISM, clima, radiación, fotografía orbital de fondo, navegación 3D/HUD, posiciones APXS transformadas o autonomía de trajes. Se investigaron como extensiones, pero requieren comprobar cobertura y calibración. Los tiempos usan **2 km/h y 10 min por parada posterior a la salida**; no incluyen regreso. No se estima oxígeno. Las alturas publicadas de objetivos y del DTM no se comparan como si compartieran una alineación vertical ya validada.
 
 Proyecto independiente inspirado en NASA Space Apps. No implica afiliación ni aprobación de NASA. Conservar créditos de NASA/JPL-Caltech/University of Arizona y Gasda et al. al reutilizar los datos. Consultar las condiciones de cada fuente; no se asigna una licencia propia a los datos de terceros.
+
+## Arquitectura Python
+
+- `server.py`: servidor HTTP y API JSON, sirve únicamente recursos públicos. Es un servidor de desarrollo; un despliegue público requiere endurecimiento e infraestructura adecuados.
+- `mars/planner.py`: A* con cola de prioridad, pendientes, validación de objetivos, métricas y generación de misiones.
+- `scripts/collect-data.py`: descarga y validación científica de datos NASA/PDS.
+- `scripts/build.py`: prepara la distribución ejecutable.
+- `test/test_planner.py`: pruebas con unittest, sin dependencias.
+- HTML/CSS y JavaScript: presentación, interacción y dibujo en canvas. El JavaScript ya no calcula rutas ni métricas.
+
+API: `GET /api/health`, `POST /api/plan`, `POST /api/export`. Los POST aceptan `{"stops":["Stornoway","Whaligoe"],"maxSlopeDegrees":20}`. El servidor usa sus propios datos de terreno y objetivos, valida de 2 a 20 nombres distintos y pendientes de 5° a 40°, y devuelve errores 400 cuando el recorrido no existe o los parámetros no son válidos.
