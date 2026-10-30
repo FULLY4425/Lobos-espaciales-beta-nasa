@@ -36,6 +36,10 @@ Las rutas siguen una cuadrícula de elevación real muestreada a unos 12.1 m. Se
 
 Los datos pequeños están incluidos; la app no necesita consultar NASA durante el uso. Las tipografías remotas son opcionales y tienen fuentes de respaldo. El mapa muestra **relieve calculado, no una fotografía**. Las imágenes se consultan en el archivo original mediante el enlace de contexto; todavía no se vinculan automáticamente por objetivo.
 
+## Contexto de Marte
+
+Incluye un resumen en español de [NASA Mars Facts](https://science.nasa.gov/mars/facts/): día marciano, atmósfera, temperaturas e historia del agua. Es información planetaria general, separada de los datos locales y de las simulaciones de misión.
+
 ## Capturas
 
 ![Vista de escritorio](docs/captura-escritorio.png)

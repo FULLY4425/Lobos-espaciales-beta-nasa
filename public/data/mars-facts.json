@@ -1,0 +1,28 @@
+{
+  "source": "https://science.nasa.gov/mars/facts/",
+  "providedTranslation": "https://science-nasa-gov.translate.goog/mars/facts/?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc",
+  "retrievedAt": "2026-10-30T18:20:04.300582+00:00",
+  "scope": "Contexto planetario general; no son mediciones locales actuales de Glen Torridon.",
+  "facts": [
+    {
+      "title": "Un día en Marte",
+      "value": "≈ 24.6 h",
+      "description": "NASA describe los días marcianos como soles y da una duración aproximada de 24.6 horas. Los soles del mapa identifican días de la misión Curiosity."
+    },
+    {
+      "title": "Una atmósfera tenue",
+      "value": "Principalmente CO₂",
+      "description": "La atmósfera contiene principalmente dióxido de carbono, nitrógeno y argón. Una caminata humana requiere soporte vital; esta aplicación no modela un traje."
+    },
+    {
+      "title": "Temperaturas extremas",
+      "value": "−153 a 20 °C",
+      "description": "Rango general citado por NASA para Marte. No es un pronóstico ni el rango medido en nuestra ruta; no modifica el tiempo estimado."
+    },
+    {
+      "title": "Un pasado con agua",
+      "value": "Valles · deltas · lagos",
+      "description": "NASA describe redes de valles, deltas, antiguos lechos lacustres y minerales asociados al agua líquida. Esto motiva investigar las vetas y los nódulos, sin afirmar que prueban vida."
+    }
+  ]
+}

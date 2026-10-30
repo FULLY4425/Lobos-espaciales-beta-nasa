@@ -30,3 +30,11 @@ Verificar ortofotografías sobre el mismo recorte; vincular imágenes originales
 ## Reproducción
 
 `scripts/collect-data.py` descarga la tabla y documentación, consulta un rango de bytes del DTM y genera JSON. Guarda fecha y SHA-256 de la tabla y rango descargado. Consulta `COBERTURA.md` para límites y ecuaciones. El producto completo permanece en el archivo original; no se versiona un IMG de 391 MB. Los scripts de recopilación son herramientas de investigación, no cambian los archivos originales de NASA.
+
+## NASA Mars Facts: contexto añadido
+
+Fuente consultada: https://science.nasa.gov/mars/facts/ (30 de octubre de 2026). El usuario compartió su traducción automática de Google; se consultó el original para conservar la atribución. El resumen español está guardado en `public/data/mars-facts.json` y se presenta en cuatro tarjetas.
+
+Datos usados: duración aproximada del día de 24.6 h, atmósfera principalmente CO₂ con nitrógeno y argón, extremos planetarios aproximados de −153 a 20 °C e indicios de un pasado con agua. Son contexto general, no datos meteorológicos de la ruta. No se cambian los parámetros de movilidad ni se infiere seguridad a partir de estas cifras.
+
+La página contiene afirmaciones sobre agua salobre superficial que requieren contrastarse con literatura actual antes de incorporarlas como hechos establecidos. No se han trasladado a la aplicación. Tampoco se incorporaron noticias o fechas de misiones como si fueran observaciones del recorrido.
