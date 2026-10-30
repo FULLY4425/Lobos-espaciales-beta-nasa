@@ -1,0 +1,16 @@
+{
+  "retrievedAt": "2026-10-30T17:53:13.131655+00:00",
+  "targetCount": 718,
+  "validNativePixels": 718,
+  "csvSha256": "7b965da0e64a31144e33b862b29108f57ff0c1b12016904eaf1b7b9ddd037371",
+  "terrainWindowSha256": "029964bd4f687d37ed5dba0f42034b10173459beaeb3a4802e55c2d259f38bbd",
+  "terrainByteRange": [
+    75588800,
+    98616387
+  ],
+  "sources": [
+    "https://pds-geosciences.wustl.edu/msl/urn-nasa-pds-msl_gt_diagenesis_supplement/",
+    "https://www.uahirise.org/PDS/DTM/PSP/ORB_009100_009199/PSP_009149_1750_PSP_009294_1750/DTEEC_009149_1750_009294_1750_U01.IMG"
+  ],
+  "warning": "Downsampled terrain is educational; not certified for astronaut navigation."
+}

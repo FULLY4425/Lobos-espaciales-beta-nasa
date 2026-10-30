@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1C00.sch" 
+ schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational xmlns="http://pds.nasa.gov/pds4/pds/v1" xmlns:pds="http://pds.nasa.gov/pds4/pds/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1C00.xsd">
+<Identification_Area>
+<logical_identifier>urn:nasa:pds:msl_gt_diagenesis_supplement:data:target_classification</logical_identifier>
+<version_id>1.0</version_id>
+<title>Supporting Information Metadata and Target Level Classification for Overview of the Morphology and Chemistry of Diagenetic Features in the Clay-Rich Glen Torridon Unit of Gale Crater, Mars</title>
+<information_model_version>1.12.0.0</information_model_version>
+<product_class>Product_Observational</product_class>
+</Identification_Area>
+<Observation_Area>
+<Time_Coordinates>
+<start_date_time>2019-01-24T19:30:55Z</start_date_time>
+<stop_date_time>2021-01-20T06:19:54Z</stop_date_time>
+</Time_Coordinates>
+<Investigation_Area>
+<name>Mars Science Laboratory</name>
+<type>Mission</type>
+<Internal_Reference>
+<lid_reference>urn:nasa:pds:context:investigation:mission.mars_science_laboratory</lid_reference>
+<reference_type>data_to_investigation</reference_type>
+</Internal_Reference>
+</Investigation_Area>
+<Observing_System>
+<Observing_System_Component>
+<name>Mars Science Laboratory</name>
+<type>Spacecraft</type>
+<Internal_Reference>
+<lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.msl</lid_reference>
+<reference_type>is_instrument_host</reference_type>
+</Internal_Reference>
+</Observing_System_Component>
+<Observing_System_Component>
+<name>ChemCam</name>
+<type>Instrument</type>
+<Internal_Reference>
+<lid_reference>urn:nasa:pds:context:instrument:chemcam_libs.msl</lid_reference>
+<reference_type>is_instrument</reference_type>
+</Internal_Reference>
+</Observing_System_Component>
+</Observing_System>
+<Target_Identification>
+<name>Mars</name>
+<type>Planet</type>
+<Internal_Reference>
+<lid_reference>urn:nasa:pds:context:target:planet.mars</lid_reference>
+<reference_type>data_to_target</reference_type>
+</Internal_Reference>
+</Target_Identification>
+</Observation_Area>
+<Reference_List>
+<External_Reference>
+<doi>10.1029/2021JE007097</doi>
+ <reference_text> Gasda, P. J. et al. (2022), Overview of the Morphology and Chemistry of Diagenetic Features in the Clay-Rich Glen Torridon Unit of Gale Crater, Mars, Journal of Geophysical Research: Planets, Volume 127, Issue 12.</reference_text>
+</External_Reference>
+</Reference_List>
+<File_Area_Observational>
+<File>
+<file_name>target_classification.csv</file_name>
+<creation_date_time>2020-10-02T09:52:00</creation_date_time>
+</File>
+<Header>
+<name>Column Headings</name>
+<offset unit="byte">0</offset>
+<object_length unit="byte">1273</object_length>
+<parsing_standard_id>PDS DSV 1</parsing_standard_id>
+<description>Comma-separated names of columns in the data table.</description>
+</Header>
+<Table_Delimited>
+<name>ChemCam Target-Level Classification of Diagenetic Materials in Glen Torridon</name>
+<offset unit="byte">1274</offset>
+<parsing_standard_id>PDS DSV 1</parsing_standard_id>
+<records>718</records>
+<record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+<field_delimiter>Comma</field_delimiter>
+<Record_Delimited>
+<fields>58</fields>
+<groups>0</groups>
+<Field_Delimited>
+<name>Target</name>
+<field_number>1</field_number>
+<data_type>ASCII_String</data_type>
+<description>Target Name</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>SeqID</name>
+<field_number>2</field_number>
+<data_type>ASCII_String</data_type>
+<description>Sequence Identifier</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Sol</name>
+<field_number>3</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Mars Solar Day of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Spacecraft Clock Range</name>
+<field_number>4</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Range of Spacecraft Clocks of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Distance</name>
+<field_number>5</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Distance from ChemCam to Target (Meters)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster Size</name>
+<field_number>6</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Number of Observation Points in Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Elevation (m)</name>
+<field_number>7</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Elevation of Target (Meters)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Latitude (dd)</name>
+<field_number>8</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Target Latitude (Degrees)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Longitude (dd)</name>
+<field_number>9</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Target Longitude (Degrees)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Northing (m)</name>
+<field_number>10</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Target Northing (Meters)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Easting (m)</name>
+<field_number>11</field_number>
+<data_type>ASCII_Real</data_type>
+<description>Target Easting (Meters)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>RMI has Veins</name>
+<field_number>12</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target has Veins Visible in the Remote Micro Image of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>RMI has Nodules</name>
+<field_number>13</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target has Nodules Visible in the Remote Micro Image of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>RMI has Nodules with Diagenetic Halos</name>
+<field_number>14</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target has Nodules with Diagenetic Halos Visible in the Remote Micro Image of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>RMI has Dark Strata Nodules/cements</name>
+<field_number>15</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target has Dark Strata Nodules/cements Visible in the Remote Micro Image of Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Diagenetic Feature</name>
+<field_number>16</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Diagenetic Feature </description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Viens</name>
+<field_number>17</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Viens</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Nodules</name>
+<field_number>18</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Nodules</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Nodule-rich bedrock</name>
+<field_number>19</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Nodule-rich bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Nodules with diagenetic halos</name>
+<field_number>20</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Nodules with diagenetic halos</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Raster hits Nodules with calcium-sulfate cement</name>
+<field_number>21</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Nodules with calcium-sulfate cement</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Veins points</name>
+<field_number>22</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Values of Observation Points of Target that Hit a Vein</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule points</name>
+<field_number>23</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Values of Observation Points of Target that Hit a Nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule-rich bedrock points</name>
+<field_number>24</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Values of Observation Points of Target that Hit Nodule-rich-Bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule-with-diagenetic-halo points</name>
+<field_number>25</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Values of Observation Points of Target that Hit a Nodule with a diagenetic halo</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Calcium-sulfate cement points</name>
+<field_number>26</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Values of Observation Points of Target that Hit Calcium-sulfate cement</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Vein Enrichments</name>
+<field_number>27</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Strings of Compositional Enrichments of Observation Points of Target that Hit a Vein Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Vein Strongest Enrichments</name>
+<field_number>28</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Strongest Compositional Enrichment of Observation Points of Target that Hit a Vein Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule Enrichments</name>
+<field_number>29</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Strings of Compositional Enrichments of Observation Points of Target that Hit a Nodule Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule Strongest Enrichments</name>
+<field_number>30</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Strongest Compositional Enrichment of Observation Points of Target that Hit a Nodule Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule-rich bedrock Enrichments</name>
+<field_number>31</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Strings of Compositional Enrichments of Observation Points of Target that Hit Nodule-rich bedrock Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Nodule-rich bedrock Strongest Enrichments</name>
+<field_number>32</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Strongest Compositional Enrichment of Observation Points of Target that Hit Nodule-rich bedrock Compared to the Chemical Endmember of a Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Hits vein with mixed composition</name>
+<field_number>33</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Hits vein with a mixed composition</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Hits vein with pure composition</name>
+<field_number>34</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Hits vein with a pure composition</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Hits vein with non-CaO-rich composition</name>
+<field_number>35</field_number>
+<data_type>ASCII_Integer</data_type>
+<description>Binary yes (1) or no (0) if Target Raster hits Hits vein with a non-CaO-rich composition</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Formation</name>
+<field_number>36</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Stratigraphic Formation of the Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Stratigraphic Member</name>
+<field_number>37</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Stratigraphic Member of the Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Chemical Endmember</name>
+<field_number>38</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Chemical Endmember of the Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Corresponding MAHLI Target;Sol</name>
+<field_number>39</field_number>
+<data_type>ASCII_String</data_type>
+<description>Semicolon Seperated Strings of the Corresponding MAHLI Target and Sol Number</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Notes</name>
+<field_number>40</field_number>
+<data_type>ASCII_String</data_type>
+<description>Additional Notes for Observation Point in Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>Min GIS Label</name>
+<field_number>41</field_number>
+<data_type>ASCII_String</data_type>
+<description>The Highest Rank (Minimum Value) of GIS Label of the Target</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 0</name>
+<field_number>42</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 0 - No Diagenetic Feature</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 1</name>
+<field_number>43</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 1 - sampled special veins (MgO- or MnO/FeOT-rich)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 2</name>
+<field_number>44</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 2 - sampled MnO nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 3</name>
+<field_number>45</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 3 - sampled FeOT nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 4</name>
+<field_number>46</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 4 - sampled MgO nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 5</name>
+<field_number>47</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 5 - sampled CaO nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 6</name>
+<field_number>48</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 6 - sampled Na2O nodule</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 7</name>
+<field_number>49</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 7 - sampled NE nodule (not enriched)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 8</name>
+<field_number>50</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 8 - sampled MnO nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 9</name>
+<field_number>51</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 9 - sampled FeOT nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 10</name>
+<field_number>52</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 10 - sampled MgO nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 11</name>
+<field_number>53</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 11 - sampled CaO nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 12</name>
+<field_number>54</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 12 - sampled Na2O nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 13</name>
+<field_number>55</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 13 - sampled NE nodular bedrock (not enriched)</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 14</name>
+<field_number>56</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 14 - sampled Ca-S cemented nodular bedrock</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 15</name>
+<field_number>57</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 15 - sampled Ca-S cement</description>
+</Field_Delimited>
+<Field_Delimited>
+<name>GIS 16</name>
+<field_number>58</field_number>
+<data_type>ASCII_String</data_type>
+<description>GIS Label 16 - sampled or observed vein in Remote Micro Image of Target</description>
+</Field_Delimited>
+</Record_Delimited>
+</Table_Delimited>
+</File_Area_Observational>
+</Product_Observational>
