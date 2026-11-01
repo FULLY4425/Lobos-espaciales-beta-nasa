@@ -11,7 +11,7 @@ async function setView3D(enabled){
 }
 const workspace=document.querySelector('.workspace');
 for(const [button,cls] of [['toggleLayers','show-layers'],['toggleDetails','show-details']])$(button).onclick=()=>{const open=workspace.classList.toggle(cls);$(button).setAttribute('aria-expanded',String(open));};
-$('openAR').onclick=async()=>{try{if(!metrics){$('routeStatus').textContent='Calcula una ruta antes de abrir AR.';return;}const mission=await requestMission('/api/export');sessionStorage.setItem('mars-ar-mission',JSON.stringify(mission));location.href='/ar.html';}catch(e){$('routeStatus').textContent=`No se pudo abrir AR: ${e.message}`;}};
+for(const [id,destination,label] of [['openAR','/ar.html','AR'],['openKsp','/ksp.html','la prueba KSP']])$(id).onclick=async()=>{try{if(!metrics){$('routeStatus').textContent=`Calcula una ruta antes de abrir ${label}.`;return;}const mission=await requestMission('/api/export');sessionStorage.setItem('mars-ar-mission',JSON.stringify(mission));location.href=destination;}catch(e){$('routeStatus').textContent=`No se pudo abrir ${label}: ${e.message}`;}};
 $('expandMap').onclick=()=>{const open=workspace.classList.toggle('expanded-map');$('expandMap').setAttribute('aria-pressed',String(open));document.body.classList.toggle('map-expanded',open);};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&workspace.classList.contains('expanded-map'))$('expandMap').click();});
 for(const [id,preset] of [['cameraOverview','overview'],['cameraNorth','north'],['cameraFlyover','flyover']])$(id).onclick=()=>viewer3d?.preset(preset);

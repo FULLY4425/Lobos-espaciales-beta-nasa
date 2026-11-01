@@ -1,5 +1,18 @@
 # Ojo de Marte: AR y Kerbal Space Program 1
 
+## Fase actual: laboratorio KSP y futuro casco
+
+La prueba actual se realiza en **Prueba KSP**, un menú independiente en
+`/ksp.html` que se abre como ventana auxiliar junto al juego. No inserta una
+ventana nativa dentro de KSP. No solicita cámara ni consulta WebXR. Puedes
+conectar el juego local o probar el HUD con una misión simulada.
+
+El casco de astronauta con características similares a Quest es el objetivo
+posterior: se conserva el HUD compacto y la voz como base de interfaz. El modo
+AR experimental permanece separado en `/ar.html`. No se presupone que el
+futuro casco utilice el mismo SDK, óptica, seguimiento o sistema de entrada de
+Quest; eso se determinará al definir el hardware.
+
 ## Qué está implementado
 
 - **Cámara HUD:** un aviso de navegación sobre la cámara, sin seguimiento espacial.
@@ -67,8 +80,8 @@ python3 integrations/ksp_server.py
 
 1. Abre KSP 1, selecciona un vehículo/rover y activa el servidor del mod kRPC.
 2. Mantén kRPC en `127.0.0.1`, RPC 50000 y stream 50001.
-3. Abre `http://localhost:7173/`, calcula una ruta y entra en **Modo AR**.
-4. En los ajustes de AR, elige **KSP 1 · kRPC local**.
+3. Abre `http://localhost:7173/`, calcula una ruta y entra en **Prueba KSP**.
+4. En el menú de pruebas pulsa **Conectar KSP local**.
 5. Con el vehículo en el lugar que quieras usar como salida, pulsa **Calibrar
    inicio de ruta**. A partir de ahí, desplázalo usando los controles del juego.
 

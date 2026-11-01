@@ -33,7 +33,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.reply(200,dict(status='ok',engine='python',targets=len(TARGETS)))
         # Only serve application assets and public research, never Git metadata or code directories.
         resolved=(ROOT/pathname.lstrip('/')).resolve()
-        allowed=pathname in ('/','/index.html','/ar.html','/sw.js','/manifest.webmanifest') or pathname.startswith(('/src/','/public/','/docs/'))
+        allowed=pathname in ('/','/index.html','/ar.html','/ksp.html','/sw.js','/manifest.webmanifest') or pathname.startswith(('/src/','/public/','/docs/'))
         if not allowed or not resolved.is_relative_to(ROOT) or any(p.startswith('.') for p in Path(pathname).parts):
             return self.send_error(404)
         if resolved.is_dir() and pathname != "/":

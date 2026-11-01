@@ -198,3 +198,12 @@ Consulta [instalación, compatibilidad y límites AR/KSP](docs/AR_KSP.md).
 La cámara HUD no localiza al usuario sobre Marte y el globo de Duna no se
 considera equivalente a Marte. La integración se ha probado con telemetría
 simulada; faltan las pruebas con un visor real y una partida de KSP.
+
+### Menú de pruebas KSP
+
+El flujo actual para probar el futuro HUD de casco es **Prueba KSP**, separado
+del modo AR. Calcula una ruta y abre ese menú desde el explorador, o visita
+`/ksp.html` e importa la misión. Se usa como ventana auxiliar junto a KSP 1,
+sin cámara ni solicitudes WebXR. Permite conectar kRPC local o probar el HUD
+sin juego. La adaptación a un casco similar a Quest es una fase posterior que
+requiere definir y validar el dispositivo físico.
