@@ -1,25 +1,40 @@
-import {slopeAt,gridPoint} from './route.js';
+import {slopeAt} from './route.js';
 const $=id=>document.getElementById(id);let terrain,targets,selected,stops=[],path=[],metrics=null,view;
 const canvas=$('map'),ctx=canvas.getContext('2d');
+let zoom=1,pan={x:0,y:0},drag=null,moved=false,orbitalReady=false;
+const orbital=new Image();
+orbital.onload=()=>{orbitalReady=true;$('imageryStatus').textContent='HiRISE · fotografía orbital · 1.01 m/píxel';draw();};
+orbital.onerror=()=>{$('imageryStatus').textContent='Fotografía no disponible · mostrando relieve';draw();};
+orbital.src='/public/imagery/glen-torridon-hirise.webp';
+function zoomAt(factor,x,y){if(!view)return;const next=Math.max(1,Math.min(12,zoom*factor)),ratio=next/zoom;pan.x=(pan.x+canvas.clientWidth/2-x)*ratio+x-canvas.clientWidth/2;pan.y=(pan.y+canvas.clientHeight/2-y)*ratio+y-canvas.clientHeight/2;zoom=next;draw();}
+$('zoomIn').onclick=()=>zoomAt(1.5,canvas.clientWidth/2,canvas.clientHeight/2);
+$('zoomOut').onclick=()=>zoomAt(1/1.5,canvas.clientWidth/2,canvas.clientHeight/2);
+$('resetView').onclick=()=>{zoom=1;pan={x:0,y:0};draw();};
+canvas.addEventListener('wheel',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();zoomAt(Math.exp(-e.deltaY*.002),e.clientX-r.left,e.clientY-r.top);},{passive:false});
+canvas.onpointerdown=e=>{if(e.button!==0)return;drag={x:e.clientX,y:e.clientY};moved=false;canvas.setPointerCapture(e.pointerId);};
+canvas.onpointermove=e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>2)moved=true;pan.x+=dx;pan.y+=dy;drag={x:e.clientX,y:e.clientY};draw();};
+canvas.onpointerup=canvas.onpointercancel=()=>{drag=null;};
+canvas.onkeydown=e=>{const keys=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','0'];if(!keys.includes(e.key))return;e.preventDefault();if(e.key==='0')$('resetView').click();else if(['+','=','-'].includes(e.key))zoomAt(e.key==='-'?1/1.5:1.5,canvas.clientWidth/2,canvas.clientHeight/2);else{pan.x+=e.key==='ArrowLeft'?40:e.key==='ArrowRight'?-40:0;pan.y+=e.key==='ArrowUp'?40:e.key==='ArrowDown'?-40:0;draw();}};
+
 $('sources').onclick=()=>$('sourceDialog').showModal();$('closeSources').onclick=()=>$('sourceDialog').close();
 function filtered(){return targets.filter(p=>$('feature').value==='all'||p[$('feature').value]);}
-function pos(p){const [x,y]=gridPoint(terrain,p);return [view.x+x*view.scale,view.y+y*view.scale];}
-function draw(){if(!terrain)return;const box=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);const w=box.width,h=box.height,scale=Math.min((w-38)/terrain.width,(h-105)/terrain.height);view={scale,x:(w-terrain.width*scale)/2,y:(h-terrain.height*scale)/2};ctx.fillStyle='#222925';ctx.fillRect(0,0,w,h);const z=terrain.elevations,valid=z.filter(v=>v!=null),min=Math.min(...valid),max=Math.max(...valid);for(let y=0;y<terrain.height;y++)for(let x=0;x<terrain.width;x++){const i=y*terrain.width+x,v=z[i];if(v==null)continue;let color='#29322c';if($('terrainLayer').checked){const norm=(v-min)/(max-min),left=z[y*terrain.width+Math.max(0,x-1)]??v,up=z[Math.max(0,y-1)*terrain.width+x]??v,light=Math.max(.4,Math.min(1.3,.9+(v-left)*.04+(v-up)*.04));color=`rgb(${Math.round((99+norm*75)*light)},${Math.round((78+norm*52)*light)},${Math.round((61+norm*32)*light)})`;}ctx.fillStyle=color;ctx.fillRect(view.x+x*scale,view.y+y*scale,scale+.5,scale+.5);if($('slopeLayer').checked){const s=slopeAt(terrain,x,y);ctx.fillStyle=s>$('maxSlope').value?'#ef614b99':s>10?'#e8c26444':'#74b9a422';ctx.fillRect(view.x+x*scale,view.y+y*scale,scale+.5,scale+.5);}}
+function pos(p){const x=(p.lon-terrain.west)/terrain.degreeStep,y=(terrain.north-p.lat)/terrain.degreeStep;return [view.x+x*view.scale,view.y+y*view.scale];}
+function draw(){if(!terrain)return;const box=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);const w=box.width,h=box.height,scale=Math.min((w-38)/terrain.width,(h-105)/terrain.height)*zoom;view={scale,x:(w-terrain.width*scale)/2+pan.x,y:(h-terrain.height*scale)/2+pan.y};ctx.fillStyle='#222925';ctx.fillRect(0,0,w,h);const satellite=$('satelliteLayer').checked&&orbitalReady;if(satellite)ctx.drawImage(orbital,view.x,view.y,terrain.width*scale,terrain.height*scale);const z=terrain.elevations,valid=z.filter(v=>v!=null),min=Math.min(...valid),max=Math.max(...valid);for(let y=0;y<terrain.height;y++)for(let x=0;x<terrain.width;x++){const i=y*terrain.width+x,v=z[i];if(v==null)continue;let color='#29322c';if($('terrainLayer').checked){const norm=(v-min)/(max-min),left=z[y*terrain.width+Math.max(0,x-1)]??v,up=z[Math.max(0,y-1)*terrain.width+x]??v,light=Math.max(.4,Math.min(1.3,.9+(v-left)*.04+(v-up)*.04));color=`rgb(${Math.round((99+norm*75)*light)},${Math.round((78+norm*52)*light)},${Math.round((61+norm*32)*light)})`;}if(!satellite){ctx.fillStyle=color;ctx.fillRect(view.x+x*scale,view.y+y*scale,scale+.5,scale+.5);}if($('slopeLayer').checked){const s=slopeAt(terrain,x,y);ctx.fillStyle=s>$('maxSlope').value?'#ef614b99':s>10?'#e8c26444':'#74b9a422';ctx.fillRect(view.x+x*scale,view.y+y*scale,scale+.5,scale+.5);}}
 ctx.strokeStyle='#e8ebd30c';ctx.lineWidth=1;for(let x=0;x<w;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let y=0;y<h;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
 if($('scienceLayer').checked)for(const p of filtered()){const [x,y]=pos(p);ctx.fillStyle=p.veins?'#b5e5d2':'#e6c88b';ctx.beginPath();ctx.arc(x,y,1.7,0,Math.PI*2);ctx.fill();}
 if(path.length){ctx.strokeStyle='#f7ab7b';ctx.lineWidth=3;ctx.beginPath();path.forEach(([x,y],i)=>{const a=view.x+x*scale,b=view.y+y*scale;i?ctx.lineTo(a,b):ctx.moveTo(a,b);});ctx.stroke();}
 for(const [i,p] of stops.entries()){const [x,y]=pos(p);ctx.fillStyle='#f18559';ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#151b17';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillText(i+1,x,y+3);}
 if(selected){const [x,y]=pos(selected);ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.stroke();}
 $('pointCount').textContent=`${filtered().length} OBJETIVOS`;
-document.querySelector('.scale').style.width=`${200/terrain.cellMeters*scale}px`;
+const meters=zoom>4?20:zoom>2?50:100;document.querySelector('.scale').style.width=`${meters/terrain.cellMeters*scale}px`;document.querySelector('.scale').textContent=`${meters} m`;
 }
 function select(p){selected=p;$('targetSelect').value=String(targets.indexOf(p));$('targetName').textContent=p.name;$('targetDescription').textContent=`Observación ChemCam del sol ${p.sol}. ${p.veins?'Vetas visibles en la imagen RMI. ':''}${p.nodules?'Nódulos visibles en la imagen RMI. ':''}Consulta las imágenes originales para interpretar el contexto.`;const facts=[['COORDENADAS',`${p.lat.toFixed(6)}°, ${p.lon.toFixed(6)}° E`],['ELEVACIÓN PUBLICADA',`${p.elevation.toFixed(1)} m`],['FORMACIÓN',p.formation],['MIEMBRO',p.member],['SECUENCIA',p.sequence]];$('targetFacts').replaceChildren(...facts.map(([k,v])=>{const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=k;dd.textContent=v;row.append(dt,dd);return row;}));$('addStop').disabled=stops.includes(p);draw();}
 function invalidate(){requestVersion++;path=[];metrics=null;$('distance').textContent=$('ascent').textContent=$('duration').textContent='—';$('routeStatus').textContent=stops.length<2?'Agrega al menos dos puntos.':'Recorrido pendiente de cálculo.';draw();}
 function renderStops(){const list=$('stops');list.replaceChildren();stops.forEach((p,i)=>{const li=document.createElement('li');li.textContent=p.name;const b=document.createElement('button');b.textContent='×';b.setAttribute('aria-label',`Quitar ${p.name}`);b.onclick=()=>{stops.splice(i,1);renderStops();invalidate();};li.append(b);list.append(li);});$('empty').hidden=stops.length>0;if(selected)$('addStop').disabled=stops.includes(selected);}
 $('addStop').onclick=()=>{if(selected&&!stops.includes(selected)){stops.push(selected);renderStops();invalidate();}};
 $('targetSelect').onchange=e=>{if(e.target.value!=='')select(targets[Number(e.target.value)]);};
-canvas.onclick=e=>{if(!targets||!$('scienceLayer').checked)return;const r=canvas.getBoundingClientRect();let nearest=null,best=18;for(const p of filtered()){const [x,y]=pos(p),d=Math.hypot(e.clientX-r.left-x,e.clientY-r.top-y);if(d<best){best=d;nearest=p;}}if(nearest)select(nearest);};
-for(const id of ['terrainLayer','slopeLayer','scienceLayer','feature'])$(id).onchange=draw;
+canvas.onclick=e=>{if(moved){moved=false;return;}if(!targets||!$('scienceLayer').checked)return;const r=canvas.getBoundingClientRect();let nearest=null,best=18;for(const p of filtered()){const [x,y]=pos(p),d=Math.hypot(e.clientX-r.left-x,e.clientY-r.top-y);if(d<best){best=d;nearest=p;}}if(nearest)select(nearest);};
+for(const id of ['satelliteLayer','terrainLayer','slopeLayer','scienceLayer','feature'])$(id).onchange=draw;
 $('maxSlope').oninput=()=>{$('slopeValue').textContent=$('maxSlope').value+'°';invalidate();};
 $('clear').onclick=()=>{stops=[];renderStops();invalidate();};
 let requestVersion=0;

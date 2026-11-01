@@ -24,6 +24,9 @@ Puedes ejecutar el proyecto en Android con **Pydroid 3 o Termux**, sin computado
 
 ## Ejecutar
 
+Para que tus compañeros accedan con un enlace público, consulta la
+[guía de despliegue desde GitHub en Render](docs/DESPLIEGUE.md).
+
 Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
 
 ```sh
@@ -50,7 +53,7 @@ Las rutas siguen una cuadrícula de elevación real muestreada a unos 12.1 m. Se
 - [Tabla científica original](public/data/target_classification.csv)
 - [Reproducir la recopilación](scripts/collect-data.py): `python3 scripts/collect-data.py` (solo biblioteca estándar).
 
-Los datos pequeños están incluidos; la app no necesita consultar NASA durante el uso. Las tipografías remotas son opcionales y tienen fuentes de respaldo. El mapa muestra **relieve calculado, no una fotografía**. Las imágenes se consultan en el archivo original mediante el enlace de contexto; todavía no se vinculan automáticamente por objetivo.
+Los datos pequeños están incluidos; la app no necesita consultar NASA durante el uso. Las tipografías remotas son opcionales y tienen fuentes de respaldo. El mapa muestra por defecto una **ortofotografía orbital real HiRISE en blanco y negro**, con zoom y arrastre. Al desactivar la fotografía se muestra el relieve calculado. [Procedencia de la imagen](public/imagery/metadata.json). Las imágenes se consultan en el archivo original mediante el enlace de contexto; todavía no se vinculan automáticamente por objetivo.
 
 ## Contexto de Marte
 
@@ -66,7 +69,7 @@ Incluye un resumen en español de [NASA Mars Facts](https://science.nasa.gov/mar
 
 Implementado: elevación, pendientes calculadas, observaciones químico-geológicas de ChemCam, filtros de vetas y nódulos, ficha científica, recorridos y exportación. Dos misiones: MRO y MSL/Curiosity.
 
-No integrado: capa mineralógica CRISM, clima, radiación, fotografía orbital de fondo, navegación 3D/HUD, posiciones APXS transformadas o autonomía de trajes. Se investigaron como extensiones, pero requieren comprobar cobertura y calibración. Los tiempos usan **2 km/h y 10 min por parada posterior a la salida**; no incluyen regreso. No se estima oxígeno. Las alturas publicadas de objetivos y del DTM no se comparan como si compartieran una alineación vertical ya validada.
+No integrado: capa mineralógica CRISM, clima, radiación, navegación 3D/HUD, posiciones APXS transformadas o autonomía de trajes. Se investigaron como extensiones, pero requieren comprobar cobertura y calibración. Los tiempos usan **2 km/h y 10 min por parada posterior a la salida**; no incluyen regreso. No se estima oxígeno. Las alturas publicadas de objetivos y del DTM no se comparan como si compartieran una alineación vertical ya validada.
 
 Proyecto independiente inspirado en NASA Space Apps. No implica afiliación ni aprobación de NASA. Conservar créditos de NASA/JPL-Caltech/University of Arizona y Gasda et al. al reutilizar los datos. Consultar las condiciones de cada fuente; no se asigna una licencia propia a los datos de terceros.
 

@@ -48,4 +48,6 @@ Se detectó una inconsistencia en la etiqueta XML: los campos 10 y 11 se llaman 
 
 Filas PDS 2800–3652 y columnas 1400–2852, muestreadas cada 12 píxeles: 122 × 72 celdas. Tamaño de celda ~12.14 m. Se preservan datos ausentes como null. Las rutas se ajustan al centro de celda más cercano: desplazamiento máximo aproximado de 8.6 m. Pendientes por diferencias finitas sobre el recorte; detalles subcuadrícula y obstáculos pequeños no están representados.
 
-Queda pendiente la alineación visual con ortofotografías, la precisión absoluta horizontal y la referencia vertical de las alturas científicas. APXS y CRISM no forman parte de esta cobertura validada.
+Se incorporó la ortofotografía `PSP_009149_1750_RED_C_01_ORTHO`, con la misma proyección, escala y offsets PDS del DTM. Se recortan los píxeles de base cero [1399, 2799, 2863, 3663), a 1464 × 864 píxeles. La esquina superior izquierda corresponde al origen de la cuadrícula; cada celda equivale a 12 píxeles de la imagen. Se conserva la banda RED en escala de grises, sin inventar colores naturales. Créditos: NASA/JPL/University of Arizona. Véase `/public/imagery/metadata.json`.
+
+Queda pendiente la verificación independiente de la precisión absoluta horizontal y la referencia vertical de las alturas científicas. APXS y CRISM no forman parte de esta cobertura validada.
