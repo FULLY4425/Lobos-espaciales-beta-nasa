@@ -72,6 +72,15 @@ proyecto, incluidos los errores. Los resultados de la prueba del HUD están en
   `space_center.warp_rate` para confirmar que es `1`.
 - La interfaz está en español: el grupo de frenos se llama "Conmutar Grupo de
   Acción de Frenos" y SAS aparece como "SAE".
+- Si la ventana no tenía el foco, **el primer clic solo la activa**: el icono no
+  cambia. Comprueba el resultado con `estado.py` y repite el clic si hace falta.
+- `hold_key` mantiene **una sola tecla** (con modificadores): no se puede
+  mantener `W` y `D` a la vez. Para girar sin soltar el avance, usa el trim de
+  dirección (sección 4).
+- Puede aparecer una segunda ventana en blanco titulada "Kerbal Space Program"
+  delante del juego. No la cierres: haz clic en la parte visible del juego.
+- Con el panel del navegador oculto, la página del mapa se actualiza con
+  retraso y puede mostrar "Telemetría perdida" un momento. Se recupera sola.
 
 ### Iconos útiles (ventana de ~980×800 px en la esquina superior izquierda)
 
@@ -96,7 +105,8 @@ y pasando el ratón por encima (aparece el nombre).
 | Cabeceo | `W` baja el morro, `S` lo sube | Con SAS en estabilidad, el avión vuelve a su actitud al soltar. |
 | Alabeo | `Q` / `E` | ~100°/s en el Aeris 4A a gran velocidad: pulsos de 0,3 s. |
 | Rover: avanzar/girar | `W`/`S`, `A`/`D` | Crater Crawler: `W` 8 s → 19 m/s; pulsos de 1,5–2,5 s → 4–6 m/s. |
-| Frenos | `B` (mantener) | Mantener `B` **no siempre frenó**. Usa el icono de frenos. |
+| Frenos | `B` (mantener) | Mantener `B` **no siempre frenó**. Usa el icono de frenos. En Duna, cuesta abajo, el freno no paró el rover a 20 m/s: hizo falta `S` (motor en reversa) 5 s. |
+| Trim de dirección | `Alt+A` / `Alt+D` (mantener) | ~0,1 por segundo mantenido (`wheel_steering`); el rover gira solo con `W`. **Ojo:** también cambia el trim de guiñada. `Alt+X` pone todos los trims a 0. `Alt+W` apenas cambió `wheel_throttle` (0,008), y después aparecieron RCS y SAS activados sin saber la causa: compruébalo con kRPC y apágalos con `R` y `T`. |
 | Tren | `G` | |
 | Vista de mapa | `M` | El mapa tenía muchas líneas superpuestas; mejor leer la órbita con `estado.py`. |
 | Aceleración de tiempo | `.` sube, `,` baja | Se detiene sola al entrar en la atmósfera (70 km en Kerbin). |
@@ -137,6 +147,33 @@ y pasando el ratón por encima (aparece el nombre).
 5. Comportamiento observado: el desvío sube de forma lineal si la rotación es
    incorrecta. A unos 30 m dice "Recalculando ruta.", luego "Ruta recalculada.",
    el desvío vuelve a unos 4 m y la misión pasa a "Posición actual" → destino.
+
+## 6b. Probar el mapa nativo (`ksp-map.html`) en Duna
+
+Segunda prueba, 1 de noviembre de 2026: rover Crater Crawler en Duna
+(lat −0,049°, lon −74,725°, 5345 m de altitud), con el conector de `main`
+(protocolo `ksp-surface-v1`).
+
+1. Si hay un conector antiguo escuchando en 7173, detenlo y arranca el de la
+   copia actual. `/api/ksp` debe devolver `protocol: ksp-surface-v1`.
+2. `connectGame` y luego `sampleTerrain` (33 × 33, 25 m: 1089 alturas en ~12 s).
+3. Revisa las pendientes antes de elegir un destino: `GET /api/ksp/terrain`
+   devuelve `elevations` en una malla de 33 × 33 con el norte arriba. Junto al
+   rover todo tenía 15–20°, así que con una pendiente máxima de 15° la ruta
+   fallaba ("Sin paso entre Vehículo actual y …"). Con 20° y un destino en la
+   llanura del sureste (−0,07576°, −74,6893°) salió una ruta de 262 m.
+4. Cuesta abajo y con la gravedad baja de Duna, el rover pasó de 6 a 15 m/s sin
+   acelerar y **se pasó del destino**. Frena unos 60 m antes, y antes aún si va
+   rápido.
+5. Al soltar `W` en pendiente, el rover **rueda hacia atrás** y los giros se
+   invierten. Comprueba la trayectoria real (dos lecturas de lat/lon) frente al
+   rumbo. A baja velocidad, 0,5 s de `A` llegó a girarlo ~130°.
+6. Si el destino queda justo detrás, avanza marcha atrás con `S` en vez de dar
+   la vuelta en pendiente.
+7. El mapa recalculó desde la posición del rover varias veces ("Desvío detectado.
+   Recalculando en el terreno KSP…" → "Ruta KSP recalculada desde el vehículo;
+   destinos pendientes conservados.") y la voz lo anunció. Al salir de la región
+   mostró "Vehículo fuera de la región muestreada…".
 
 ## 7. Control por kRPC (solo si el usuario lo pide)
 
