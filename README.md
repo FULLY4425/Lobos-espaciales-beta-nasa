@@ -1,5 +1,7 @@
 # Lobos Espaciales · Ojo de Marte
 
+**Versión actual: v1.1.0 «Horizonte KSP» · 1 de noviembre de 2026.** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
 **[Abrir el proyecto](https://lobos-espaciales-python.onrender.com/)** · **[Guía de uso](docs/USO.md)** · **[Instalar en tu PC](docs/INSTALACION_LOCAL.md)** · **[Mapa KSP](docs/KSP_MAPA.md)** · **[HUD / futuro casco](docs/AR_KSP.md)** · **[Fuentes y créditos](docs/REFERENCIAS.md)**

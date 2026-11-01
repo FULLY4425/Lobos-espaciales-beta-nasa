@@ -1,0 +1,61 @@
+# Historial de actualizaciones
+
+[Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
+
+## v1.1.0 «Horizonte KSP» — 1 de noviembre de 2026
+
+Esta versión convierte el proyecto en un explorador de Marte y una guía de superficie para **KSP 1**, conservando las funciones anteriores. Implementación principal: [92c7046](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/92c7046).
+
+### Añadido
+
+- Mapa KSP independiente en `/ksp-map.html`, con vistas 2D y relieve 3D.
+- Lectura de coordenadas, radio y alturas del cuerpo activo mediante kRPC; muestreo por bloques con progreso y cancelación.
+- Destinos guardados por cuerpo, planificación según pendiente y agua, indicaciones por voz y recálculo automático desde la posición actual.
+- Importación de destinos del mismo cuerpo y exportación de misiones con coordenadas, ruta y procedencia de datos.
+- Demo pública marcada como sintética, sin necesidad de instalar KSP.
+- Guía de configuración, arquitectura y validaciones del nuevo mapa.
+- Número y nombre de versión en el README, la interfaz y `package.json`, junto con este historial.
+
+### Conservado
+
+Explorador de Marte con HiRISE y ChemCam, globo, objetivos propios, astronautas, voz, recálculo, escenarios de polvo, HUD de entrenamiento y AR experimental. El APK y la instalación PWA siguen retirados.
+
+### Comprobado y pendiente
+
+42 pruebas automatizadas aprobadas, comprobaciones de navegador y contrato HTTP con telemetría simulada. La prueba dentro de una partida real de KSP sigue pendiente. El juego requiere el conector local; Render ofrece la web y la demo. La guía es de superficie, no controla el vehículo y no proporciona navegación orbital ni meteorología real del juego.
+
+## Actualizaciones anteriores
+
+Antes de v1.1.0, `package.json` indicaba **1.0.0**, pero los cambios no tenían versiones individuales ni nombres oficiales. Se registran aquí por fecha y commit, con títulos descriptivos añadidos al preparar este historial. No representan publicaciones numeradas retrospectivas.
+
+Orden: de la actualización anterior más reciente a la primera.
+
+| Fecha | Actualización | Cambios | Commit |
+| --- | --- | --- | --- |
+| 2026-11-01 | Proyecto web sin APK | Retirada del APK, Android y mecanismos de instalación PWA; conservación del proyecto web, KSP, AR y las funciones de Marte. | [0041b9a](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/0041b9a) |
+| 2026-11-01 | Calibración y clima | El HUD de entrenamiento exige calibración KSP antes de aplicar un cambio de escenario meteorológico. | [35b8ce7](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/35b8ce7) |
+| 2026-11-01 | Reproducción tras recálculo | Corrección para permitir reanudar la reproducción tras recalcular sobre la misma geometría de malla. | [aeeea9a](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/aeeea9a) |
+| 2026-11-01 | Reanudar con ruta nueva | Recálculo antes de reanudar después de caminar libremente. | [f866717](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/f866717) |
+| 2026-11-01 | Progreso al caminar | Corrección para alinear el progreso con la posición del astronauta movido manualmente. | [c7bc1ab](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/c7bc1ab) |
+| 2026-11-01 | Recálculo y polvo | Recálculo desde posiciones fuera de la ruta y escenarios explícitamente simulados de polvo y tormenta. | [ed9f48e](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/ed9f48e) |
+| 2026-11-01 | Documentación unificada | Guías de instalación y uso, referencias, arquitectura y registro de validaciones consolidados. | [2f1ed15](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/2f1ed15) |
+| 2026-11-01 | Menús KSP y AR | Separación del laboratorio auxiliar de KSP y del flujo experimental para un futuro casco AR. | [a273ae9](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/a273ae9) |
+| 2026-11-01 | HUD AR y puente KSP | HUD mínimo, modo maqueta WebXR y conector local de KSP 1 mediante kRPC, de solo lectura. | [19ccd0a](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/19ccd0a) |
+| 2026-11-01 | Guía por voz | Indicaciones de giro y voces españolas seleccionables para la navegación. | [699e084](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/699e084) |
+| 2026-11-01 | Destinos propios | Objetivos personalizados integrados en las rutas y en la exportación de misiones. | [22f2bad](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/22f2bad) |
+| 2026-11-01 | Globo y astronautas | Globo de Marte, astronautas que siguen la ruta y navegación de superficie. | [783c999](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/783c999) |
+| 2026-11-01 | Exploración inmersiva | Cámaras panorámicas y navegación orbital para explorar el terreno. | [9087d2d](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/9087d2d) |
+| 2026-11-01 | Relieve 3D | Terreno tridimensional con textura orbital real. | [6648fd6](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/6648fd6) |
+| 2026-11-01 | Fotografía orbital | Imágenes HiRISE reales y controles interactivos del mapa. | [788242e](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/788242e) |
+| 2026-10-30 | Python en Android — histórico | Se documentó la ejecución con Pydroid y Termux. La documentación móvil se retiró al abandonar el APK y la aplicación instalable. | [f02608c](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/f02608c) |
+| 2026-10-30 | APK histórico — retirado | Se añadió un APK Android de depuración con datos de Marte y conexión Python. Fue retirado en 0041b9a. | [ef7e723](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/ef7e723) |
+| 2026-10-30 | PWA histórica — retirada | Se incorporaron instalación PWA, mapa sin conexión y guía móvil. Estas funciones de instalación se retiraron posteriormente en 0041b9a. | [0875988](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/0875988) |
+| 2026-10-30 | Propósito del proyecto | Explicación en español de los objetivos educativos y científicos. | [950c6ce](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/950c6ce) |
+| 2026-10-30 | Contexto de Marte | Información planetaria con fuentes de NASA y contexto científico. | [54aea92](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/54aea92) |
+| 2026-10-30 | Instalación local | Guía en español para instalar, ejecutar y probar el proyecto en una computadora. | [6b9ef1e](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/6b9ef1e) |
+| 2026-10-30 | Servidor Python | Servidor, planificación de rutas y exportación de misiones trasladados a Python. | [3702d7c](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/3702d7c) |
+| 2026-10-30 | Primer mapa científico | Guía de campo de Glen Torridon con datos verificados de relieve y objetivos científicos, y documentación de investigación. | [84a916a](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/84a916a) |
+
+## Cómo registrar las siguientes versiones
+
+Cada actualización publicada debe añadir una entrada al inicio con número, nombre, fecha, funciones añadidas, correcciones, retiradas y validación. Se mantendrá el mismo número en `package.json`, README e interfaz. Las correcciones compatibles incrementan el último número; las funciones compatibles, el segundo; los cambios incompatibles, el primero.
