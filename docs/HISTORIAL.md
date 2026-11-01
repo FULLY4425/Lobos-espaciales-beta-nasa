@@ -2,6 +2,21 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.2.0 «Atlas KSP» — 1 de noviembre de 2026
+
+- Investigación de kRPC, SCANsat, Sigma Cartographer y KerbalMaps, con fuentes y diferencias entre imágenes y alturas documentadas.
+- Descarga y carga de regiones `ksp-terrain-v1` de kRPC; reutilización con telemetría del mismo cuerpo.
+- Convertidor de CSV de SCANsat por regiones, con lectura línea a línea, muestras cercanas, máscara opcional de océano y huecos bloqueados sin interpolación.
+- Preparación de rutas sobre mapas importados con salida manual y sin juego, conservando 2D/3D, destinos, exportación y el servidor Python.
+- API acotada de validación y planificación de mapas, con identidad derivada del contenido y procedencia declarada explícita.
+- Corrección del rumbo: lectura en el marco de superficie de kRPC, conservando posición y velocidad en el marco del cuerpo.
+- Conservación de las funciones anteriores de Marte, KSP, HUD y AR.
+- Validación: 31 pruebas Python y 18 JavaScript (49 en total); navegador con mapas y telemetría de prueba. El CSV exportado por una partida y la corrección del rumbo frente a la navball requieren validación real.
+
+### Registro de prueba real incorporado entre versiones
+
+El [merge cbdc7ce](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/cbdc7ce) añadió la prueba parcial del HUD anterior con KSP 1.12.5 y kRPC 0.7.0: conexión, conducción, avisos y recálculo; también registró el error de rumbo abordado en v1.2.0. Es una prueba del HUD anterior, no del mapa nativo nuevo. Véase [VALIDACION.md](VALIDACION.md).
+
 ## v1.1.0 «Horizonte KSP» — 1 de noviembre de 2026
 
 Esta versión convierte el proyecto en un explorador de Marte y una guía de superficie para **KSP 1**, conservando las funciones anteriores. Implementación principal: [92c7046](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/92c7046).

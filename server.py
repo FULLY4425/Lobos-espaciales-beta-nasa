@@ -6,6 +6,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
 from mars.planner import plan_mission
 from integrations.ksp_navigation import demo_terrain, plan_ksp_mission
+from integrations.ksp_maps import read_archive, archive, plan_archive
 KSP_DEMO = demo_terrain()
 
 ROOT = Path(__file__).resolve().parent
@@ -48,15 +49,19 @@ class Handler(SimpleHTTPRequestHandler):
         pathname=urlsplit(self.path).path
         if pathname in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan'):
             return self.reply(503,dict(error='Abre la aplicación del conector local KSP en el PC del juego.'))
-        if pathname not in ('/api/plan','/api/export','/api/ksp/demo/plan'):
+        if pathname not in ('/api/plan','/api/export','/api/ksp/demo/plan','/api/ksp/maps/validate','/api/ksp/maps/plan'):
             return self.reply(404,dict(error='Ruta desconocida.'))
         try:
             length=int(self.headers.get('Content-Length','0'))
-            if not 0<length<=16384:
+            if not 0<length<=(512*1024 if pathname.startswith('/api/ksp/maps/') else 16384):
                 return self.reply(413,dict(error='Solicitud demasiado grande o vacía.'))
             payload=json.loads(self.rfile.read(length))
             if not isinstance(payload,dict):
                 raise ValueError('Se requiere un objeto JSON.')
+            if pathname=='/api/ksp/maps/validate':
+                return self.reply(200,archive(read_archive(payload)))
+            if pathname=='/api/ksp/maps/plan':
+                return self.reply(200,plan_archive(payload))
             mission=plan_ksp_mission(KSP_DEMO,payload) if pathname=='/api/ksp/demo/plan' else plan_mission(TERRAIN,TARGETS,payload)
             self.reply(200,mission,attachment=pathname=='/api/export')
         except (ValueError,TypeError) as exc:

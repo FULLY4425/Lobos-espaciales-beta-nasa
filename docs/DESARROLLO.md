@@ -157,3 +157,7 @@ Las capacidades actuales se anuncian como `ksp-surface-v1`. Una petición
 reciente. Las API `/api/ksp/demo/*` solo usan el escenario sintético del
 servidor y están disponibles en el despliegue web. Los detalles están en
 [KSP_MAPA.md](KSP_MAPA.md).
+
+## Mapas portátiles KSP
+
+`integrations/ksp_maps.py` valida `ksp-terrain-v1`, deriva una identidad del contenido y planifica con alturas importadas. `scripts/import-scansat.py` convierte el CSV de SCANsat línea a línea, sin interpolar huecos. Las rutas `/api/ksp/maps/validate` y `/api/ksp/maps/plan` aceptan hasta 512 KB y no persisten archivos. El mapa web distingue salida manual y vehículo real. Instrucciones y límites en [KSP_MAPAS_DATOS.md](KSP_MAPAS_DATOS.md).

@@ -62,3 +62,7 @@ Conserva la atribución de cada recurso y consulta las condiciones del archivo o
 ## Terreno nativo del juego
 
 El [mapa KSP](KSP_MAPA.md) obtiene alturas mediante `CelestialBody.bedrock_height`, propiedades del cuerpo y telemetría del cliente kRPC 0.7.0. No usa datos de NASA para representar cuerpos de KSP. La demo nativa tiene procedencia `synthetic-ksp-demo`; no se atribuye a una partida observada.
+
+## Fuentes de mapas KSP (v1.2.0)
+
+Consulta del 1 de noviembre de 2026: [SCANsat 21.1 y su exportador CSV](https://github.com/KSPModStewards/SCANsat/blob/21.1/SCANsat/SCAN_Map/SCANmapExporter.cs), [Sigma Cartographer](https://github.com/Sigma88/Sigma-Cartographer) y [KerbalMaps](https://github.com/FiniteMonkeys/kerbal-maps). Se integra la conversión de archivos de alturas exportados por el usuario, sin redistribuir imágenes ni código de esos mods. Véase [KSP_MAPAS_DATOS.md](KSP_MAPAS_DATOS.md).

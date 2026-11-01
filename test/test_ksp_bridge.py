@@ -42,8 +42,9 @@ class KspBridgeTests(unittest.TestCase):
 
         class Vessel:
             name, orbit = 'Rover', SimpleNamespace(body=body)
-            def flight(self, reference_frame):
-                self.assert_frame = reference_frame
+            frames = []
+            def flight(self, reference_frame=None):
+                self.frames.append(reference_frame)
                 return Flight()
             @property
             def control(self):
@@ -55,7 +56,7 @@ class KspBridgeTests(unittest.TestCase):
         with patch.dict(sys.modules, {'krpc': client}):
             telemetry.run()
         self.assertEqual(telemetry.snapshot()[0], 200)
-        self.assertIs(vessel.assert_frame, body.reference_frame)
+        self.assertEqual(vessel.frames, [body.reference_frame, None])
         self.assertEqual(client.connect.call_args.kwargs['address'], '127.0.0.1')
         self.assertEqual(client.connect.call_args.kwargs['timeout'], 2)
         connection.close.assert_called_once()

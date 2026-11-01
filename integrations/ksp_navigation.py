@@ -5,7 +5,11 @@ from mars.planner import find_path, route_metrics
 
 
 def finite(value, name):
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+    try:
+        valid = not isinstance(value, bool) and isinstance(value, (int, float)) and math.isfinite(value)
+    except OverflowError:
+        valid = False
+    if not valid:
         raise ValueError(f'{name}: se requiere un número finito.')
     return value
 

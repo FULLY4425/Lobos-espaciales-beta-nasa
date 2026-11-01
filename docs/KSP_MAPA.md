@@ -24,6 +24,10 @@ La demo tiene alturas y vehículo generados para la prueba; no es una captura ni
 telemetría de una partida. Está marcada como `synthetic-ksp-demo` en pantalla y
 exportaciones. Render no puede conectarse directamente al juego de tu PC.
 
+## Guardar y cargar mapas
+
+Desde v1.2.0 «Atlas KSP» puedes descargar la región muestreada, volver a cargarla y convertir archivos de alturas SCANsat. Consulta [mapas descargables y fuentes de datos](KSP_MAPAS_DATOS.md). Se admite preparación sin el juego con una salida manual, y reutilización del mapa con telemetría local del mismo cuerpo. El modo sin juego sigue necesitando el servidor Python para calcular rutas.
+
 ## Preparar el conector
 
 Sigue la [instalación de KSP 1 y kRPC](AR_KSP.md). Se mantiene el mismo cliente

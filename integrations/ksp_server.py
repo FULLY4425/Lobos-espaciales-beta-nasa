@@ -31,6 +31,18 @@ def validate_sample(sample):
     }
 
 
+def read_vessel_sample(vessel, session_id):
+    body = vessel.orbit.body
+    flight = vessel.flight(body.reference_frame)
+    # Heading is defined relative to local north, unlike body-fixed Cartesian axes.
+    surface = vessel.flight()
+    return body, validate_sample(dict(
+        latitude=flight.latitude, longitude=flight.longitude, heading=surface.heading,
+        surfaceAltitude=flight.surface_altitude, speed=flight.speed,
+        bodyRadius=body.equatorial_radius, body=body.name,
+        vessel=vessel.name, vesselId=f"{session_id}:{hash(vessel)}"))
+
+
 class Telemetry:
     def __init__(self, rpc_port=50000, stream_port=50001):
         self.rpc_port, self.stream_port = rpc_port, stream_port
@@ -152,14 +164,8 @@ class Telemetry:
                 session_id = uuid.uuid4().hex
                 while not self.stopped.is_set():
                     vessel = connection.space_center.active_vessel
-                    body = vessel.orbit.body
-                    flight = vessel.flight(body.reference_frame)
-                    # All RPC calls here are property reads. No control/autopilot access.
-                    sample = validate_sample(dict(
-                        latitude=flight.latitude, longitude=flight.longitude, heading=flight.heading,
-                        surfaceAltitude=flight.surface_altitude, speed=flight.speed,
-                        bodyRadius=body.equatorial_radius, body=body.name,
-                        vessel=vessel.name, vesselId=f"{session_id}:{hash(vessel)}"))
+                    # All RPC calls here are reads. No control/autopilot access.
+                    body, sample = read_vessel_sample(vessel, session_id)
                     with self.lock:
                         self.sample = sample
                     self._sample_batch(body,sample)

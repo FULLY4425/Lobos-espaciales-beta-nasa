@@ -6,13 +6,13 @@ Estado documental: **1 de noviembre de 2026**. Este documento recoge comprobacio
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 24 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado. |
+| `python3 -m unittest discover -s test -v` | 31 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia y marco de rumbo. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 
-Total registrado: **42 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **49 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ## Comprobaciones de navegador realizadas
 
@@ -27,12 +27,16 @@ Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de 
 - HUD AR: misión cargada, interfaz compacta sin desbordamiento, simulación, inicio/cierre con cámara de prueba de Chromium y alternativa ante rechazo de sesión WebXR.
 - KSP: calibración, recálculo por desvío y pausa fuera de cobertura con telemetría simulada, y respuesta `503` del conector cuando no hay juego/dependencia disponible.
 
+## Mapas descargables (v1.2.0)
+
+CSV de prueba con el formato del exportador SCANsat 21.1: importación, huecos bloqueados, rechazo de columnas ambiguas y números no finitos, y conservación de coordenadas/alturas. En Chromium se comprobaron carga, salida manual, planificación, relieve 3D, descarga/reimportación, pérdida de conector y tamaño compacto sin errores JavaScript. Se repitió el flujo del conector con cuerpo y telemetría simulados. No se ha procesado todavía una exportación de una partida real en esta validación.
+
 ## Conexión con una partida real de KSP 1 (parcial)
 
 > Versión probada: copia local previa al commit `92c7046` (mapa nativo KSP), con
 > `ksp.html` y el conector de esa copia. El mapa nativo `ksp-map.html` no se ha
-> probado aún con el juego real. El fallo de rumbo descrito abajo sigue presente
-> en `integrations/ksp_server.py` de `main`.
+> probado aún con el juego real. El fallo de rumbo descrito abajo se corrigió
+> en v1.2.0 usando el marco de superficie; su comparación real con la navball sigue pendiente.
 
 1 de noviembre de 2026, Windows 10, Python 3.13.17, Node.js 26.13.0. KSP 1.12.5
 (Steam, build 03190) con el mod kRPC 0.7.0 y cliente Python `krpc==0.7.0`
