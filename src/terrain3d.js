@@ -55,7 +55,7 @@ export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false, na
     document.querySelector('.workspace').dataset.worldMode=mode;
     document.getElementById('surfaceNote').hidden=mode!=='surface';document.getElementById('globeNote').hidden=mode!=='globe';
     if(mode==='globe'){yaw=Math.atan2(sitePosition.x,sitePosition.z);pitch=.18;distance=1500;focus.set(0,0,0);}else if(mode==='terrain'){yaw=0;pitch=1.32;distance=span*1.15;focus.set(0,30,0);}render();}
-  function toggleWalk(){if(hold)return false;if(!totalLength)return false;if(worldMode==='globe')setMode('follow');transition=null;flight=false;if(progress>=1)progress=0;running=!running;if(!running)navigation?.pause();if(running)startAnimation();render();return running;}
+  function toggleWalk(){if(hold)return false;if(offRoutePosition){events.onDeviation?.({...navigationState(),reason:'manual'});return false;}if(!totalLength)return false;if(worldMode==='globe')setMode('follow');transition=null;flight=false;if(progress>=1)progress=0;running=!running;if(!running)navigation?.pause();if(running)startAnimation();render();return running;}
   function seek(value){stop();navigation?.seek(value);progress=THREE.MathUtils.clamp(value,0,1);render();}
 
   function moveAstronaut(x,y){if(hold||!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||x>w-1||y>h-1||z[Math.round(y)*w+Math.round(x)]===null)return;stop();offRoutePosition={x,y};render();}
