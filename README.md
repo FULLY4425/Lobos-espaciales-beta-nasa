@@ -109,3 +109,29 @@ Las cámaras Panorámica, Cenital y Sobrevolar tienen transiciones animadas.
 o arrastra el terreno para detenerlo. La brújula sigue el giro y la altitud
 de cámara se expresa respecto al datum marciano, que puede ser negativa.
 El vuelo recorre el mismo modelo local; no extiende la cobertura cartográfica.
+
+### Globo, astronautas y vista de superficie
+
+El panel de control permanece a la izquierda del mapa en escritorio; en móvil
+aparece debajo para conservar espacio para el mapa.
+
+- **Globo:** esfera giratoria de Marte con textura global de Solar System Scope
+  ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). El marcador
+  turquesa abre Glen Torridon; la alta resolución está limitada al recorte local.
+- **Terreno 3D:** vista aérea del relieve HiRISE y la ruta calculada por Python.
+- **Seguir astronauta:** cámara que acompaña a dos personajes sobre la ruta.
+- **Superficie:** cámara a 1.7 m sobre la ruta, con arrastre para mirar. Es una
+  reconstrucción a partir del modelo de ~12 m y la ortofotografía, sin fotos
+  panorámicas Street View. El cielo es un fondo ilustrativo.
+
+Calcula una ruta de al menos dos objetivos y pulsa **Iniciar / pausar recorrido**.
+El control de avance permite saltar a un tramo; las velocidades 20×, 100× y
+200× aceleran la reproducción de una caminata base de 2 km/h. Esta animación no
+simula los tiempos de investigación en las paradas ni cambia las métricas de
+misión. Al modificar la ruta se reinicia la reproducción. Los personajes siguen
+la línea de la ruta, con interpolación entre sus vértices; en vista aérea se
+amplían 6× para identificarlos, y en seguimiento y superficie tienen escala
+humana. La altitud indicada corresponde a la cámara, no a un sensor real.
+
+Procedencia y atribución de la textura global:
+[`public/imagery/mars-global-metadata.json`](public/imagery/mars-global-metadata.json).

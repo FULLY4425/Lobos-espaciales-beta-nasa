@@ -12,6 +12,9 @@ for(const [button,cls] of [['toggleLayers','show-layers'],['toggleDetails','show
 $('expandMap').onclick=()=>{const open=workspace.classList.toggle('expanded-map');$('expandMap').setAttribute('aria-pressed',String(open));document.body.classList.toggle('map-expanded',open);};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&workspace.classList.contains('expanded-map'))$('expandMap').click();});
 for(const [id,preset] of [['cameraOverview','overview'],['cameraNorth','north'],['cameraFlyover','flyover']])$(id).onclick=()=>viewer3d?.preset(preset);
+for(const [id,mode] of [['showGlobe','globe'],['showTerrain','terrain'],['showSurface','surface'],['showFollow','follow']])$(id).onclick=async()=>{await setView3D(true);viewer3d?.setMode(mode);};
+$('walkRoute').onclick=async()=>{await setView3D(true);if(viewer3d){const playing=viewer3d.toggleWalk();$('walkRoute').setAttribute('aria-pressed',String(playing));$('journeyStatus').textContent=playing?'Astronautas siguiendo la ruta · reproducción acelerada.':'Recorrido en pausa.';}};
+$('routeProgress').oninput=()=>viewer3d?.seek(Number($('routeProgress').value)/1000);
 $('orbitFlight').onclick=()=>{if(viewer3d)$('orbitFlight').setAttribute('aria-pressed',String(viewer3d.toggleFlight()));};
 $('view2d').onclick=()=>setView3D(false);$('view3d').onclick=()=>setView3D(true);
 let zoom=1,pan={x:0,y:0},drag=null,moved=false,orbitalReady=false;
