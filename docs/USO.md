@@ -83,7 +83,7 @@ Los avisos se agrupan para no anunciar cada pequeño zigzag de la cuadrícula. L
 
 Con una ruta calculada:
 
-- **Prueba KSP** abre una ventana auxiliar de prueba del HUD. Elige **Probar HUD sin juego** o conecta el juego con el conector local.
+- **HUD KSP** abre una ventana auxiliar de prueba del HUD. Elige **Probar HUD sin juego** o conecta el juego con el conector local.
 - **Modo AR** abre la pantalla experimental con vista previa, cámara HUD o maqueta WebXR según el dispositivo.
 
 Ambos menús reciben la misión de esa pestaña y también aceptan importar el JSON exportado. Consulta [AR_KSP.md](AR_KSP.md) para instalar kRPC, calibrar y conocer los límites. La prueba KSP no pide cámara ni visor. El futuro casco no está implementado como un producto de hardware.
@@ -115,3 +115,10 @@ planificar. La evolución opcional cambia el escenario cada 30 s de demostració
 Si no hay un paso válido, se suspende la guía y se habilita reintentar.
 Estos escenarios no provienen de meteorología actual. Consulta
 [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) antes de presentar sus resultados.
+
+## Mapa propio de KSP
+
+**Mapa KSP** abre `/ksp-map.html` sin necesitar antes una misión marciana. Usa
+el conector local para muestrear alturas y navegar sobre el cuerpo activo, o
+selecciona la demo sintética para probar sin juego. No mezcla coordenadas de
+Marte con las de KSP. Consulta [KSP_MAPA.md](KSP_MAPA.md).

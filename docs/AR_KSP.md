@@ -1,4 +1,6 @@
-# Ojo de Marte: AR y Kerbal Space Program 1
+# Ojo de Marte: HUD de entrenamiento, AR y KSP 1
+
+Para usar **el cuerpo y terreno propios del juego**, entra en [Mapa KSP](KSP_MAPA.md). Esta guía describe el HUD de entrenamiento que conserva una ruta marciana y la pantalla AR; ambas funciones permanecen disponibles.
 
 ## Fase actual: laboratorio KSP y futuro casco
 

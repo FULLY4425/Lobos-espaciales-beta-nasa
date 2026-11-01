@@ -5,6 +5,8 @@ from pathlib import Path
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
 from mars.planner import plan_mission
+from integrations.ksp_navigation import demo_terrain, plan_ksp_mission
+KSP_DEMO = demo_terrain()
 
 ROOT = Path(__file__).resolve().parent
 TERRAIN = json.loads((ROOT/'public/data/terrain.json').read_text())
@@ -27,13 +29,15 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         pathname=unquote(urlsplit(self.path).path)
-        if pathname=='/api/ksp':
+        if pathname=='/api/ksp/demo/terrain':
+            return self.reply(200,dict(status='complete',terrain=KSP_DEMO))
+        if pathname in ('/api/ksp','/api/ksp/terrain'):
             return self.reply(503,dict(status='unavailable',error='KSP requiere el conector local integrations/ksp_server.py en el PC del juego.',readOnly=True))
         if pathname=='/api/health':
             return self.reply(200,dict(status='ok',engine='python',targets=len(TARGETS)))
         # Only serve application assets and public research, never Git metadata or code directories.
         resolved=(ROOT/pathname.lstrip('/')).resolve()
-        allowed=pathname in ('/','/index.html','/ar.html','/ksp.html','/sw.js') or pathname.startswith(('/src/','/public/','/docs/'))
+        allowed=pathname in ('/','/index.html','/ar.html','/ksp.html','/ksp-map.html','/sw.js') or pathname.startswith(('/src/','/public/','/docs/'))
         if not allowed or not resolved.is_relative_to(ROOT) or any(p.startswith('.') for p in Path(pathname).parts):
             return self.send_error(404)
         if resolved.is_dir() and pathname != "/":
@@ -42,7 +46,9 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         pathname=urlsplit(self.path).path
-        if pathname not in ('/api/plan','/api/export'):
+        if pathname in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan'):
+            return self.reply(503,dict(error='Abre la aplicación del conector local KSP en el PC del juego.'))
+        if pathname not in ('/api/plan','/api/export','/api/ksp/demo/plan'):
             return self.reply(404,dict(error='Ruta desconocida.'))
         try:
             length=int(self.headers.get('Content-Length','0'))
@@ -51,7 +57,7 @@ class Handler(SimpleHTTPRequestHandler):
             payload=json.loads(self.rfile.read(length))
             if not isinstance(payload,dict):
                 raise ValueError('Se requiere un objeto JSON.')
-            mission=plan_mission(TERRAIN,TARGETS,payload)
+            mission=plan_ksp_mission(KSP_DEMO,payload) if pathname=='/api/ksp/demo/plan' else plan_mission(TERRAIN,TARGETS,payload)
             self.reply(200,mission,attachment=pathname=='/api/export')
         except (ValueError,TypeError) as exc:
             self.reply(400,dict(error=str(exc)))

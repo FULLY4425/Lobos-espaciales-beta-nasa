@@ -1,6 +1,6 @@
 import {buildDirections,distanceText} from './directions.js';
 
-export function createNavigation() {
+export function createNavigation({guideName='Marte'}={}) {
   const $=id=>document.getElementById(id),synth=window.speechSynthesis;
   const supported=!!synth&&typeof window.SpeechSynthesisUtterance==='function';
   let route={distance:0,steps:[]},voices=[],enabled=false,previousRunning=false,previousProgress=0,lastSpoken='',lastTime=0,activeStep=-1,arrived=false,settings={};
@@ -26,8 +26,8 @@ export function createNavigation() {
   function currentSpeech(){return $('navigationDistance').textContent?`${$('navigationDistance').textContent}, ${$('navigationText').textContent.toLowerCase()}`:$('navigationText').textContent;}
   $('voiceRate').value=String(Math.max(.8,Math.min(1.4,Number(settings.rate)||1)));
   $('voiceVolume').value=String(Math.max(0,Math.min(1,Number.isFinite(settings.volume)?settings.volume:1)));
-  $('enableNavigationVoice').onclick=()=>{enabled=!enabled;$('enableNavigationVoice').setAttribute('aria-pressed',String(enabled));$('enableNavigationVoice').textContent=enabled?'🔊 Voz activada':'🔇 Activar voz';cancel();if(enabled)speak(route.steps.length?currentSpeech():'Guía de Marte activada. Calcula una ruta e inicia el recorrido.',{force:true});};
-  $('testNavigationVoice').onclick=()=>speak('Hola. Soy tu guía de Marte. Continúa recto y, en cincuenta metros, gira a la derecha.',{force:true});
+  $('enableNavigationVoice').onclick=()=>{enabled=!enabled;$('enableNavigationVoice').setAttribute('aria-pressed',String(enabled));$('enableNavigationVoice').textContent=enabled?'🔊 Voz activada':'🔇 Activar voz';cancel();if(enabled)speak(route.steps.length?currentSpeech():`Guía de ${guideName} activada. Calcula una ruta e inicia el recorrido.`,{force:true});};
+  $('testNavigationVoice').onclick=()=>speak(`Hola. Soy tu guía de ${guideName}. Continúa recto y, en cincuenta metros, gira a la derecha.`,{force:true});
   $('repeatDirection').onclick=()=>{if(route.steps.length)speak(currentSpeech(),{force:true});};
   for(const id of ['navigationVoice','voiceRate','voiceVolume'])$(id).onchange=()=>{cancel();save();if(id==='navigationVoice')populate();};
   if(supported){populate();synth.addEventListener('voiceschanged',populate);}else{for(const id of ['enableNavigationVoice','testNavigationVoice','navigationVoice','voiceRate','voiceVolume','repeatDirection'])$(id).disabled=true;$('voiceStatus').textContent='Este navegador no ofrece voz. Las indicaciones en pantalla siguen disponibles.';}

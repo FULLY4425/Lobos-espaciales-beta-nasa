@@ -11,6 +11,7 @@ Rutas públicas principales:
 | Ruta | Función |
 | --- | --- |
 | `/` | Mapa, planificación, astronautas e indicaciones. |
+| `/ksp-map.html` | Mapa nativo KSP: demo pública; el juego real requiere el conector local. |
 | `/ksp.html` | Laboratorio del HUD para KSP; el juego real requiere el conector local. |
 | `/ar.html` | Pantalla AR experimental. |
 | `/api/health` | Estado del motor Python y número de objetivos. |

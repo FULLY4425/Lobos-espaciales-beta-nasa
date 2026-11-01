@@ -6,12 +6,13 @@ Estado documental: **1 de noviembre de 2026**. Este documento recoge comprobacio
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 16 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado. |
+| `python3 -m unittest discover -s test -v` | 24 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
+| `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 
-Total registrado: **31 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **42 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ## Comprobaciones de navegador realizadas
 
@@ -63,3 +64,13 @@ solo permite retirar trabajadores y cachés heredados; no instala una app.
 Se verificó en navegador la retirada de cachés heredadas conservando puntos
 personalizados, preferencias de voz y cachés ajenas. También se comprobaron
 mapa 3D, tormenta simulada, exportación JSON y transferencia al menú KSP.
+
+## Mapa nativo KSP
+
+Se comprobaron proyección geográfica y radio del cuerpo, muestreo por bloques,
+cancelación, rechazo de cuerpos gaseosos y conexiones caducadas, agua,
+pendientes y separación respecto a coordenadas NASA. En navegador: demo
+2D/3D, destinos, exportación, persistencia y recálculo con destinos pendientes.
+También se ejercitaron las rutas HTTP reales del conector con un proveedor de
+alturas/telemetría simulado: carga de región, ruta en Duna, desvío, cambio de
+cuerpo y pérdida de datos. No equivale a una prueba en el juego real.

@@ -2,7 +2,7 @@
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
-**[Abrir el proyecto](https://lobos-espaciales-python.onrender.com/)** · **[Guía de uso](docs/USO.md)** · **[Instalar en tu PC](docs/INSTALACION_LOCAL.md)** · **[Prueba KSP / futuro casco](docs/AR_KSP.md)** · **[Fuentes y créditos](docs/REFERENCIAS.md)**
+**[Abrir el proyecto](https://lobos-espaciales-python.onrender.com/)** · **[Guía de uso](docs/USO.md)** · **[Instalar en tu PC](docs/INSTALACION_LOCAL.md)** · **[Mapa KSP](docs/KSP_MAPA.md)** · **[HUD / futuro casco](docs/AR_KSP.md)** · **[Fuentes y créditos](docs/REFERENCIAS.md)**
 
 ![Mapa 3D y recorrido calculado](docs/captura-escritorio.png)
 
@@ -26,7 +26,8 @@ Es un prototipo independiente inspirado en NASA Space Apps. No implica afiliaci�
 | Astronautas | Dos personajes recorren la ruta; pausa, avance manual y cámara de seguimiento. |
 | Vista de superficie | Reconstrucción 3D a nivel del terreno. No son panoramas fotográficos Street View. |
 | Indicaciones y voz | Giros, distancias, paradas y llegada; voces españolas del dispositivo, ritmo y volumen. |
-| Menú Prueba KSP | Ventana auxiliar sin cámara ni solicitudes WebXR; demostración del HUD o telemetría local de KSP 1. |
+| Mapa nativo KSP | Malla de alturas del cuerpo activo leída de kRPC, vehículo, destinos por cuerpo, rutas y recálculo; demo sintética para probar sin juego. |
+| HUD de entrenamiento | Ventana auxiliar sin cámara ni solicitudes WebXR; demostración del HUD o telemetría local de KSP 1. |
 | AR experimental | Cámara HUD y maqueta WebXR sobre superficies en dispositivos compatibles. |
 | Recálculo y polvo | Replanificación desde la posición actual por desvío o cambio de escenario; zonas de tormenta hipotéticas y pausa si no hay paso. |
 | Exportación | JSON con paradas, ruta, métricas, supuestos y fuentes. |
@@ -57,9 +58,15 @@ En Windows, usa `py -3 server.py`. Abre **http://localhost:5173/** y mantén la 
 - [Alojamiento y despliegue en Render](docs/DESPLIEGUE.md)
 
 
-## KSP ahora; casco después
+## Mapa y guía para Kerbal Space Program
 
-La prueba actual utiliza **KSP 1 + kRPC**, con un conector Python en el PC del juego. **Prueba KSP** se abre como ventana auxiliar del navegador; no es un menú nativo añadido dentro de KSP.
+**Mapa KSP** abre un espacio nativo en `/ksp-map.html`: usa el radio, las coordenadas y las alturas del cuerpo activo de KSP 1. Permite muestrear una región, marcar destinos, planificar con pendientes/agua, seguir el vehículo, escuchar indicaciones y recalcular desde su posición. No necesita calibrar el cuerpo del juego como si fuera Marte.
+
+[Guía del mapa nativo KSP](docs/KSP_MAPA.md). En Render puedes probar la demo sintética; para datos de una partida usa `http://localhost:7173/ksp-map.html` con el conector actualizado.
+
+## HUD de entrenamiento y futuro casco
+
+El modo de entrenamiento anterior utiliza **KSP 1 + kRPC**, con un conector Python en el PC del juego. **HUD KSP** se abre como ventana auxiliar del navegador; no es un menú nativo añadido dentro de KSP.
 
 El conector lee posición, rumbo y velocidad. Una calibración asocia la posición inicial del vehículo con la salida de la ruta; no controla el vehículo ni convierte Duna en Marte. El sitio en Render no puede acceder por sí solo a tu partida local.
 
@@ -122,8 +129,9 @@ Pruebas JavaScript opcionales para desarrollo, con Node.js moderno:
 node test/directions.test.js
 node test/ar-tracking.test.js
 node test/replanning.test.js
+node test/ksp-geo.test.js
 ```
 
-**Estado de validación:** 16 pruebas Python y 15 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. Falta probar la integración en una partida real de KSP y en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
+**Estado de validación:** 24 pruebas Python y 18 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. Falta probar la integración en una partida real de KSP y en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

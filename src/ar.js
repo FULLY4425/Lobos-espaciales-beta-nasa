@@ -9,6 +9,7 @@ $('arSettingsButton').onclick=()=>settings($('arSettings').hidden);
 function stopPlayback(){playing=false;clearInterval(timer);timer=null;$('arPlay').setAttribute('aria-pressed','false');$('arPlay').textContent='▶ Simular';navigation.pause();}
 function update(running=false){navigation.update(progress,running);$('arProgress').value=Math.round(progress*1000);}
 function validateMission(data){
+ if(data?.context?.kind==='ksp-surface')throw Error('Esta es una misión nativa KSP. Usa el mapa KSP; este HUD conserva la proyección de entrenamiento de Marte.');
  if(!data||!Array.isArray(data.gridPath)||data.gridPath.length>40000||!Array.isArray(data.stops)||data.stops.length>20)throw Error('Misión no válida. Exporta una misión desde el mapa.');
  for(const cell of data.gridPath){if(!Array.isArray(cell)||cell.length!==2||cell.some(v=>!Number.isInteger(v))||cell[0]<0||cell[1]<0||cell[0]>=terrain.width||cell[1]>=terrain.height||terrain.elevations[cell[1]*terrain.width+cell[0]]==null)throw Error('La ruta está fuera del terreno disponible.');}
  if(data.gridPath.length<2)throw Error('La misión necesita una ruta con desplazamiento.');

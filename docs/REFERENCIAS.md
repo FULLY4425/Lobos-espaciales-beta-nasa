@@ -58,3 +58,7 @@ Conserva la atribución de cada recurso y consulta las condiciones del archivo o
 ## Escenarios de polvo
 
 [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) distingue el contexto planetario de NASA de los parámetros sintéticos de entrenamiento. Las zonas de exclusión, velocidades y efectos de neblina no son productos meteorológicos observados.
+
+## Terreno nativo del juego
+
+El [mapa KSP](KSP_MAPA.md) obtiene alturas mediante `CelestialBody.bedrock_height`, propiedades del cuerpo y telemetría del cliente kRPC 0.7.0. No usa datos de NASA para representar cuerpos de KSP. La demo nativa tiene procedencia `synthetic-ksp-demo`; no se atribuye a una partida observada.

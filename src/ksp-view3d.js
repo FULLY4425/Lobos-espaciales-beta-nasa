@@ -1,0 +1,25 @@
+import * as THREE from './vendor/three.module.js';
+import {gridPosition} from './ksp-geo.js';
+export function createKspRelief(canvas){
+ const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setClearColor('#101b19');
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(45,1,.5,100000),root=new THREE.Group();scene.add(root);scene.add(new THREE.HemisphereLight(0xffffff,0x334438,2));const sun=new THREE.DirectionalLight(0xffe1bd,2);sun.position.set(-500,1200,500);scene.add(sun);
+ let current=null,state=null,yaw=0,pitch=.95,distance=1500,active=false,overlay=new THREE.Group();root.add(overlay);
+ function dispose(group){for(const child of [...group.children]){if(child.children.length)dispose(child);child.geometry?.dispose();child.material?.dispose();group.remove(child);}}
+ function xyz(x,y,lift=3){const t=state.terrain,z=t.elevations[Math.max(0,Math.min(t.height-1,Math.round(y)))*t.width+Math.max(0,Math.min(t.width-1,Math.round(x)))];return new THREE.Vector3((x-(t.width-1)/2)*t.cellMeters,(z??state.floor)-state.floor+lift,(y-(t.height-1)/2)*t.cellMeters);}
+ function render(){if(!active||!state)return;const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();camera.position.set(distance*Math.sin(yaw)*Math.cos(pitch),distance*Math.sin(pitch),distance*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(0,(state.ceiling-state.floor)/2,0);renderer.render(scene,camera);}
+ function update(next){if(!next.terrain)return;const t=next.terrain,values=t.elevations.filter(v=>v!==null),floor=Math.min(...values),ceiling=Math.max(...values);state={...next,floor,ceiling};
+  if(current!==t.id){dispose(root);overlay=new THREE.Group();root.add(overlay);current=t.id;distance=Math.max(t.width,t.height)*t.cellMeters*1.5;const vertices=[],colors=[],indices=[];
+   for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){const i=y*t.width+x,v=t.elevations[i];vertices.push(...xyz(x,y,0).toArray());const c=new THREE.Color(t.water[i]?'#346482':'#a5b084');if(!t.water[i])c.multiplyScalar(.55+(v-floor)/(ceiling-floor||1)*.45);colors.push(c.r,c.g,c.b);}
+   for(let y=0;y<t.height-1;y++)for(let x=0;x<t.width-1;x++){const a=y*t.width+x,b=a+1,c=a+t.width,d=c+1;if([a,c,b].every(i=>t.elevations[i]!==null))indices.push(a,c,b);if([b,c,d].every(i=>t.elevations[i]!==null))indices.push(b,c,d);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.setIndex(indices);g.computeVertexNormals();root.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide})));
+  }
+  dispose(overlay);
+  if(next.mission){const g=new THREE.BufferGeometry().setFromPoints(next.mission.gridPath.map(([x,y])=>xyz(x,y,4)));overlay.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:next.suspended?'#87978e':'#aaffbd'})));}
+  for(const p of next.points){const grid=gridPosition(p,t);if(grid.x<0||grid.y<0||grid.x>=t.width||grid.y>=t.height)continue;const marker=new THREE.Mesh(new THREE.SphereGeometry(t.cellMeters*.12,8,6),new THREE.MeshBasicMaterial({color:'#ffaa72'}));marker.position.copy(xyz(grid.x,grid.y,5));overlay.add(marker);}
+  if(next.sample){const grid=gridPosition({lat:next.sample.latitude,lon:next.sample.longitude},t);if(grid.x>=0&&grid.y>=0&&grid.x<t.width&&grid.y<t.height){const rover=new THREE.Mesh(new THREE.BoxGeometry(t.cellMeters*.28,t.cellMeters*.18,t.cellMeters*.4),new THREE.MeshBasicMaterial({color:'#f8f6dd'}));rover.position.copy(xyz(grid.x,grid.y,t.cellMeters*.16));rover.rotation.y=-next.sample.heading*Math.PI/180;overlay.add(rover);}}
+  render();
+ }
+ let pointer=null;canvas.onpointerdown=e=>{pointer={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);};canvas.onpointermove=e=>{if(!pointer)return;yaw-=(e.clientX-pointer.x)*.007;pitch=THREE.MathUtils.clamp(pitch+(e.clientY-pointer.y)*.005,.15,1.55);pointer={x:e.clientX,y:e.clientY};render();};canvas.onpointerup=canvas.onpointercancel=()=>pointer=null;
+ canvas.addEventListener('wheel',e=>{e.preventDefault();distance=THREE.MathUtils.clamp(distance*Math.exp(e.deltaY*.0015),30,50000);render();},{passive:false});canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','0','+','-'].includes(e.key))return;e.preventDefault();if(e.key==='0'){yaw=0;pitch=.95;distance=state.terrain.width*state.terrain.cellMeters*1.5;}else{yaw+=e.key==='ArrowLeft'?.1:e.key==='ArrowRight'?-.1:0;pitch=THREE.MathUtils.clamp(pitch+(e.key==='ArrowUp'?.1:e.key==='ArrowDown'?-.1:0),.15,1.55);distance*=e.key==='+'?.85:e.key==='-'?1.15:1;}render();};new ResizeObserver(render).observe(canvas);
+ return {update,setActive(value){active=value;render();},reset(){yaw=0;pitch=.95;if(state)distance=state.terrain.width*state.terrain.cellMeters*1.5;render();}};
+}

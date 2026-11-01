@@ -113,6 +113,7 @@ python3 -m unittest discover -s test -v
 node test/directions.test.js
 node test/ar-tracking.test.js
 node test/replanning.test.js
+node test/ksp-geo.test.js
 python3 scripts/build.py
 ```
 
@@ -142,3 +143,17 @@ permiten mantener las paradas pendientes al replanificar.
 actual, conserva el orden de destinos restantes y cancela peticiones obsoletas.
 No modifica los datos científicos. El umbral de 30 m y las velocidades de clima
 son parámetros del prototipo; ver [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md).
+
+## Navegación KSP nativa
+
+`integrations/ksp_navigation.py` implementa proyección geográfica local,
+validación y planificación con alturas leídas de kRPC. `Telemetry` en el
+conector administra trabajos de muestreo y solo publica mallas completas.
+`src/ksp-map.js`, `src/ksp-geo.js` y `src/ksp-view3d.js` proporcionan el mapa
+nativo y su relieve, separados del terreno marciano.
+
+Las capacidades actuales se anuncian como `ksp-surface-v1`. Una petición
+`/api/ksp/plan` necesita una región muestreada del cuerpo activo y telemetría
+reciente. Las API `/api/ksp/demo/*` solo usan el escenario sintético del
+servidor y están disponibles en el despliegue web. Los detalles están en
+[KSP_MAPA.md](KSP_MAPA.md).
