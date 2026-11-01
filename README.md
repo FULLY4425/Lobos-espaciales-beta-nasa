@@ -83,3 +83,19 @@ Proyecto independiente inspirado en NASA Space Apps. No implica afiliación ni a
 - HTML/CSS y JavaScript: presentación, interacción y dibujo en canvas. El JavaScript ya no calcula rutas ni métricas.
 
 API: `GET /api/health`, `POST /api/plan`, `POST /api/export`. Los POST aceptan `{"stops":["Stornoway","Whaligoe"],"maxSlopeDegrees":20}`. El servidor usa sus propios datos de terreno y objetivos, valida de 2 a 20 nombres distintos y pendientes de 5° a 40°, y devuelve errores 400 cuando el recorrido no existe o los parámetros no son válidos.
+
+## Terreno 3D
+
+Selecciona **Terreno 3D** en el mapa para explorar el modelo HiRISE con su
+ortofotografía real. Arrastra para girar e inclinar; Mayús + arrastre o botón
+derecho para desplazar; rueda o botones +/− para acercar. En móvil, un dedo
+gira y dos dedos desplazan y amplían. Con el lienzo enfocado: flechas para
+girar, W/A/S/D para desplazar y 0 para restablecer.
+
+Las alturas se representan en metros a escala 1:1, sin exageración vertical.
+La geometría utiliza la cuadrícula de ~12.1 m; la fotografía conserva ~1 m/píxel.
+Los huecos de elevación no generan superficie. Las rutas y objetivos comparten
+las coordenadas del mapa 2D. La vista es un recorte local de Glen Torridon.
+Requiere WebGL; el mapa 2D sigue disponible en equipos sin soporte.
+Three.js 0.170.0 está incluido localmente, con su licencia MIT en
+`src/vendor/THREE-LICENSE.txt`; no requiere CDN durante el uso.
