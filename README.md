@@ -99,3 +99,13 @@ las coordenadas del mapa 2D. La vista es un recorte local de Glen Torridon.
 Requiere WebGL; el mapa 2D sigue disponible en equipos sin soporte.
 Three.js 0.170.0 está incluido localmente, con su licencia MIT en
 `src/vendor/THREE-LICENSE.txt`; no requiere CDN durante el uso.
+
+### Ojo de Marte
+
+El explorador abre en 3D con paneles plegables de **Capas y ruta** y
+**Objetivos**. **Ampliar** ocupa la ventana; Escape vuelve al tamaño normal.
+Las cámaras Panorámica, Cenital y Sobrevolar tienen transiciones animadas.
+**Vuelo orbital** gira automáticamente alrededor del recorte; vuelve a pulsarlo
+o arrastra el terreno para detenerlo. La brújula sigue el giro y la altitud
+de cámara se expresa respecto al datum marciano, que puede ser negativa.
+El vuelo recorre el mismo modelo local; no extiende la cobertura cartográfica.

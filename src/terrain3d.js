@@ -10,7 +10,7 @@ export function createTerrain3D(canvas, terrain, onSelect) {
   const {width:w,height:h,cellMeters:m,elevations:z}=terrain;
   const valid=z.filter(v=>v!==null),floor=Math.min(...valid),ceiling=Math.max(...valid),span=Math.max(w,h)*m;
   const focus=new THREE.Vector3(0,30,0);
-  let yaw=0,pitch=.85,distance=span*1.25,active=false,frame=0,state;
+  let yaw=0,pitch=1.32,distance=span*1.15,active=false,frame=0,state,flight=false,animation=0,lastTime=0,transition=null;
   const geometry=new THREE.BufferGeometry(),vertices=[],uvs=[],indices=[];
   for(let y=0;y<h;y++)for(let x=0;x<w;x++) {
     vertices.push((x-w/2)*m,(z[y*w+x]??floor)-floor,(y-h/2)*m);
@@ -48,13 +48,20 @@ export function createTerrain3D(canvas, terrain, onSelect) {
     if(next.selected){const marker=new THREE.Mesh(new THREE.SphereGeometry(11,12,8),new THREE.MeshBasicMaterial({color:'white',wireframe:true}));marker.position.copy(targetPoint(next.selected,8));overlays.add(marker);}
     render();
   }
-  function render(){if(!active)return;const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();camera.position.set(focus.x+distance*Math.sin(yaw)*Math.cos(pitch),focus.y+distance*Math.sin(pitch),focus.z+distance*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(focus);renderer.render(scene,camera);}
-  function reset(){yaw=0;pitch=.85;distance=span*1.25;focus.set(0,30,0);render();}
+  function render(){if(!active)return;const rect=canvas.getBoundingClientRect();if(!rect.width||!rect.height)return;renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();camera.position.set(focus.x+distance*Math.sin(yaw)*Math.cos(pitch),focus.y+distance*Math.sin(pitch),focus.z+distance*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(focus);renderer.render(scene,camera);const bearing=((yaw*180/Math.PI)%360+360)%360;document.getElementById('cameraBearing').textContent=`${bearing.toFixed(0).padStart(3,'0')}°`;document.getElementById('cameraHeight').textContent=`${Math.round(camera.position.y+floor)} m`;document.getElementById('compassNeedle').style.transform=`rotate(${-bearing}deg)`;}
+  function stop(){flight=false;transition=null;cancelAnimationFrame(animation);animation=0;document.getElementById('orbitFlight').setAttribute('aria-pressed','false');}
+  function animate(now){if(!active){stop();return;}const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
+    if(transition){const t=Math.min(1,(now-transition.start)/1100),ease=t*t*(3-2*t);yaw=THREE.MathUtils.lerp(transition.yaw,transition.to.yaw,ease);pitch=THREE.MathUtils.lerp(transition.pitch,transition.to.pitch,ease);distance=THREE.MathUtils.lerp(transition.distance,transition.to.distance,ease);focus.lerpVectors(transition.focus,new THREE.Vector3(0,30,0),ease);if(t===1)transition=null;}
+    if(flight)yaw+=dt*.12;render();if(transition||flight)animation=requestAnimationFrame(animate);else animation=0;
+  }
+  function preset(name){stop();const presets={overview:{yaw:0,pitch:1.32,distance:span*1.15},flyover:{yaw:-.35,pitch:.38,distance:span*.72},north:{yaw:0,pitch:1.56,distance:span*1.15}};transition={yaw,pitch,distance,focus:focus.clone(),start:performance.now(),to:presets[name]||presets.overview};lastTime=performance.now();animation=requestAnimationFrame(animate);}
+  function toggleFlight(){if(flight){stop();return false;}flight=true;lastTime=performance.now();if(!animation)animation=requestAnimationFrame(animate);return true;}
+  function reset(){preset('overview');}
   function zoom(factor){distance=THREE.MathUtils.clamp(distance/factor,80,span*4);render();}
   function pan(dx,dy){const k=distance*.001;focus.x+=(-dx*Math.cos(yaw)-dy*Math.sin(yaw))*k;focus.z+=(dx*Math.sin(yaw)-dy*Math.cos(yaw))*k;focus.x=THREE.MathUtils.clamp(focus.x,-span,span);focus.z=THREE.MathUtils.clamp(focus.z,-span,span);}
   const pointers=new Map();let moved=false,start=null;
   canvas.oncontextmenu=e=>e.preventDefault();
-  canvas.onpointerdown=e=>{canvas.focus();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});start={x:e.clientX,y:e.clientY};moved=false;};
+  canvas.onpointerdown=e=>{stop();canvas.focus();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});start={x:e.clientX,y:e.clientY};moved=false;};
   canvas.onpointermove=e=>{
     const old=pointers.get(e.pointerId);if(!old)return;
     const dx=e.clientX-old.x,dy=e.clientY-old.y;
@@ -69,9 +76,9 @@ export function createTerrain3D(canvas, terrain, onSelect) {
     if(!moved&&e.button===0&&pickable){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hits=raycaster.intersectObject(pickable);const surface=raycaster.intersectObject(mesh)[0];const hit=hits.find(hit=>!surface||hit.distance<=surface.distance+15);if(hit)onSelect(pickTargets[hit.index]);}
   };
   canvas.onpointercancel=e=>{pointers.delete(e.pointerId);moved=true;};
-  canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.0015));},{passive:false});
+  canvas.addEventListener('wheel',e=>{stop();e.preventDefault();zoom(Math.exp(-e.deltaY*.0015));},{passive:false});
   canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','0','w','a','s','d'].includes(e.key))return;e.preventDefault();if(e.key==='0')reset();else if(['+','=','-'].includes(e.key))zoom(e.key==='-'?1/1.3:1.3);else if(['w','a','s','d'].includes(e.key))pan(e.key==='a'?30:e.key==='d'?-30:0,e.key==='w'?30:e.key==='s'?-30:0);else{yaw+=e.key==='ArrowLeft'?.15:e.key==='ArrowRight'?-.15:0;pitch=THREE.MathUtils.clamp(pitch+(e.key==='ArrowUp'?.1:e.key==='ArrowDown'?-.1:0),.12,Math.PI/2-.01);render();}};
   new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(render);}).observe(canvas);
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();document.getElementById('view2d').click();document.getElementById('viewStatus').textContent='Se perdió el contexto 3D. Puedes continuar en el mapa 2D.';});
-  return {update,zoom,reset,setActive(value){active=value;pointers.clear();if(active&&state)render();}};
+  return {update,zoom,reset,preset,toggleFlight,setActive(value){active=value;if(!value)stop();pointers.clear();if(active&&state)render();}};
 }
