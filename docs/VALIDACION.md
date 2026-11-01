@@ -12,7 +12,9 @@ Estado documental: **1 de noviembre de 2026**. Este documento recoge comprobacio
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 
-Total registrado: **49 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+| `node test/ksp-reports.test.js` | 8 pruebas aprobadas. | Alcance KSP real, evidencia o ausencia justificada, contenido del informe, revisión y límites de archivos, recortes, transferencia a GitHub y filtrado seguro de reportes. |
+
+Total registrado: **57 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ## Comprobaciones de navegador realizadas
 
@@ -26,6 +28,10 @@ Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de 
 - Menú KSP separado: transferencia de misión, estado sin conector y demostración del HUD. Se comprobaron cero solicitudes a cámara o consulta WebXR en esa página.
 - HUD AR: misión cargada, interfaz compacta sin desbordamiento, simulación, inicio/cierre con cámara de prueba de Chromium y alternativa ante rechazo de sesión WebXR.
 - KSP: calibración, recálculo por desvío y pausa fuera de cobertura con telemetría simulada, y respuesta `503` del conector cuando no hay juego/dependencia disponible.
+
+## Bitácora KSP (v1.3.0)
+
+Se probaron formulario, confirmación de partida real, logs obligatorios o ausencia justificada, lectura/revisión local, descarga íntegra, informe largo con copia manual, invalidación tras cambios, diagnóstico puntual y filtrado de reportes públicos con respuestas de prueba. Se verificaron los enlaces a GitHub y el formulario YAML; no se publicaron issues ficticios ni se subieron archivos de usuarios durante las pruebas.
 
 ## Mapas descargables (v1.2.0)
 

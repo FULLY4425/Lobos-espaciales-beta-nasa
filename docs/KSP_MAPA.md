@@ -138,6 +138,10 @@ telemetría entre bloques. Un cambio de cuerpo/vehículo durante el muestreo lo
 invalida. Las peticiones de planificación comprueban contexto y frescura. Las
 operaciones solo leen datos de KSP; cancelar solo detiene trabajo del conector.
 
+## Compartir una prueba con el equipo
+
+Usa [Bitácora de pruebas KSP](KSP_COLABORADORES.md) para documentar una sesión con el juego real, adjuntar logs y proponer mejoras. El acceso está en el menú del mapa y del HUD; los informes se publican y conservan en GitHub.
+
 ## Límites y validación
 
 El muestreo no detecta rocas, edificios, vehículos, resistencia del suelo,

@@ -2,6 +2,17 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.3.0 «Bitácora KSP» — 1 de noviembre de 2026
+
+- Apartado exclusivo para experiencias de pruebas reales de la integración KSP, accesible desde mapa y HUD.
+- Informe con entorno, versiones, mods, pasos, experiencia observada, errores, mejoras y matriz de comprobaciones sin marcar pruebas como aprobadas por defecto.
+- Revisión local de archivos de logs, extractos, descarga de textos completos y paquete JSON; diagnóstico puntual del conector.
+- Formulario GitHub con confirmación de alcance y campos obligatorios. Publicación y adjuntos confirmados por el probador con su cuenta, y seguimiento mediante issues/comentarios persistentes.
+- Listado bajo demanda de reportes KSP, con acceso al historial completo y alternativa si falla la API pública.
+- Guía de colaboradores, recopilación de logs y diferencias entre preparar, descargar y publicar.
+- Se conservan Marte, mapas, integración KSP, HUD y AR. No se añade almacenamiento efímero de reportes en Render.
+- Validación: 31 pruebas Python y 26 JavaScript (57 en total), más comprobaciones de navegador con archivos y respuestas de prueba; sin publicar informes ficticios.
+
 ## v1.2.0 «Atlas KSP» — 1 de noviembre de 2026
 
 - Investigación de kRPC, SCANsat, Sigma Cartographer y KerbalMaps, con fuentes y diferencias entre imágenes y alturas documentadas.

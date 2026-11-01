@@ -58,3 +58,5 @@ obtiene ejecutando el conector en el PC de KSP, según [AR_KSP.md](AR_KSP.md).
 El plan gratuito puede suspender el servicio por inactividad y tardar en el
 primer acceso. El servidor incluido sigue siendo de desarrollo; el despliegue
 actual se utiliza para compartir y probar el prototipo.
+
+La sección `/ksp-tests.html` utiliza GitHub para reportes y adjuntos persistentes. No requiere variables de entorno ni base de datos nuevas. Su formulario nativo se despliega con el repositorio (`.github/ISSUE_TEMPLATE/ksp-integration.yml`).
