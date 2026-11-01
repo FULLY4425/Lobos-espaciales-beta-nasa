@@ -144,3 +144,31 @@ pendientes y separación respecto a coordenadas NASA. En navegador: demo
 También se ejercitaron las rutas HTTP reales del conector con un proveedor de
 alturas/telemetría simulado: carga de región, ruta en Duna, desvío, cambio de
 cuerpo y pérdida de datos. No equivale a una prueba en el juego real.
+
+### Prueba en Duna con el juego real (parcial)
+
+1 de noviembre de 2026, KSP 1.12.5 + kRPC 0.7.0, conector de `main`
+(`ksp-surface-v1`). El rover Crater Crawler, en Duna, se condujo con el teclado;
+la aplicación solo leyó datos.
+
+- **Conexión:** `/api/ksp` informó Duna, el vehículo y las capacidades
+  `telemetry`, `terrain-sampling` y `surface-planning`. El muestreo de 33 × 33 a
+  25 m leyó 1089 alturas reales (5216–5486 m) en ~12 s.
+- **Planificación:** con pendiente máxima de 15°, el mapa informó correctamente
+  "Sin paso…", porque el terreno alrededor tenía 15–20°. Con 20° calculó
+  262 m, +2,7 m de subida y ~3 min a 2 m/s.
+- **Avance:** la distancia bajó de 265 a 45 m al conducir hacia el destino. La
+  voz dijo "En 265 metros, llegarás a llanura sureste…".
+- **Recálculo:** tras pasarse del destino cuesta abajo, mostró "Desvío
+  detectado…" y luego "Ruta KSP recalculada desde el vehículo; destinos
+  pendientes conservados". La voz dijo "Recalculando ruta KSP." y "Ruta KSP
+  calculada.".
+- **Salida de la región:** al salir, mostró "Vehículo fuera de la región
+  muestreada…".
+- **Pausa con panel oculto:** con el panel del navegador oculto, la página mostró
+  durante un momento "Telemetría perdida. Guía en pausa" y se recuperó sola.
+- **Destino no alcanzado:** el rover no llegó a detenerse en el destino. Se pasó
+  cuesta abajo, rodó hacia atrás al soltar `W` y acabó ~740 m fuera de la
+  región, frenado y entero. Fueron fallos de conducción, no del mapa.
+- **Rumbo mostrado:** el rumbo que muestra el mapa sale del conector
+  (`body.reference_frame`) y no coincidía con la navball.
