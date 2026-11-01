@@ -1,6 +1,6 @@
 # Cómo descargar y probar Lobos Espaciales en tu computadora
 
-No necesitas una cuenta de NASA, claves de API, Node.js ni instalar paquetes con pip. Los datos necesarios ya están incluidos. Necesitas **Python 3.10 o posterior** y un navegador moderno.
+Para el mapa y la API no necesitas una cuenta de NASA, claves de API, Node.js ni instalar paquetes con pip. El conector opcional KSP tiene dependencias propias. Los datos necesarios ya están incluidos. Necesitas **Python 3.10 o posterior** y un navegador moderno.
 
 ## 1. Descargar el proyecto
 
@@ -82,14 +82,15 @@ No abras `index.html` con doble clic: el mapa y las rutas necesitan el servidor 
 ## 4. Hacer una prueba completa
 
 1. Espera a que el mapa indique **718 objetivos**.
-2. En el selector del cuaderno de campo, elige **Stornoway** y pulsa **Agregar al recorrido**.
+2. Pulsa **Objetivos** para abrir el cuaderno de campo. En su selector, elige **Stornoway** y pulsa **Agregar al recorrido**.
 3. Elige **Whaligoe** y agrégalo también.
 4. Deja el límite de pendiente en **20°** y pulsa **Calcular recorrido**.
 5. Debe aparecer una ruta de aproximadamente **1.31 km** y un tiempo simulado de **50 minutos**. No incluye regreso.
 6. Prueba la capa **Pendientes**, el filtro **Vetas** y **Exportar misión** para descargar un JSON.
-7. Abre **Fuentes** para consultar la procedencia y las limitaciones de los datos.
+7. Prueba **Seguir astronauta**, **Iniciar / pausar recorrido** y **Activar voz**. Para escuchar los avisos usa 1× o 5×.
+8. Abre **Fuentes** para consultar la procedencia y las limitaciones de los datos.
 
-La aplicación usa un recorte real de HiRISE y observaciones de Curiosity. Las rutas son educativas; no certifican seguridad. Las imágenes originales se consultan mediante enlaces externos. El mapa y el cálculo funcionan con los datos locales; esos enlaces y las tipografías remotas necesitan internet, con fuentes de respaldo si estas últimas no cargan.
+La aplicación usa un recorte real de HiRISE y observaciones de Curiosity. Las rutas son educativas; no certifican seguridad. La ortofotografía HiRISE local ya está incluida. Las fotos de contexto por objetivo se consultan mediante enlaces externos. El mapa y el cálculo funcionan con los datos locales; esos enlaces y las tipografías remotas necesitan internet, con fuentes de respaldo si estas últimas no cargan.
 
 ## 5. Si algo falla
 
@@ -136,10 +137,18 @@ macOS / Linux:
 python3 -m unittest discover -s test -v
 ```
 
-Deben completarse las siete pruebas sin errores.
+La última validación registrada incluye 13 pruebas Python aprobadas. Para las 11 pruebas JavaScript opcionales y el alcance de los ensayos consulta [VALIDACION.md](VALIDACION.md).
 
 ## Compartirlo con otras personas
 
-Comparte el enlace del repositorio y esta guía. Cada persona puede descargarlo y ejecutarlo en su computadora; `127.0.0.1` siempre apunta al equipo de quien abre la dirección, no al tuyo. Si el repositorio es privado, necesitarán acceso.
+Puedes compartir directamente https://lobos-espaciales-python.onrender.com/ para usar el servicio publicado. Para ejecutar una copia propia, comparte el enlace del repositorio y esta guía. Cada persona puede descargarlo y ejecutarlo en su computadora; `127.0.0.1` siempre apunta al equipo de quien abre la dirección, no al tuyo. Si el repositorio es privado, necesitarán acceso.
 
 Este servidor es para desarrollo y pruebas locales. No requiere abrir puertos del router ni desplegar un sitio público. Escucha en todas las interfaces para permitir su uso en entornos de desarrollo; evita ejecutarlo en redes no confiables o exponerlo a internet.
+
+## Continuar con KSP o AR
+
+El mapa normal usa el puerto 5173. El conector KSP opcional sirve otra instancia
+local en el puerto 7173: [instalación de KSP 1 y kRPC](AR_KSP.md). Usa el botón
+**Prueba KSP** para el laboratorio sin cámara, y **Modo AR** para el prototipo
+separado. Ninguno de los dos requisitos adicionales es necesario para explorar
+el mapa. La [guía de uso](USO.md) explica controles, puntos propios y voz.

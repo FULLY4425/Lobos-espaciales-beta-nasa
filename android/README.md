@@ -1,5 +1,7 @@
 # APK Android · Lobos Marte
 
+> El APK disponible es una compilación de depuración anterior a las últimas funciones web de 3D, voz, AR y KSP. No se ha recompilado ni probado para todas ellas. Usa el navegador/PWA actual para evaluar el estado vigente del proyecto.
+
 La aplicación Android incluye interfaz, terreno HiRISE y 718 objetivos ChemCam. Usa Android WebView y un servidor de recursos dentro del proceso, limitado a 127.0.0.1. Android 8.0 o posterior. No incluye intérprete Python: las rutas y su exportación las genera el servidor Python en la computadora o un despliegue HTTPS.
 
 ## Descargar e instalar

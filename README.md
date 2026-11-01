@@ -1,209 +1,123 @@
-# Lobos Espaciales · Mars Field Guide
+# Lobos Espaciales · Ojo de Marte
 
-Aplicación educativa en español para explorar **Glen Torridon, cráter Gale, Marte**, y planear una caminata científica con datos reales de NASA/PDS.
+**Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
-## ¿De qué trata el proyecto?
+**[Abrir el proyecto](https://lobos-espaciales-python.onrender.com/)** · **[Guía de uso](docs/USO.md)** · **[Instalar en tu PC](docs/INSTALACION_LOCAL.md)** · **[Prueba KSP / futuro casco](docs/AR_KSP.md)** · **[Fuentes y créditos](docs/REFERENCIAS.md)**
 
-**Lobos Espaciales** busca mostrar cómo un astronauta podría planear una caminata científica en Marte. Inspirado en el reto de NASA Space Apps, reúne datos reales de Curiosity y Mars Reconnaissance Orbiter en un mapa de Glen Torridon, dentro del cráter Gale.
+![Mapa 3D y recorrido calculado](docs/captura-escritorio.png)
 
-El usuario puede explorar el relieve, conocer 718 objetivos científicos y seleccionar paradas para investigar vetas y nódulos: características de las rocas que ayudan a estudiar la historia del agua en la región. A partir de esas paradas, Python calcula recorridos considerando pendientes y estima distancias y tiempos con supuestos explícitos.
+## De qué trata
 
-La meta es conectar **exploración, planificación y ciencia** en una experiencia accesible. Es un prototipo educativo: no representa una misión humana existente, no certifica seguridad y no implica afiliación ni aprobación de NASA.
+El proyecto plantea cómo un astronauta podría elegir puntos de interés y preparar una caminata científica. Permite consultar **718 objetivos ChemCam**, identificar vetas y nódulos, agregar puntos propios y calcular una ruta que considere pendientes y celdas sin datos.
 
-## Descargar y probar en tu computadora
+Además del explorador, incluye un **laboratorio de navegación para KSP 1**, usado como ventana auxiliar junto al juego. El objetivo posterior es adaptar una interfaz de pocas distracciones a un casco de astronauta con funciones similares a un visor tipo Quest. El hardware y su integración física todavía no están definidos ni validados.
 
-Sigue la **[guía de instalación local para Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)**. Incluye descarga ZIP o Git, instalación de Python, inicio del servidor, una misión de ejemplo y soluciones a errores comunes.
+Es un prototipo independiente inspirado en NASA Space Apps. No implica afiliación ni aprobación de NASA y no es una herramienta certificada para operaciones espaciales.
 
-## Android
+## Qué puedes hacer
 
-Incluye una versión instalable como **PWA**, con iconos, modo independiente y caché del mapa. [Cómo probar e instalar en Android](docs/ANDROID.md). La instalación requiere HTTPS; el cálculo y la exportación siguen ejecutándose en el servidor Python. También hay un **[APK de prueba descargable](downloads/LobosMarte-debug.apk)** para Android 8.0 o posterior. [Instrucciones del APK](android/README.md).
+| Función | Comportamiento actual |
+| --- | --- |
+| Mapa 2D y terreno 3D | Fotografía orbital HiRISE real en blanco y negro sobre elevaciones; zoom, giro, inclinación y desplazamiento. |
+| Globo de Marte | Contexto global con acceso al recorte de Glen Torridon; la alta resolución está limitada a esa zona. |
+| Objetivos científicos | 718 registros con coordenadas, sol, formación y clasificación de vetas/nódulos. |
+| Puntos personalizados | Crear por clic o coordenadas, nombrar, eliminar y mezclar con objetivos científicos. Se guardan en tu navegador. |
+| Planificación Python | Rutas de 2–20 paradas, límite de pendiente de 5°–40°, distancia, ascenso y tiempo educativo. |
+| Astronautas | Dos personajes recorren la ruta; pausa, avance manual y cámara de seguimiento. |
+| Vista de superficie | Reconstrucción 3D a nivel del terreno. No son panoramas fotográficos Street View. |
+| Indicaciones y voz | Giros, distancias, paradas y llegada; voces españolas del dispositivo, ritmo y volumen. |
+| Menú Prueba KSP | Ventana auxiliar sin cámara ni solicitudes WebXR; demostración del HUD o telemetría local de KSP 1. |
+| AR experimental | Cámara HUD y maqueta WebXR sobre superficies en dispositivos compatibles. |
+| Exportación | JSON con paradas, ruta, métricas, supuestos y fuentes. |
 
-## Python directamente en el celular
+## Primera prueba en cinco pasos
 
-Puedes ejecutar el proyecto en Android con **Pydroid 3 o Termux**, sin computadora. Consulta la [guía de Python en Android](docs/PYTHON_EN_ANDROID.md), con instrucciones para abrirlo en el navegador o conectar el APK al servidor del mismo teléfono.
+1. Abre la [aplicación pública](https://lobos-espaciales-python.onrender.com/).
+2. Pulsa **Objetivos**, selecciona **Stornoway** y **Agregar al recorrido**.
+3. Selecciona **Whaligoe** y agrégalo también.
+4. Deja la pendiente en **20°** y pulsa **Calcular recorrido**. El ejemplo produce unos **1.31 km**, **+59.6 m** de ascenso y **50 minutos** simulados, sin regreso.
+5. Pulsa **Seguir astronauta** e **Iniciar / pausar recorrido**. En **Navegación paso a paso**, activa o prueba la voz. Usa **1× o 5×** para oír los avisos con calma.
 
-## Ejecutar
+El panel de control está a la izquierda en escritorio y debajo del mapa en móvil. Consulta la [guía completa](docs/USO.md) para crear objetivos, usar las cámaras, exportar y abrir los menús KSP/AR.
 
-Para que tus compañeros accedan con un enlace público, consulta la
-[guía de despliegue desde GitHub en Render](docs/DESPLIEGUE.md).
+## Ejecutar en tu computadora
 
-Requiere **Python 3.10 o posterior**. No necesita Node.js, pip, paquetes externos ni claves de API.
+El mapa y la API solo necesitan **Python 3.10 o posterior** y un navegador moderno. No requieren Node.js, pip, cuentas NASA ni claves de API. Los datos y Three.js están incluidos. El conector opcional de KSP sí tiene dependencias propias.
 
-```sh
+```bash
+git clone https://github.com/FULLY4425/Lobos-espaciales-beta-nasa.git
+cd Lobos-espaciales-beta-nasa
 python3 server.py
 ```
 
-Abre el puerto 5173 en tu entorno de desarrollo. `PORT` permite cambiarlo. Para preparar una distribución: `python3 scripts/build.py`. Ejecuta `python3 server.py` dentro de `dist/`. Se requiere un servidor Python: el alojamiento exclusivamente estático ya no es suficiente. `python3 -m unittest discover -s test -v` verifica navegación, obstáculos, entradas y datos reales. Los comandos npm se conservan solo como atajos opcionales.
+En Windows, usa `py -3 server.py`. Abre **http://localhost:5173/** y mantén la terminal abierta. No abras `index.html` directamente ni uses un servidor exclusivamente estático: las rutas y exportaciones necesitan la API Python.
 
-## Uso
+- [Instalación y solución de problemas en Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)
+- [PWA y Android](docs/ANDROID.md)
+- [Python en Android con Pydroid 3 o Termux](docs/PYTHON_EN_ANDROID.md)
+- [APK de prueba: instalación, compilación y límites](android/README.md)
+- [Alojamiento y despliegue en Render](docs/DESPLIEGUE.md)
 
-1. Activa las capas de relieve, pendientes y objetivos científicos.
-2. Selecciona un punto del mapa o usa el selector accesible de objetivos.
-3. Agrega dos o más objetivos al recorrido, en orden. El primero es la salida.
-4. Ajusta el límite de pendiente simulado y calcula la ruta.
-5. Exporta coordenadas, fuentes, parámetros y métricas en JSON.
+El APK existente es una compilación de prueba anterior; no se ha recompilado para incluir todas las novedades web. Para probar las funciones actuales, usa el navegador o la PWA actualizada.
 
-Las rutas siguen una cuadrícula de elevación real muestreada a unos 12.1 m. Se evitan celdas sin datos, pendientes superiores al límite y cruces diagonales por esquinas bloqueadas. La función de costo penaliza desniveles. No se afirma que sea una ruta certificada ni óptima para humanos.
+## KSP ahora; casco después
 
-## Datos e investigación
+La prueba actual utiliza **KSP 1 + kRPC**, con un conector Python en el PC del juego. **Prueba KSP** se abre como ventana auxiliar del navegador; no es un menú nativo añadido dentro de KSP.
 
-- [Investigación y fuentes](docs/INVESTIGACION.md)
-- [Verificación de cobertura](docs/COBERTURA.md)
-- [Procedencia y hashes](public/data/provenance.json)
-- [Tabla científica original](public/data/target_classification.csv)
-- [Reproducir la recopilación](scripts/collect-data.py): `python3 scripts/collect-data.py` (solo biblioteca estándar).
+El conector lee posición, rumbo y velocidad. Una calibración asocia la posición inicial del vehículo con la salida de la ruta; no controla el vehículo ni convierte Duna en Marte. El sitio en Render no puede acceder por sí solo a tu partida local.
 
-Los datos pequeños están incluidos; la app no necesita consultar NASA durante el uso. Las tipografías remotas son opcionales y tienen fuentes de respaldo. El mapa muestra por defecto una **ortofotografía orbital real HiRISE en blanco y negro**, con zoom y arrastre. Al desactivar la fotografía se muestra el relieve calculado. [Procedencia de la imagen](public/imagery/metadata.json). Las imágenes se consultan en el archivo original mediante el enlace de contexto; todavía no se vinculan automáticamente por objetivo.
+**[Instalación paso a paso de kRPC, comandos y calibración](docs/AR_KSP.md)**.
 
-## Contexto de Marte
+El modo **AR** es un prototipo separado: la cámara HUD superpone indicaciones sin seguimiento espacial, y WebXR permite colocar una maqueta del terreno cuando el dispositivo admite `immersive-ar` y `hit-test`. No representa caminar físicamente sobre una ruta marciana. La adaptación a un casco real sigue pendiente.
 
-Incluye un resumen en español de [NASA Mars Facts](https://science.nasa.gov/mars/facts/): día marciano, atmósfera, temperaturas e historia del agua. Es información planetaria general, separada de los datos locales y de las simulaciones de misión.
+## Qué datos son reales y qué se simula
 
-## Capturas
+| Elemento | Procedencia / alcance |
+| --- | --- |
+| Elevación | DTM MRO/HiRISE `DTEEC_009149_1750_009294_1750_U01`; cuadrícula incluida de 122 × 72 celdas, aproximadamente 12.14 m por celda. |
+| Fotografía local | Ortofotografía `PSP_009149_1750_RED_C_01_ORTHO`, banda RED en escala de grises; aproximadamente 1.012 m/píxel. |
+| Objetivos | Conjunto de Gasda et al. en NASA/PDS: 718 objetivos ChemCam, soles 2300–3007. |
+| Textura del globo | Solar System Scope, CC BY 4.0; contexto visual global, separado de los datos locales. |
+| Recorridos y tiempos | Cálculos educativos del proyecto, no recorridos humanos observados. |
+| Astronautas, cielo y vista de superficie | Representación visual y animación sobre el modelo; no imágenes de astronautas en Marte ni fotografías desde el suelo. |
+| HUD KSP / AR | Simulación o correspondencia local calibrada; no GPS ni navegación operativa de un traje. |
 
-![Vista de escritorio](docs/captura-escritorio.png)
+[Referencias completas y licencias](docs/REFERENCIAS.md) · [Investigación](docs/INVESTIGACION.md) · [Cobertura y coordenadas](docs/COBERTURA.md) · [Hashes de los datos](public/data/provenance.json) · [Metadatos de la ortofoto](public/imagery/metadata.json).
 
-[Validación realizada](docs/VALIDACION.md).
+## Supuestos y límites
 
-## Alcance
+- El cálculo evita celdas ausentes, pendientes que superen el límite y diagonales por esquinas bloqueadas. A* penaliza desniveles; no demuestra transitabilidad humana.
+- Los puntos se ajustan a la cuadrícula, con un desplazamiento de hasta aproximadamente **8.6 m**. Obstáculos menores que la resolución no están representados.
+- El tiempo usa **2 km/h + 10 minutos por parada posterior a la salida**. No incluye regreso, oxígeno, traje ni evacuación. La animación acelerada no cambia esas métricas.
+- Las alturas del modelo no se exageran en 3D. La precisión horizontal absoluta y la alineación vertical con las alturas científicas no están verificadas independientemente.
+- No hay clima actual, radiación local, capa CRISM integrada ni autonomía de trajes. Los datos de NASA Science mostrados son contexto planetario general.
+- Los puntos propios se guardan localmente, hasta 50; no se sincronizan entre compañeros. Las misiones exportadas incluyen los puntos utilizados.
+- Las voces dependen del navegador y dispositivo. Calcular y exportar requiere el servidor Python; la caché de la PWA no lo sustituye.
 
-Implementado: elevación, pendientes calculadas, observaciones químico-geológicas de ChemCam, filtros de vetas y nódulos, ficha científica, recorridos y exportación. Dos misiones: MRO y MSL/Curiosity.
+## Documentación y desarrollo
 
-No integrado: capa mineralógica CRISM, clima, radiación, navegación 3D/HUD, posiciones APXS transformadas o autonomía de trajes. Se investigaron como extensiones, pero requieren comprobar cobertura y calibración. Los tiempos usan **2 km/h y 10 min por parada posterior a la salida**; no incluyen regreso. No se estima oxígeno. Las alturas publicadas de objetivos y del DTM no se comparan como si compartieran una alineación vertical ya validada.
+| Documento | Contenido |
+| --- | --- |
+| [Guía de uso](docs/USO.md) | Mapa, cámaras, objetivos, rutas, astronautas, voz y ejemplos. |
+| [Instalación local](docs/INSTALACION_LOCAL.md) | Descarga, Python y problemas frecuentes. |
+| [AR y KSP](docs/AR_KSP.md) | Menú de prueba, instalación del mod, conector, calibración y futuro casco. |
+| [Referencias](docs/REFERENCIAS.md) | Fuentes científicas, imágenes, dependencias y créditos. |
+| [Arquitectura y API](docs/DESARROLLO.md) | Estructura, contratos, pruebas, distribución y contribuciones. |
+| [Validación](docs/VALIDACION.md) | Evidencia disponible y pruebas pendientes con hardware real. |
 
-Proyecto independiente inspirado en NASA Space Apps. No implica afiliación ni aprobación de NASA. Conservar créditos de NASA/JPL-Caltech/University of Arizona y Gasda et al. al reutilizar los datos. Consultar las condiciones de cada fuente; no se asigna una licencia propia a los datos de terceros.
+Pruebas de Python:
 
-## Arquitectura Python
+```bash
+python3 -m unittest discover -s test -v
+```
 
-- `server.py`: servidor HTTP y API JSON, sirve únicamente recursos públicos. Es un servidor de desarrollo; un despliegue público requiere endurecimiento e infraestructura adecuados.
-- `mars/planner.py`: A* con cola de prioridad, pendientes, validación de objetivos, métricas y generación de misiones.
-- `scripts/collect-data.py`: descarga y validación científica de datos NASA/PDS.
-- `scripts/build.py`: prepara la distribución ejecutable.
-- `test/test_planner.py`: pruebas con unittest, sin dependencias.
-- HTML/CSS y JavaScript: presentación, interacción y dibujo en canvas. El JavaScript ya no calcula rutas ni métricas.
+Pruebas JavaScript opcionales para desarrollo, con Node.js moderno:
 
-API: `GET /api/health`, `POST /api/plan`, `POST /api/export`. Los POST aceptan `{"stops":["Stornoway","Whaligoe"],"maxSlopeDegrees":20}`. El servidor usa sus propios datos de terreno y objetivos, valida de 2 a 20 nombres distintos y pendientes de 5° a 40°, y devuelve errores 400 cuando el recorrido no existe o los parámetros no son válidos.
+```bash
+node test/directions.test.js
+node test/ar-tracking.test.js
+```
 
-## Terreno 3D
+**Estado de validación:** 13 pruebas Python y 11 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. Falta probar la integración en una partida real de KSP y en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
 
-Selecciona **Terreno 3D** en el mapa para explorar el modelo HiRISE con su
-ortofotografía real. Arrastra para girar e inclinar; Mayús + arrastre o botón
-derecho para desplazar; rueda o botones +/− para acercar. En móvil, un dedo
-gira y dos dedos desplazan y amplían. Con el lienzo enfocado: flechas para
-girar, W/A/S/D para desplazar y 0 para restablecer.
-
-Las alturas se representan en metros a escala 1:1, sin exageración vertical.
-La geometría utiliza la cuadrícula de ~12.1 m; la fotografía conserva ~1 m/píxel.
-Los huecos de elevación no generan superficie. Las rutas y objetivos comparten
-las coordenadas del mapa 2D. La vista es un recorte local de Glen Torridon.
-Requiere WebGL; el mapa 2D sigue disponible en equipos sin soporte.
-Three.js 0.170.0 está incluido localmente, con su licencia MIT en
-`src/vendor/THREE-LICENSE.txt`; no requiere CDN durante el uso.
-
-### Ojo de Marte
-
-El explorador abre en 3D con paneles plegables de **Capas y ruta** y
-**Objetivos**. **Ampliar** ocupa la ventana; Escape vuelve al tamaño normal.
-Las cámaras Panorámica, Cenital y Sobrevolar tienen transiciones animadas.
-**Vuelo orbital** gira automáticamente alrededor del recorte; vuelve a pulsarlo
-o arrastra el terreno para detenerlo. La brújula sigue el giro y la altitud
-de cámara se expresa respecto al datum marciano, que puede ser negativa.
-El vuelo recorre el mismo modelo local; no extiende la cobertura cartográfica.
-
-### Globo, astronautas y vista de superficie
-
-El panel de control permanece a la izquierda del mapa en escritorio; en móvil
-aparece debajo para conservar espacio para el mapa.
-
-- **Globo:** esfera giratoria de Marte con textura global de Solar System Scope
-  ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). El marcador
-  turquesa abre Glen Torridon; la alta resolución está limitada al recorte local.
-- **Terreno 3D:** vista aérea del relieve HiRISE y la ruta calculada por Python.
-- **Seguir astronauta:** cámara que acompaña a dos personajes sobre la ruta.
-- **Superficie:** cámara a 1.7 m sobre la ruta, con arrastre para mirar. Es una
-  reconstrucción a partir del modelo de ~12 m y la ortofotografía, sin fotos
-  panorámicas Street View. El cielo es un fondo ilustrativo.
-
-Calcula una ruta de al menos dos objetivos y pulsa **Iniciar / pausar recorrido**.
-El control de avance permite saltar a un tramo; las velocidades 20×, 100× y
-200× aceleran la reproducción de una caminata base de 2 km/h. Esta animación no
-simula los tiempos de investigación en las paradas ni cambia las métricas de
-misión. Al modificar la ruta se reinicia la reproducción. Los personajes siguen
-la línea de la ruta, con interpolación entre sus vértices; en vista aérea se
-amplían 6× para identificarlos, y en seguimiento y superficie tienen escala
-humana. La altitud indicada corresponde a la cámara, no a un sensor real.
-
-Procedencia y atribución de la textura global:
-[`public/imagery/mars-global-metadata.json`](public/imagery/mars-global-metadata.json).
-
-### Objetivos personalizados
-
-En **Mis objetivos**, pulsa **Marcar punto en el mapa** y toca el terreno 3D
-o cambia a Mapa 2D y toca una posición. También puedes elegir **Agregar por
-coordenadas**. Asigna un nombre y confirma si quieres añadirlo al recorrido.
-Puedes mezclar estos puntos con los objetivos ChemCam y usar la misma función
-de cálculo, exportación y caminata animada.
-
-Los puntos se guardan en el navegador (hasta 50) y se pueden seleccionar o
-eliminar desde el panel. No se sincronizan entre compañeros. La exportación
-de misión incluye las coordenadas de los puntos usados. El servidor valida
-coordenadas finitas, cobertura, elevación y pendiente usando sus propios datos;
-las alturas enviadas por el cliente se ignoran. Cada ruta admite 2–20 paradas.
-Los puntos propios no se presentan como observaciones científicas.
-
-La API mantiene las paradas científicas como cadenas y acepta puntos propios:
-`{"stops":["Stornoway",{"type":"custom","name":"Mi punto","lat":-4.73324341,"lon":137.3998236}],"maxSlopeDegrees":20}`.
-
-### Indicaciones y voz
-
-Al calcular una ruta, el mapa muestra el siguiente giro, su distancia y lo que
-falta hasta el destino. En **Navegación paso a paso** puedes consultar la lista
-de instrucciones y pulsar **Activar voz**, **Probar voz** o **Repetir indicación**.
-La guía anuncia derecha, izquierda, giros suaves o pronunciados, media vuelta,
-objetivos intermedios y llegada. Se sincroniza con el avance de los astronautas.
-
-La voz utiliza SpeechSynthesis del navegador, sin claves de API. Se priorizan
-las voces españolas de México; puedes seleccionar cualquier voz española
-disponible y ajustar ritmo y volumen. Las preferencias se guardan localmente,
-pero la voz se activa mediante un botón para respetar las políticas de audio
-del navegador. El nombre y la calidad de las voces dependen del dispositivo.
-Algunos motores necesitan conexión; si el navegador no ofrece síntesis, la
-guía de texto continúa funcionando.
-
-Para oír cada indicación usa las velocidades 1× o 5×. En reproducción acelerada
-no se acumula una cola de anuncios: se prioriza el aviso actual. Pausar, cambiar
-de cámara, buscar otro tramo o modificar la ruta cancela la narración pendiente.
-Las instrucciones se calculan sobre la ruta devuelta por Python. Se agrupan
-pequeños zigzags de la cuadrícula para evitar un anuncio por celda; esto no
-modifica la geometría que siguen los astronautas. Las distancias del avance
-consideran las alturas del modelo. Esta guía corresponde a la simulación local
-y no utiliza GPS ni representa navegación operativa en Marte.
-
-Pruebas de direcciones (Node.js, solo para desarrollo):
-`node test/directions.test.js`. La ejecución del servidor sigue requiriendo
-únicamente Python.
-
-## AR y Kerbal Space Program 1
-
-Calcula una misión y pulsa **Modo AR**. La pantalla dedicada muestra una sola
-indicación, voz opcional y ajustes plegables. Ofrece cámara HUD, vista previa y
-maqueta espacial mediante WebXR cuando el dispositivo admite AR con hit-test.
-La versión AR evita cargar el globo y los paneles del explorador.
-
-Se incluye un conector local de solo lectura para **KSP 1 + kRPC**, con
-calibración entre la salida de la misión y la posición del vehículo. Requiere
-ejecutarlo en el PC del juego; Render no accede a tu instalación local de KSP.
-Consulta [instalación, compatibilidad y límites AR/KSP](docs/AR_KSP.md).
-
-La cámara HUD no localiza al usuario sobre Marte y el globo de Duna no se
-considera equivalente a Marte. La integración se ha probado con telemetría
-simulada; faltan las pruebas con un visor real y una partida de KSP.
-
-### Menú de pruebas KSP
-
-El flujo actual para probar el futuro HUD de casco es **Prueba KSP**, separado
-del modo AR. Calcula una ruta y abre ese menú desde el explorador, o visita
-`/ksp.html` e importa la misión. Se usa como ventana auxiliar junto a KSP 1,
-sin cámara ni solicitudes WebXR. Permite conectar kRPC local o probar el HUD
-sin juego. La adaptación a un casco similar a Quest es una fase posterior que
-requiere definir y validar el dispositivo físico.
+Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

@@ -1,30 +1,59 @@
-# Compartir el proyecto con un enlace público
+# Alojamiento y despliegue
 
-GitHub guarda el código. Para ejecutar la página y su API Python, conecta el
-repositorio a un servicio web de Render. GitHub Pages no ejecuta Python.
+## Servicio público actual
 
-## Desplegar en Render
+La aplicación está disponible en **https://lobos-espaciales-python.onrender.com/**.
+Es un **servicio web Python** de Render conectado a la rama `main` del repositorio
+`FULLY4425/Lobos-espaciales-beta-nasa` y con despliegue automático habilitado.
 
-1. Sube a GitHub los cambios que incluyen `render.yaml`.
-2. Entra en https://dashboard.render.com/ y accede con tu cuenta.
-3. Selecciona **New → Blueprint**, conecta GitHub y elige
-   `FULLY4425/Lobos-espaciales-beta-nasa` y la rama que contiene estos cambios.
-4. Revisa la configuración y crea el servicio. El archivo `render.yaml`
-   configura Python, el inicio y la comprobación de salud.
-5. Cuando termine el despliegue, abre la URL HTTPS que Render asigne al servicio
-   y compártela con tus compañeros. No necesitan instalar Python.
+Rutas públicas principales:
 
-El servidor lee el puerto de `PORT` y escucha en `0.0.0.0`, como requiere Render.
-No se necesitan paquetes externos ni claves de API. Los cambios posteriores
-en la rama conectada se despliegan automáticamente.
+| Ruta | Función |
+| --- | --- |
+| `/` | Mapa, planificación, astronautas e indicaciones. |
+| `/ksp.html` | Laboratorio del HUD para KSP; el juego real requiere el conector local. |
+| `/ar.html` | Pantalla AR experimental. |
+| `/api/health` | Estado del motor Python y número de objetivos. |
 
-El plan gratuito puede suspender el servicio cuando no se usa; el primer acceso
-puede tardar en responder. Revisa las condiciones y límites vigentes de Render.
-Esta configuración sirve para compartir el prototipo educativo; el servidor
-Python incluido es de desarrollo.
+GitHub conserva el código; Render ejecuta el servidor. GitHub Pages no ejecuta
+las API de cálculo y exportación. El sitio estático creado en una etapa anterior
+no sustituye al servicio Python.
 
-## Comprobar el despliegue
+## Actualizar el servicio existente
 
-- Abre `/api/health` en la URL pública: debe devolver `"status": "ok"`.
-- Abre la página, agrega dos objetivos y calcula una ruta para verificar la API.
-- Comparte la URL pública HTTPS, no `localhost` ni la dirección del repositorio.
+1. Verifica los cambios y súbelos a `main`.
+2. Render inicia un despliegue al detectar el commit; no hace falta disparar otro.
+3. Comprueba que ese despliegue llegue al estado `live`.
+4. Abre `/api/health` y calcula una ruta en la URL pública.
+5. Si cambiaste recursos de la PWA, comprueba la versión de caché y vuelve a abrir la app.
+
+El nombre del servicio web actual es `lobos-espaciales-python`. El `render.yaml`
+del repositorio es una plantilla para crear infraestructura; el servicio actual
+se creó directamente y no se debe asumir que editar ese archivo cambia su
+configuración en Render. Aplicar un Blueprint nuevo puede crear otro servicio.
+
+## Crear un despliegue nuevo
+
+Puedes usar **New → Web Service** con estos valores:
+
+| Campo | Valor |
+| --- | --- |
+| Repositorio | `https://github.com/FULLY4425/Lobos-espaciales-beta-nasa` |
+| Rama | La rama que quieras publicar, normalmente `main`. |
+| Runtime | Python. |
+| Build command | `python --version` |
+| Start command | `python server.py` |
+| Comprobación HTTP opcional | `/api/health` |
+
+También puedes elegir **New → Blueprint** después de subir `render.yaml` a la
+rama elegida, revisando nombre, recursos y plan antes de aplicarlo. Consulta las
+condiciones vigentes de Render para planes, límites y facturación.
+
+El servidor lee `PORT` y escucha en `0.0.0.0`, como requiere el alojamiento. La
+aplicación principal no necesita paquetes externos ni claves. **No instales
+kRPC en Render para intentar acceder al juego del usuario**: la telemetría se
+obtiene ejecutando el conector en el PC de KSP, según [AR_KSP.md](AR_KSP.md).
+
+El plan gratuito puede suspender el servicio por inactividad y tardar en el
+primer acceso. El servidor incluido sigue siendo de desarrollo; el despliegue
+actual se utiliza para compartir y probar el prototipo.

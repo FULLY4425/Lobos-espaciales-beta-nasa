@@ -7,7 +7,7 @@ Integrar múltiples misiones y al menos tres tipos de información para apoyar u
 ## Fuentes consultadas
 
 1. **Gasda, P. J. (2022), Database of Diagenetic Features in the Clay-Rich Unit of Gale Crater, Mars.** DOI: https://doi.org/10.17189/dw9v-xe39. Archivo: https://pds-geosciences.wustl.edu/msl/urn-nasa-pds-msl_gt_diagenesis_supplement/ . Contiene clasificación de objetivos, vetas, nódulos, estratos oscuros y cementos. Publicación asociada: https://doi.org/10.1029/2021JE007097 . Incluimos la tabla original, etiqueta XML y README de origen; descargamos y transformamos coordenadas, nombres, soles, formación y clasificaciones para la aplicación.
-2. **MRO / HiRISE:** https://www.uahirise.org/dtm/dtm.php?ID=PSP_009294_1750 . Modelo y ortoimágenes de Gale. DTM verificado por etiqueta adjunta y lectura de valores nativos. Crédito: NASA/JPL-Caltech/University of Arizona. Las ortofotografías se localizaron pero no se descargaron ni integraron.
+2. **MRO / HiRISE:** https://www.uahirise.org/dtm/dtm.php?ID=PSP_009294_1750 . Modelo y ortoimágenes de Gale. DTM verificado por etiqueta adjunta y lectura de valores nativos. Crédito: NASA/JPL-Caltech/University of Arizona. Se integró la ortofotografía `PSP_009149_1750_RED_C_01_ORTHO` como fondo local en blanco y negro, usando la misma proyección del DTM. [Metadatos del recorte](../public/imagery/metadata.json). La precisión absoluta sigue pendiente de verificación independiente.
 3. **Archivo MSL:** https://pds-geosciences.wustl.edu/missions/msl/ . Índice de APXS, ChemCam, CheMin, DAN, SAM, cámaras, PLACES, RAD, REMS y SPICE. La publicación es periódica: no constituye telemetría en tiempo real.
 4. **Archivo de imágenes y posiciones:** https://pds-imaging.jpl.nasa.gov/volumes/msl.html . Incluye PLACES, Navcam/Hazcam y Mastcam; colecciones MSAM de mosaicos y análisis estéreo. Su existencia fue verificada; no se verificó cada producto ni su alineación con nuestro mapa.
 5. **MSL Analyst’s Notebook:** https://an.rsl.wustl.edu/msl/ . Acceso a datos en contexto de operaciones por sol, ubicación e instrumento. Enlace de consulta para imágenes; no se afirma que abra automáticamente una foto del objetivo seleccionado.
@@ -25,7 +25,7 @@ No se certifica seguridad. Un DTM métrico tampoco permite detectar todos los ob
 
 ## Próximas extensiones científicas
 
-Verificar ortofotografías sobre el mismo recorte; vincular imágenes originales por sol/secuencia; localizar un producto CRISM con cobertura; documentar incertidumbre horizontal y vertical; evaluar un modelo de movilidad con parámetros explícitos. No rellenar capas faltantes con datos inventados.
+Verificar independientemente la exactitud absoluta de la ortofotografía y el terreno sobre el mismo recorte; vincular imágenes originales por sol/secuencia; localizar un producto CRISM con cobertura; documentar incertidumbre horizontal y vertical; evaluar un modelo de movilidad con parámetros explícitos. No rellenar capas faltantes con datos inventados.
 
 ## Reproducción
 
@@ -38,3 +38,12 @@ Fuente consultada: https://science.nasa.gov/mars/facts/ (30 de octubre de 2026).
 Datos usados: duración aproximada del día de 24.6 h, atmósfera principalmente CO₂ con nitrógeno y argón, extremos planetarios aproximados de −153 a 20 °C e indicios de un pasado con agua. Son contexto general, no datos meteorológicos de la ruta. No se cambian los parámetros de movilidad ni se infiere seguridad a partir de estas cifras.
 
 La página contiene afirmaciones sobre agua salobre superficial que requieren contrastarse con literatura actual antes de incorporarlas como hechos establecidos. No se han trasladado a la aplicación. Tampoco se incorporaron noticias o fechas de misiones como si fueran observaciones del recorrido.
+
+## Referencias consolidadas y evolución de la interfaz
+
+La [lista de referencias y créditos](REFERENCIAS.md) incluye la ortofoto local,
+la textura global, dependencias y documentación de integración. Las nuevas
+vistas 3D, personajes, indicaciones, voz y HUD KSP/AR no añaden validación
+científica al modelo ni convierten los escenarios de KSP en datos de Marte.
+Consulta [USO.md](USO.md) para operación y [VALIDACION.md](VALIDACION.md) para
+evidencia y pendientes.

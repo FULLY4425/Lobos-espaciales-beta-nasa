@@ -103,4 +103,4 @@ El servidor es de desarrollo y escucha en todas las interfaces. Úsalo en una re
 
 ## Estado de comprobación
 
-El servidor y sus siete pruebas se ejecutaron en Python de escritorio. Pydroid 3, Termux y la comunicación entre aplicaciones en Android **todavía requieren prueba en un dispositivo físico**. El proyecto usa únicamente la biblioteca estándar y Python 3.10+, pero eso no garantiza los permisos de archivos ni el manejo de procesos de cada teléfono.
+El servidor principal se ejecutó en Python de escritorio. La última validación registrada incluye 13 pruebas Python; consulta [VALIDACION.md](VALIDACION.md) para el alcance y las pruebas JavaScript. Pydroid 3, Termux y la comunicación entre aplicaciones en Android **todavía requieren prueba en un dispositivo físico**. El servidor principal usa únicamente la biblioteca estándar y Python 3.10+, pero eso no garantiza los permisos de archivos ni el manejo de procesos de cada teléfono.

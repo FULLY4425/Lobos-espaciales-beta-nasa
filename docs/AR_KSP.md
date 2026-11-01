@@ -69,27 +69,44 @@ ese cliente y con tu instalación de KSP 1.
 
 ## Ejecutar el conector en el PC del juego
 
-Desde la raíz del proyecto:
+Primero instala el mod del servidor kRPC desde sus [releases oficiales](https://github.com/krpc/krpc/releases), siguiendo las instrucciones de la versión compatible con tu KSP 1. Los archivos del mod van en la carpeta `GameData` del juego; reinicia KSP después de instalarlos. Usa un servidor compatible con el cliente Python 0.7.0 fijado en este repositorio.
 
-```sh
-python3 -m venv .venv
-# Activa el entorno virtual según tu sistema operativo.
-python3 -m pip install -r integrations/requirements-ksp.txt
-python3 integrations/ksp_server.py
+Descarga el [repositorio](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa), extrae el ZIP si procede y abre una terminal en la carpeta que contiene `server.py`. Necesitas Python 3.10 o posterior en el **mismo PC del juego**.
+
+**Windows (PowerShell):**
+
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r integrations/requirements-ksp.txt
+.venv\Scripts\python.exe integrations/ksp_server.py
 ```
 
+Si `py` no está disponible, usa `python` para crear el entorno. Estos comandos usan directamente su ejecutable y no requieren cambiar la política de ejecución de PowerShell.
+
+**macOS / Linux:**
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r integrations/requirements-ksp.txt
+.venv/bin/python integrations/ksp_server.py
+```
+
+Mantén esa terminal abierta. No hace falta iniciar también `server.py`: el conector ya sirve la aplicación en el puerto 7173.
+
 1. Abre KSP 1, selecciona un vehículo/rover y activa el servidor del mod kRPC.
-2. Mantén kRPC en `127.0.0.1`, RPC 50000 y stream 50001.
+2. Mantén kRPC en `127.0.0.1`, RPC 50000 y stream 50001; inicia su servidor y acepta la solicitud del cliente si el mod la muestra.
 3. Abre `http://localhost:7173/`, calcula una ruta y entra en **Prueba KSP**.
 4. En el menú de pruebas pulsa **Conectar KSP local**.
-5. Con el vehículo en el lugar que quieras usar como salida, pulsa **Calibrar
+5. Para la primera prueba usa un rover sobre terreno relativamente llano. Con el vehículo en el lugar que quieras usar como salida, pulsa **Calibrar
    inicio de ruta**. A partir de ahí, desplázalo usando los controles del juego.
 
 Puedes cambiar los puertos del cliente local:
 
 ```sh
-python3 integrations/ksp_server.py --port 7173 --rpc-port 50000 --stream-port 50001
+.venv/bin/python integrations/ksp_server.py --port 7173 --rpc-port 50000 --stream-port 50001
 ```
+
+En Windows usa `.venv\Scripts\python.exe` en lugar de `.venv/bin/python`.
 
 La conexión HTTP y la RPC se limitan al equipo local de forma predeterminada.
 El conector ofrece la misma aplicación y `/api/ksp`, evitando conexiones del
@@ -139,3 +156,17 @@ importación de misión, telemetría simulada y rechazo de sesión WebXR.
 **Pendiente:** prueba de aceptación en un visor/teléfono AR real y en una partida
 real de KSP 1 con el mod kRPC. Este entorno no dispone de esos dispositivos ni
 del juego; no se afirma validación física ni rendimiento medido en visor.
+
+## Problemas frecuentes en la prueba KSP
+
+| Situación | Comprobación |
+| --- | --- |
+| `No module named krpc` | Instala `integrations/requirements-ksp.txt` con el mismo Python que inicia el conector. |
+| No hay telemetría | Selecciona un vehículo en una partida, activa el servidor kRPC y revisa dirección y puertos. |
+| Render no conecta con el juego | Abre la aplicación del conector en `http://localhost:7173/` dentro del PC del juego. |
+| No aparece la misión en el menú | Calcula la ruta y entra desde **Prueba KSP**, o importa un JSON exportado de esta versión. |
+| Cambié de nave, cuerpo o conexión | Vuelve al lugar de salida elegido y recalibra. |
+| La guía se pausa por desvío | El vehículo se alejó más de 30 m del corredor proyectado. La guía no conoce los obstáculos reales de KSP. |
+| Puerto 7173 ocupado | Inicia el conector con `--port 7174` y abre esa nueva dirección. |
+
+![Menú de laboratorio KSP, sin partida conectada](captura-ksp.png)

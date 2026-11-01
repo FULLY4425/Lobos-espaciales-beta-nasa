@@ -8,14 +8,14 @@ Ejecuta el servidor dentro del teléfono con [Pydroid 3 o Termux](PYTHON_EN_ANDR
 
 ## Instalación desde un sitio HTTPS
 
-Cuando el proyecto esté desplegado con su servidor Python detrás de HTTPS:
+El servicio actual está disponible en https://lobos-espaciales-python.onrender.com/. Para instalarlo desde un navegador compatible:
 
 1. Abre la dirección pública en Chrome para Android.
 2. Espera a que carguen el mapa y sus 718 objetivos.
 3. Pulsa **Instalar app** si aparece, o abre el menú de Chrome y busca **Instalar aplicación / Añadir a pantalla de inicio**. El texto depende de la versión del navegador.
 4. Abre **Lobos Marte** desde tu pantalla de inicio.
 
-El botón solo aparece cuando el navegador informa que puede instalarla. La primera carga necesita conexión. Este repositorio no incluye una dirección pública desplegada; subir el código a GitHub no inicia el servidor. GitHub Pages no ejecuta la API Python.
+El botón solo aparece cuando el navegador informa que puede instalarla. La primera carga necesita conexión. La URL pública ejecuta el servidor Python en Render; subir código a GitHub por sí solo no ejecuta una aplicación. GitHub Pages no ejecuta la API Python.
 
 ## Prueba en tu red local sin desplegar
 
@@ -43,4 +43,4 @@ Desinstala desde los ajustes de Android o manteniendo pulsado el icono, según e
 
 ## Validación
 
-Se prueba la interfaz con emulación móvil Chromium, manifest y service worker, carga sin conexión de los datos y advertencia de conexión. Esto no sustituye una prueba en un teléfono Android físico; no se afirma que se haya realizado esa prueba ni generado un APK.
+Se prueba la interfaz con emulación móvil Chromium, manifest y service worker, carga sin conexión de los datos y advertencia de conexión. Esto no sustituye una prueba en un teléfono Android físico; no se afirma que se haya realizado una prueba física. Existe un APK de depuración anterior, cuya firma y empaquetado se verificaron, pero no se ha recompilado para todas las funciones web actuales. Consulta [VALIDACION.md](VALIDACION.md).
