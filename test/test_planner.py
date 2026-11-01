@@ -74,3 +74,26 @@ class PlannerTests(unittest.TestCase):
         t=self.custom_terrain();t['elevations'][24]=100
         with self.assertRaises(ValueError):
             plan_mission(t,[],dict(stops=[a,b],maxSlopeDegrees=5))
+    def test_weather_blocks_area_and_routes_around_it(self):
+        from mars.planner import environment_for, blocked_cells
+        t=dict(width=50,height=50,cellMeters=10,elevations=[0]*2500,west=137,north=-4,degreeStep=.001,source='test')
+        stops=[dict(type='custom',name='A',lat=-4.024,lon=137),dict(type='custom',name='B',lat=-4.024,lon=137.049)]
+        clear=plan_mission(t,[],dict(stops=stops,weather='clear'))
+        storm=plan_mission(t,[],dict(stops=stops,weather='storm'))
+        blocked=blocked_cells(t,environment_for(t,'storm'))
+        self.assertTrue(any(tuple(p) in blocked for p in clear['gridPath']))
+        self.assertFalse(any(tuple(p) in blocked for p in storm['gridPath']))
+        self.assertGreater(storm['metrics']['distance'],clear['metrics']['distance'])
+        self.assertGreater(storm['metrics']['durationMinutes'],clear['metrics']['durationMinutes'])
+        self.assertEqual(storm['environment']['sourceType'],'synthetic')
+    def test_weather_invalid_and_no_safe_escape(self):
+        t=self.custom_terrain();stops=[dict(type='custom',name='A',lat=-4,lon=137),dict(type='custom',name='B',lat=-4.004,lon=137.004)]
+        for weather in [False,{},'live-nasa']:
+            with self.assertRaises(ValueError):plan_mission(t,[],dict(stops=stops,weather=weather))
+        with self.assertRaises(ValueError):plan_mission(t,[],dict(stops=stops,weather='storm'))
+    def test_replan_from_position_keeps_destination(self):
+        t=self.custom_terrain();stops=[dict(type='custom',name='Actual',lat=-4.001,lon=137.002),dict(type='custom',name='Destino',lat=-4.004,lon=137.004)]
+        mission=plan_mission(t,[],dict(stops=stops,replanReason='deviation',weather='dust'))
+        self.assertEqual(mission['gridPath'][0],(2,1));self.assertEqual(mission['gridPath'][-1],(4,4))
+        self.assertEqual(mission['planningContext']['reason'],'deviation')
+        self.assertEqual(mission['stopPathIndices'],[0,len(mission['gridPath'])-1])

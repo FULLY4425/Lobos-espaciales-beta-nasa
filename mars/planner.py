@@ -1,6 +1,32 @@
 """Terrain navigation and educational mission estimates (standard library only)."""
 import math
 import heapq
+import json
+from pathlib import Path
+
+WEATHER = json.loads((Path(__file__).resolve().parents[1]/"public/data/weather-scenarios.json").read_text())
+
+def environment_for(t, weather):
+    if not isinstance(weather,str) or weather not in WEATHER["scenarios"]:
+        raise ValueError("Escenario meteorológico no válido.")
+    preset = WEATHER["scenarios"][weather]
+    zones = [dict(name=z["name"], lat=t["north"]-z["yFraction"]*(t["height"]-1)*t["degreeStep"],
+                  lon=t["west"]+z["xFraction"]*(t["width"]-1)*t["degreeStep"],
+                  radiusMeters=z["radiusCells"]*t["cellMeters"]) for z in preset["zones"]]
+    return dict(weather=weather,model=WEATHER["model"],sourceType="synthetic",
+                label=preset["label"],visibility=preset["visibility"],restrictions=zones,
+                speedKmH=preset["speedKmH"],notice=WEATHER["notice"])
+
+def blocked_cells(t, environment):
+    blocked=set()
+    for zone in environment["restrictions"]:
+        cx=(zone["lon"]-t["west"])/t["degreeStep"];cy=(t["north"]-zone["lat"])/t["degreeStep"]
+        radius=zone["radiusMeters"]/t["cellMeters"]
+        for y in range(max(0,math.floor(cy-radius)),min(t["height"],math.ceil(cy+radius)+1)):
+            for x in range(max(0,math.floor(cx-radius)),min(t["width"],math.ceil(cx+radius)+1)):
+                if math.hypot(x-cx,y-cy)<=radius:blocked.add((x,y))
+    return blocked
+
 from datetime import datetime, timezone
 
 
@@ -18,15 +44,16 @@ def grid_point(t, p):
     return (math.floor((p['lon']-t['west'])/t['degreeStep']+.5), math.floor((t['north']-p['lat'])/t['degreeStep']+.5))
 
 
-def find_path(t, start, end, max_slope=20):
+def find_path(t, start, end, max_slope=20, blocked=None):
     w, h, m = t['width'], t['height'], t['cellMeters']
     start, end = tuple(start), tuple(end)
+    blocked = blocked or set()
     def inside(p):
         return 0<=p[0]<w and 0<=p[1]<h
     def elevation(p):
         return t['elevations'][p[1]*w+p[0]]
     def passes(p):
-        return inside(p) and elevation(p) is not None and slope_at(t, *p)<=max_slope
+        return inside(p) and p not in blocked and elevation(p) is not None and slope_at(t, *p)<=max_slope
     if not passes(start) or not passes(end):
         return None
     scores, parents, closed = {start: 0}, {}, set()
@@ -74,6 +101,11 @@ def plan_mission(t, targets, payload):
         raise ValueError('Selecciona entre 2 y 20 objetivos.')
     if isinstance(limit,bool) or not isinstance(limit,(int,float)) or not math.isfinite(limit) or not 5<=limit<=40:
         raise ValueError('La pendiente debe estar entre 5 y 40 grados.')
+    reason=payload.get('replanReason','initial')
+    if reason not in ('initial','deviation','weather','manual'):
+        raise ValueError('Motivo de planificación no válido.')
+    environment=environment_for(t,payload.get('weather','clear'))
+    blocked=blocked_cells(t,environment)
     lookup = {p['name']:p for p in targets}
     stops, names, path = [], set(), []
     for entry in entries:
@@ -91,7 +123,7 @@ def plan_mission(t, targets, payload):
             if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in (lat,lon)):
                 raise ValueError('Las coordenadas del punto deben ser números finitos.')
             gx, gy = (lon-t['west'])/t['degreeStep'], (t['north']-lat)/t['degreeStep']
-            if not 0<=gx<=t['width']-1 or not 0<=gy<=t['height']-1:
+            if not -1e-8<=gx<=t['width']-1+1e-8 or not -1e-8<=gy<=t['height']-1+1e-8:
                 raise ValueError('El punto está fuera del terreno disponible.')
             x,y = grid_point(t,dict(lat=lat,lon=lon))
             elevation = t['elevations'][y*t['width']+x]
@@ -105,16 +137,18 @@ def plan_mission(t, targets, payload):
             raise ValueError('Objetivos desconocidos o repetidos.')
         names.add(stop['name'])
         stops.append(stop)
+    stop_indices=[0]
     for a,b in zip(stops,stops[1:]):
-        segment = find_path(t,grid_point(t,a),grid_point(t,b),limit)
+        segment = find_path(t,grid_point(t,a),grid_point(t,b),limit,blocked)
         if segment is None:
-            raise ValueError(f"No se encontró un paso entre {a['name']} y {b['name']} con este límite y resolución.")
+            raise ValueError(f"No se encontró un paso entre {a['name']} y {b['name']} con las restricciones, el límite y la resolución actuales.")
         path.extend(segment if not path else segment[1:])
+        stop_indices.append(len(path)-1)
     metrics = route_metrics(t,path)
-    metrics['durationMinutes'] = math.ceil(metrics['distance']/2000*60+(len(stops)-1)*10)
+    metrics['durationMinutes'] = math.ceil(metrics['distance']/(environment['speedKmH']*1000)*60+(len(stops)-1)*10)
     return dict(name='Glen Torridon — Lobos Espaciales', educationalSimulation=True,
                 createdAt=datetime.now(timezone.utc).isoformat(), maxSlopeDegrees=limit,
-                stops=stops, metrics=metrics, gridPath=path, returnIncluded=False,
-                assumptions=dict(speedKmH=2,stopMinutes=10,terrainCellMeters=t['cellMeters']),
+                planningContext=dict(reason=reason), environment=environment, stops=stops, stopPathIndices=stop_indices, metrics=metrics, gridPath=path, returnIncluded=False,
+                assumptions=dict(speedKmH=environment['speedKmH'],weatherModel='hypothetical-training',stopMinutes=10,terrainCellMeters=t['cellMeters']),
                 route=[dict(lon=t['west']+x*t['degreeStep'],lat=t['north']-y*t['degreeStep']) for x,y in path],
                 sources=['https://doi.org/10.17189/dw9v-xe39',t['source']])

@@ -59,6 +59,7 @@ export function createNavigation() {
       $('directionSummary').textContent=route.steps.length?`${route.steps.length} indicaciones · sigue la línea de la ruta`:'Calcula una ruta para ver las indicaciones.';if(route.steps.length)update(0,false);
     },
     update,
+    announce(text){if(enabled)speak(text,{force:true});},
     pause(){cancel();previousRunning=false;},
     seek(progress){cancel();lastSpoken='';previousRunning=false;update(progress,false);}
   };

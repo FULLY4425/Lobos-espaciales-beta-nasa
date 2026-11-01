@@ -96,7 +96,7 @@ Campos de respuesta:
 - Con `integrations/ksp_server.py`: `200` y `status: "connected"` solo con datos recientes; `503` cuando no hay juego/conexión o los datos han caducado.
 - El bloque `telemetry` contiene latitud, longitud, rumbo, altitud, velocidad, radio/nombre del cuerpo, nombre/identificador de vehículo, `receivedAt`, origen y `readOnly: true`.
 
-La identificación de sesión/vehículo obliga a recalibrar tras reconexiones o cambios. El HUD comprueba frescura y pausa la guía si el desvío supera 30 m. El protocolo no envía mandos al juego. Ver [calibración y red](AR_KSP.md).
+La identificación de sesión/vehículo obliga a recalibrar tras reconexiones o cambios. El HUD comprueba frescura y solicita un recálculo si el desvío supera 30 m; conserva el origen de calibración y pausa si el cálculo falla. El protocolo no envía mandos al juego. Ver [calibración y red](AR_KSP.md).
 
 ## Almacenamiento y privacidad funcional
 
@@ -113,6 +113,7 @@ python3 server.py
 python3 -m unittest discover -s test -v
 node test/directions.test.js
 node test/ar-tracking.test.js
+node test/replanning.test.js
 python3 scripts/build.py
 ```
 
@@ -129,3 +130,16 @@ La [validación registrada](VALIDACION.md) separa pruebas unitarias, comprobacio
 5. Actualiza guías y [validación](VALIDACION.md) sin presentar telemetría simulada como prueba en KSP ni emulación móvil como dispositivo físico.
 
 El servidor HTTP incluido es de desarrollo. El despliegue público actual es un prototipo detrás de Render, no una infraestructura certificada de navegación o de casco.
+
+## Escenarios y replanificación
+
+Los POST aceptan `weather` (`clear`, `dust`, `storm`) y `replanReason`
+(`initial`, `deviation`, `weather`, `manual`). El servidor carga los parámetros
+de `public/data/weather-scenarios.json`, construye celdas bloqueadas e incluye
+`environment`, `planningContext` y `stopPathIndices` en la misión. Los índices
+permiten mantener las paradas pendientes al replanificar.
+
+`src/replanning.js` construye la nueva salida personalizada desde la posición
+actual, conserva el orden de destinos restantes y cancela peticiones obsoletas.
+No modifica los datos científicos. El umbral de 30 m y las velocidades de clima
+son parámetros del prototipo; ver [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md).

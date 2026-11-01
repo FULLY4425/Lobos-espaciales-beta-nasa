@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {remainingStops,replanPayload,positionAtProgress} from '../src/replanning.js';
+import {nearestOnRoute} from '../src/ar-tracking.js';
+const t={width:5,height:5,cellMeters:10,elevations:Array(25).fill(0),west:137,north:-4,degreeStep:.001};
+const stop=(name,x)=>({name,lat:-4,lon:137+x*.001});
+const mission={maxSlopeDegrees:20,gridPath:[[0,0],[1,0],[2,0],[3,0],[4,0]],stops:[stop('A',0),stop('B',2),stop('C',4)],stopPathIndices:[0,2,4]};
+test('reroute keeps pending waypoint and destination, skips visited ones',()=>{assert.deepEqual(remainingStops(mission,t,.1).map(p=>p.name),['B','C']);assert.deepEqual(remainingStops(mission,t,.8).map(p=>p.name),['C']);});
+test('reroute starts at real position, uses selected scenario and rejects out-of-map positions',()=>{const p=replanPayload(mission,t,{x:1,y:3},.8,'storm');assert.equal(p.stops[0].lat,-4.003);assert.equal(p.stops[0].lon,137.001);assert.equal(p.stops[1],'C');assert.equal(p.weather,'storm');assert.throws(()=>replanPayload(mission,t,{x:7,y:0},0,'clear'));});
+test('position uses physical route distance rather than array index',()=>{const terrain={...t,elevations:[...t.elevations]};terrain.elevations[1]=10;const p=positionAtProgress([[0,0],[1,0],[2,0]],terrain,.5);assert.ok(Math.abs(p.x-1)<1e-8);});
+test('KSP retains calibration origin after reroute',()=>{const projected=nearestOnRoute({x:30,y:10},[[2,1],[3,1],[4,1]],t,[0,0]);assert.equal(projected.progress,.5);assert.equal(projected.crossTrack,0);});

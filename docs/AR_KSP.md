@@ -133,8 +133,10 @@ El conector consulta como máximo unas cinco muestras por segundo; el HUD pide
 una actualización cada 500 ms sin solapar solicitudes. Si cambia el vehículo,
 el cuerpo celeste o la conexión, hay que recalibrar. Datos de más de tres
 segundos dejan de considerarse conectados en el servidor. Si el desvío respecto
-a la ruta supera 30 m, se ocultan las instrucciones y se pausa la voz. No se
-recalcula una ruta sobre el terreno real de KSP.
+a la ruta supera 30 m, se pausa la voz y se recalcula desde la posición proyectada
+en el terreno marciano, conservando la calibración inicial. No se calcula sobre
+el terreno real de KSP. Si no existe un paso o la posición está fuera del mapa,
+se suspende la guía y se requiere reintentar.
 
 ## Menos consumo y menos elementos en pantalla
 
@@ -166,7 +168,9 @@ del juego; no se afirma validación física ni rendimiento medido en visor.
 | Render no conecta con el juego | Abre la aplicación del conector en `http://localhost:7173/` dentro del PC del juego. |
 | No aparece la misión en el menú | Calcula la ruta y entra desde **Prueba KSP**, o importa un JSON exportado de esta versión. |
 | Cambié de nave, cuerpo o conexión | Vuelve al lugar de salida elegido y recalibra. |
-| La guía se pausa por desvío | El vehículo se alejó más de 30 m del corredor proyectado. La guía no conoce los obstáculos reales de KSP. |
+| La guía se pausa por desvío | El recálculo no encontró un paso o la posición quedó fuera del mapa. La guía no conoce los obstáculos reales de KSP. |
 | Puerto 7173 ocupado | Inicia el conector con `--port 7174` y abre esa nueva dirección. |
 
 ![Menú de laboratorio KSP, sin partida conectada](captura-ksp.png)
+
+Los escenarios de polvo del HUD son hipotéticos. Consulta [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) para el comportamiento del recálculo y sus límites.

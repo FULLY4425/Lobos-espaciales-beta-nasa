@@ -28,6 +28,7 @@ Es un prototipo independiente inspirado en NASA Space Apps. No implica afiliaci�
 | Indicaciones y voz | Giros, distancias, paradas y llegada; voces españolas del dispositivo, ritmo y volumen. |
 | Menú Prueba KSP | Ventana auxiliar sin cámara ni solicitudes WebXR; demostración del HUD o telemetría local de KSP 1. |
 | AR experimental | Cámara HUD y maqueta WebXR sobre superficies en dispositivos compatibles. |
+| Recálculo y polvo | Replanificación desde la posición actual por desvío o cambio de escenario; zonas de tormenta hipotéticas y pausa si no hay paso. |
 | Exportación | JSON con paradas, ruta, métricas, supuestos y fuentes. |
 
 ## Primera prueba en cinco pasos
@@ -70,6 +71,14 @@ El conector lee posición, rumbo y velocidad. Una calibración asocia la posici�
 
 El modo **AR** es un prototipo separado: la cámara HUD superpone indicaciones sin seguimiento espacial, y WebXR permite colocar una maqueta del terreno cuando el dispositivo admite `immersive-ar` y `hit-test`. No representa caminar físicamente sobre una ruta marciana. La adaptación a un casco real sigue pendiente.
 
+## Desvíos y cambios del entorno
+
+La guía recalcula al detectar un desvío de más de 30 m, conservando las paradas pendientes. Puedes probarlo con **Probar desvío del astronauta** o usando el movimiento libre de la vista de superficie. La telemetría calibrada de KSP también activa el recálculo.
+
+En **Entorno · simulación** elige despejado, polvo atmosférico o tormenta local. El servidor evita las zonas restringidas del escenario y actualiza el tiempo con velocidades educativas. Si no existe una ruta válida, se pausa la guía. **Los escenarios no son clima actual ni predicciones de NASA.**
+
+[Modelo, parámetros, limitaciones y demostración](docs/CLIMA_RECALCULO.md).
+
 ## Qué datos son reales y qué se simula
 
 | Elemento | Procedencia / alcance |
@@ -88,7 +97,7 @@ El modo **AR** es un prototipo separado: la cámara HUD superpone indicaciones s
 
 - El cálculo evita celdas ausentes, pendientes que superen el límite y diagonales por esquinas bloqueadas. A* penaliza desniveles; no demuestra transitabilidad humana.
 - Los puntos se ajustan a la cuadrícula, con un desplazamiento de hasta aproximadamente **8.6 m**. Obstáculos menores que la resolución no están representados.
-- El tiempo usa **2 km/h + 10 minutos por parada posterior a la salida**. No incluye regreso, oxígeno, traje ni evacuación. La animación acelerada no cambia esas métricas.
+- En el escenario despejado, el tiempo usa **2 km/h + 10 minutos por parada posterior a la salida**; los escenarios de polvo cambian la velocidad educativa. No incluye regreso, oxígeno, traje ni evacuación. La animación acelerada no cambia esas métricas.
 - Las alturas del modelo no se exageran en 3D. La precisión horizontal absoluta y la alineación vertical con las alturas científicas no están verificadas independientemente.
 - No hay clima actual, radiación local, capa CRISM integrada ni autonomía de trajes. Los datos de NASA Science mostrados son contexto planetario general.
 - Los puntos propios se guardan localmente, hasta 50; no se sincronizan entre compañeros. Las misiones exportadas incluyen los puntos utilizados.
@@ -116,8 +125,9 @@ Pruebas JavaScript opcionales para desarrollo, con Node.js moderno:
 ```bash
 node test/directions.test.js
 node test/ar-tracking.test.js
+node test/replanning.test.js
 ```
 
-**Estado de validación:** 13 pruebas Python y 11 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. Falta probar la integración en una partida real de KSP y en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
+**Estado de validación:** 16 pruebas Python y 15 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. Falta probar la integración en una partida real de KSP y en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

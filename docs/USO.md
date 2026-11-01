@@ -24,7 +24,7 @@ El sitio abre con el terreno 3D de Glen Torridon. En escritorio el panel de cont
 
 En 3D, arrastra para girar e inclinar; Mayús + arrastre o botón derecho desplaza. La rueda amplía. En móvil, un dedo gira y dos dedos desplazan/amplían. En 2D, arrastra para desplazar y usa la rueda o los botones de zoom.
 
-Con el lienzo 3D enfocado, las flechas giran/inclinan; W/A/S/D desplazan y 0 restablece. En la vista de superficie, arrastrar o las flechas permite mirar; W/S avanzan o retroceden sobre una ruta existente. También se puede navegar con los botones y selectores de la interfaz.
+Con el lienzo 3D enfocado, las flechas giran/inclinan; W/A/S/D desplazan y 0 restablece. En la vista de superficie, arrastrar o las flechas permite mirar; W/A/S/D permiten desplazarse libremente sobre el terreno; al alejarse más de 30 m de la ruta se solicita un recálculo. También se puede navegar con los botones y selectores de la interfaz.
 
 La alta resolución corresponde al recorte de Glen Torridon, no a todo el globo. La flecha/brújula muestra el rumbo de la vista orbital; la altitud de cámara se refiere al datum marciano y puede ser negativa.
 
@@ -101,3 +101,17 @@ Ambos menús reciben la misión de esa pestaña y también aceptan importar el J
 | La guía KSP se pausa | Revisa telemetría, calibración y desvío de la ruta; no se recalcula sobre el terreno del juego. |
 | Cámara o WebXR no disponibles | Usa vista previa; revisa permisos, HTTPS y soporte del dispositivo. |
 | Sin conexión | La PWA puede mostrar recursos guardados, pero calcular/exportar necesita el servidor Python. |
+
+## Recálculo y tormentas simuladas
+
+**Probar desvío del astronauta** muestra el recálculo automático desde la nueva
+posición; también se activa con movimiento libre en Superficie y desvíos de
+telemetría KSP. En el mapa, la reproducción queda pausada tras el recálculo para
+que puedas revisar e iniciar la nueva ruta.
+
+**Entorno · simulación** ofrece despejado, polvo y tormenta local. Las zonas
+rojas son exclusiones hipotéticas del ejercicio; el servidor las evita al
+planificar. La evolución opcional cambia el escenario cada 30 s de demostración.
+Si no hay un paso válido, se suspende la guía y se habilita reintentar.
+Estos escenarios no provienen de meteorología actual. Consulta
+[CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) antes de presentar sus resultados.

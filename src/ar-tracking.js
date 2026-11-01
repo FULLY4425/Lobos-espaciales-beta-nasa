@@ -9,9 +9,9 @@ export function projectKsp(sample,anchor,headingOffset=0) {
   const east=dlon*rad*sample.bodyRadius*Math.cos(anchor.latitude*rad),angle=headingOffset*rad;
   return {x:east*Math.cos(angle)-north*Math.sin(angle),y:-(east*Math.sin(angle)+north*Math.cos(angle))};
 }
-export function nearestOnRoute(position,path,terrain) {
+export function nearestOnRoute(position,path,terrain,referenceOrigin=path[0]) {
   if(!position||path.length<2)return null;
-  const m=terrain.cellMeters,origin=path[0];let total=0,best={crossTrack:Infinity,distance:0};
+  const m=terrain.cellMeters,origin=referenceOrigin;let total=0,best={crossTrack:Infinity,distance:0};
   for(let i=1;i<path.length;i++){
     const a=path[i-1],b=path[i],x=(a[0]-origin[0])*m,y=(a[1]-origin[1])*m,dx=(b[0]-a[0])*m,dy=(b[1]-a[1])*m,sq=dx*dx+dy*dy;
     const t=sq?Math.max(0,Math.min(1,((position.x-x)*dx+(position.y-y)*dy)/sq)):0;

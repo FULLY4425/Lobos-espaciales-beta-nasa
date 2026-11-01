@@ -6,11 +6,12 @@ Estado documental: **1 de noviembre de 2026**. Este documento recoge comprobacio
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 13 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado. |
+| `python3 -m unittest discover -s test -v` | 16 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
+| `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 
-Total registrado: **24 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **31 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ## Comprobaciones de navegador realizadas
 
@@ -23,7 +24,7 @@ Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de 
 - Indicaciones: selección de voz, inicio/pausa, llegada, recálculo y cancelación con motor de voz simulado. Alternativa de texto cuando no existe síntesis. No se afirma haber escuchado todas las voces de dispositivos reales.
 - Menú KSP separado: transferencia de misión, estado sin conector y demostración del HUD. Se comprobaron cero solicitudes a cámara o consulta WebXR en esa página.
 - HUD AR: misión cargada, interfaz móvil sin desbordamiento, simulación, inicio/cierre con cámara de prueba de Chromium y alternativa ante rechazo de sesión WebXR.
-- KSP: calibración y pausa al salir del corredor con telemetría simulada, y respuesta `503` del conector cuando no hay juego/dependencia disponible.
+- KSP: calibración, recálculo por desvío y pausa fuera de cobertura con telemetría simulada, y respuesta `503` del conector cuando no hay juego/dependencia disponible.
 - PWA en comprobaciones previas: manifiesto, control del service worker, consulta del mapa guardado sin red y rechazo de cálculo/exportación sin servidor.
 
 ## Distribución y servicio público
@@ -52,3 +53,11 @@ Ese APK no se ha recompilado para todas las funciones web posteriores y no se pr
 | Ciencia | Precisión horizontal absoluta, alineación vertical de las alturas científicas, obstáculos pequeños y modelos de movilidad humana. |
 
 La etiqueta PDS y la coincidencia numérica de coordenadas no demuestran por sí solas exactitud absoluta. Las rutas no validan resistencia del suelo, seguridad, comunicaciones, radiación ni autonomía de un traje.
+
+## Recálculo y escenarios ambientales
+
+Se comprobó que A* evita las celdas restringidas de una tormenta sintética,
+conserva destino y restricciones de pendiente, y rechaza puntos sin salida.
+En navegador se verificaron cambios de escenario, desvío del astronauta,
+recálculo KSP con telemetría simulada y bloqueo fuera del terreno. Las condiciones
+atmosféricas son supuestos de entrenamiento, no predicciones validadas.

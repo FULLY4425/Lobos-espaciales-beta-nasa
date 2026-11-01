@@ -54,3 +54,7 @@ La interacción toma como referencia exploradores de mapas y globos como Google 
 ## Reutilización
 
 Conserva la atribución de cada recurso y consulta las condiciones del archivo original. La textura global tiene su propia licencia CC BY 4.0 y Three.js conserva su MIT. No se declara una licencia única para todos los datos, imágenes, código e instrumentos de terceros. El proyecto no tiene afiliación ni aprobación de NASA, KSP, Meta o Google.
+
+## Escenarios de polvo
+
+[CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) distingue el contexto planetario de NASA de los parámetros sintéticos de entrenamiento. Las zonas de exclusión, velocidades y efectos de neblina no son productos meteorológicos observados.

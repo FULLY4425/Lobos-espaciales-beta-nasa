@@ -1,0 +1,10 @@
+{
+  "model": "training-scenarios-v1",
+  "sourceType": "synthetic",
+  "notice": "Escenarios educativos hipotéticos; no son observaciones meteorológicas ni predicciones para Glen Torridon.",
+  "scenarios": {
+    "clear": {"label": "Despejado · simulado", "speedKmH": 2, "visibility": "Sin reducción simulada", "opacity": 0, "fogDensity": 0, "zones": []},
+    "dust": {"label": "Polvo atmosférico · simulado", "speedKmH": 1.5, "visibility": "Contraste reducido, supuesto de entrenamiento", "opacity": 0.08, "fogDensity": 0.00035, "zones": []},
+    "storm": {"label": "Tormenta de polvo local · simulada", "speedKmH": 1, "visibility": "Visibilidad muy reducida, supuesto de entrenamiento", "opacity": 0.18, "fogDensity": 0.0007, "zones": [{"xFraction": 0.52, "yFraction": 0.48, "radiusCells": 11, "name": "Zona restringida de tormenta simulada"}]}
+  }
+}
