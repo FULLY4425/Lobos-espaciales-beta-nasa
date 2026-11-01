@@ -153,3 +153,32 @@ Los puntos propios no se presentan como observaciones científicas.
 
 La API mantiene las paradas científicas como cadenas y acepta puntos propios:
 `{"stops":["Stornoway",{"type":"custom","name":"Mi punto","lat":-4.73324341,"lon":137.3998236}],"maxSlopeDegrees":20}`.
+
+### Indicaciones y voz
+
+Al calcular una ruta, el mapa muestra el siguiente giro, su distancia y lo que
+falta hasta el destino. En **Navegación paso a paso** puedes consultar la lista
+de instrucciones y pulsar **Activar voz**, **Probar voz** o **Repetir indicación**.
+La guía anuncia derecha, izquierda, giros suaves o pronunciados, media vuelta,
+objetivos intermedios y llegada. Se sincroniza con el avance de los astronautas.
+
+La voz utiliza SpeechSynthesis del navegador, sin claves de API. Se priorizan
+las voces españolas de México; puedes seleccionar cualquier voz española
+disponible y ajustar ritmo y volumen. Las preferencias se guardan localmente,
+pero la voz se activa mediante un botón para respetar las políticas de audio
+del navegador. El nombre y la calidad de las voces dependen del dispositivo.
+Algunos motores necesitan conexión; si el navegador no ofrece síntesis, la
+guía de texto continúa funcionando.
+
+Para oír cada indicación usa las velocidades 1× o 5×. En reproducción acelerada
+no se acumula una cola de anuncios: se prioriza el aviso actual. Pausar, cambiar
+de cámara, buscar otro tramo o modificar la ruta cancela la narración pendiente.
+Las instrucciones se calculan sobre la ruta devuelta por Python. Se agrupan
+pequeños zigzags de la cuadrícula para evitar un anuncio por celda; esto no
+modifica la geometría que siguen los astronautas. Las distancias del avance
+consideran las alturas del modelo. Esta guía corresponde a la simulación local
+y no utiliza GPS ni representa navegación operativa en Marte.
+
+Pruebas de direcciones (Node.js, solo para desarrollo):
+`node test/directions.test.js`. La ejecución del servidor sigue requiriendo
+únicamente Python.

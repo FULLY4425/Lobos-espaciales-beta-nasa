@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.js';
 import {slopeAt} from './route.js';
 
 // Coordinates are meters: east = X, height = Y, south = Z. No vertical exaggeration.
-export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false) {
+export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false, navigation=null) {
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
   renderer.setClearColor('#11191c');
@@ -54,8 +54,8 @@ export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false) {
     document.querySelector('.workspace').dataset.worldMode=mode;
     document.getElementById('surfaceNote').hidden=mode!=='surface';document.getElementById('globeNote').hidden=mode!=='globe';
     if(mode==='globe'){yaw=Math.atan2(sitePosition.x,sitePosition.z);pitch=.18;distance=1500;focus.set(0,0,0);}else if(mode==='terrain'){yaw=0;pitch=1.32;distance=span*1.15;focus.set(0,30,0);}render();}
-  function toggleWalk(){if(!totalLength)return false;if(worldMode==='globe')setMode('follow');transition=null;flight=false;if(progress>=1)progress=0;running=!running;if(running)startAnimation();render();return running;}
-  function seek(value){progress=THREE.MathUtils.clamp(value,0,1);render();}
+  function toggleWalk(){if(!totalLength)return false;if(worldMode==='globe')setMode('follow');transition=null;flight=false;if(progress>=1)progress=0;running=!running;if(!running)navigation?.pause();if(running)startAnimation();render();return running;}
+  function seek(value){stop();navigation?.seek(value);progress=THREE.MathUtils.clamp(value,0,1);render();}
 
   function point(x,y,lift=4){const ix=Math.max(0,Math.min(w-1,Math.round(x))),iy=Math.max(0,Math.min(h-1,Math.round(y)));return new THREE.Vector3((x-w/2)*m,(z[iy*w+ix]??floor)-floor+lift,(y-h/2)*m);}
   function targetPoint(p,lift){return point((p.lon-terrain.west)/terrain.degreeStep,(terrain.north-p.lat)/terrain.degreeStep,lift);}
@@ -77,8 +77,8 @@ export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false) {
     if(worldMode==='follow'&&routePoints.length){const here=routeAt(progress*totalLength),ahead=routeAt(Math.min(totalLength,progress*totalLength+10)),direction=ahead.clone().sub(here).setY(0).normalize();if(direction.length()<.1)direction.set(0,0,-1);camera.position.copy(here).addScaledVector(direction,-65).add(new THREE.Vector3(0,38,0));camera.lookAt(here.clone().add(new THREE.Vector3(0,8,0)));}
     if(worldMode==='surface'){const start=routePoints.length?routeAt(progress*totalLength):point(w/2,h/2,0),ahead=routePoints.length?routeAt(Math.min(totalLength,progress*totalLength+10)):point(w/2,h/2-10,0);camera.position.copy(start).add(new THREE.Vector3(0,1.7,0));const direction=ahead.sub(start);if(direction.length()<.1)direction.set(0,0,-1);direction.normalize().applyAxisAngle(new THREE.Vector3(0,1,0),lookYaw);direction.y+=lookPitch;camera.lookAt(camera.position.clone().add(direction.multiplyScalar(20)));}
     overlays.visible=worldMode!=='surface';scene.background=new THREE.Color(worldMode==='surface'?'#9c7861':'#11191c');scene.fog=worldMode==='surface'?new THREE.Fog('#9c7861',300,2300):null;updateAstronauts();renderer.render(worldMode==='globe'?globeScene:scene,camera);
-    document.getElementById('routeProgress').value=Math.round(progress*1000);document.getElementById('journeyDistance').textContent=totalLength?`${Math.round(progress*totalLength)} / ${Math.round(totalLength)} m`:'Sin ruta';const bearing=((yaw*180/Math.PI)%360+360)%360;document.getElementById('cameraBearing').textContent=`${bearing.toFixed(0).padStart(3,'0')}°`;document.getElementById('cameraHeight').textContent=`${Math.round(camera.position.y+(worldMode==='globe'?0:floor))} m`;document.getElementById('compassNeedle').style.transform=`rotate(${-bearing}deg)`;}
-  function stop(){running=false;document.getElementById('walkRoute').setAttribute('aria-pressed','false');flight=false;transition=null;cancelAnimationFrame(animation);animation=0;document.getElementById('orbitFlight').setAttribute('aria-pressed','false');}
+    navigation?.update(progress,running);document.getElementById('routeProgress').value=Math.round(progress*1000);document.getElementById('journeyDistance').textContent=totalLength?`${Math.round(progress*totalLength)} / ${Math.round(totalLength)} m`:'Sin ruta';const bearing=((yaw*180/Math.PI)%360+360)%360;document.getElementById('cameraBearing').textContent=`${bearing.toFixed(0).padStart(3,'0')}°`;document.getElementById('cameraHeight').textContent=`${Math.round(camera.position.y+(worldMode==='globe'?0:floor))} m`;document.getElementById('compassNeedle').style.transform=`rotate(${-bearing}deg)`;}
+  function stop(){navigation?.pause();running=false;document.getElementById('walkRoute').setAttribute('aria-pressed','false');flight=false;transition=null;cancelAnimationFrame(animation);animation=0;document.getElementById('orbitFlight').setAttribute('aria-pressed','false');}
   function animate(now){if(!active){stop();return;}const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;
     if(transition){const t=Math.min(1,(now-transition.start)/1100),ease=t*t*(3-2*t);yaw=THREE.MathUtils.lerp(transition.yaw,transition.to.yaw,ease);pitch=THREE.MathUtils.lerp(transition.pitch,transition.to.pitch,ease);distance=THREE.MathUtils.lerp(transition.distance,transition.to.distance,ease);focus.lerpVectors(transition.focus,new THREE.Vector3(0,30,0),ease);if(t===1)transition=null;}
     if(flight)yaw+=dt*.12;
