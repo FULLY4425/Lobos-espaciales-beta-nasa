@@ -182,3 +182,19 @@ y no utiliza GPS ni representa navegación operativa en Marte.
 Pruebas de direcciones (Node.js, solo para desarrollo):
 `node test/directions.test.js`. La ejecución del servidor sigue requiriendo
 únicamente Python.
+
+## AR y Kerbal Space Program 1
+
+Calcula una misión y pulsa **Modo AR**. La pantalla dedicada muestra una sola
+indicación, voz opcional y ajustes plegables. Ofrece cámara HUD, vista previa y
+maqueta espacial mediante WebXR cuando el dispositivo admite AR con hit-test.
+La versión AR evita cargar el globo y los paneles del explorador.
+
+Se incluye un conector local de solo lectura para **KSP 1 + kRPC**, con
+calibración entre la salida de la misión y la posición del vehículo. Requiere
+ejecutarlo en el PC del juego; Render no accede a tu instalación local de KSP.
+Consulta [instalación, compatibilidad y límites AR/KSP](docs/AR_KSP.md).
+
+La cámara HUD no localiza al usuario sobre Marte y el globo de Duna no se
+considera equivalente a Marte. La integración se ha probado con telemetría
+simulada; faltan las pruebas con un visor real y una partida de KSP.
