@@ -1,5 +1,5 @@
 // Cache public assets only. Python API requests always require the network.
-const CACHE='lobos-android-v5-globe-walk';
+const CACHE='lobos-android-v6-custom-targets';
 const ASSETS=['/','/index.html','/src/app.js','/src/route.js','/src/terrain3d.js','/src/vendor/three.module.js','/src/style.css','/src/pwa.js','/manifest.webmanifest','/public/icons/icon-192.png','/public/icons/icon-512.png','/public/imagery/glen-torridon-hirise.webp','/public/imagery/metadata.json','/public/imagery/mars-global.jpg','/public/data/targets.json','/public/data/terrain.json','/public/data/mars-facts.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('lobos-android-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

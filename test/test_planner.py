@@ -40,3 +40,37 @@ class PlannerTests(unittest.TestCase):
     def test_bad_inputs(self):
         for p in [{},{'stops':['unknown','other']},{'stops':['Stornoway']},{'stops':['Stornoway','Stornoway']},{'stops':['Stornoway','Whaligoe'],'maxSlopeDegrees':float('nan')},{'stops':['Stornoway','Whaligoe'],'maxSlopeDegrees':True}]:
             with self.assertRaises(ValueError):plan_mission(self.terrain,self.targets,p)
+
+    def custom_terrain(self):
+        return dict(self.flat(),west=137,north=-4,degreeStep=.001,source='test')
+    def test_custom_and_mixed_stops(self):
+        t=self.custom_terrain()
+        custom=dict(type='custom',name='Mi punto',lat=-4.004,lon=137.004,elevation=99999,sol=999)
+        mission=plan_mission(t,[dict(name='NASA',lat=-4,lon=137)],dict(stops=['NASA',custom]))
+        self.assertEqual(mission['gridPath'][-1],(4,4))
+        self.assertEqual(mission['stops'][1]['elevation'],0)
+        self.assertFalse(mission['stops'][1]['scientificObservation'])
+        self.assertNotIn('sol',mission['stops'][1])
+        self.assertGreater(mission['metrics']['distance'],0)
+    def test_invalid_custom_stops(self):
+        t=self.custom_terrain()
+        base=dict(type='custom',name='Punto',lat=-4.002,lon=137.002)
+        known=dict(name='NASA',lat=-4,lon=137)
+        for change in [dict(lat=True),dict(lon=float('nan')),dict(lat=-3.99999),dict(lon=137.005),dict(name=''),dict(name='x'*61),dict(name='NASA'),dict(type='other')]:
+            with self.subTest(change=change),self.assertRaises(ValueError):
+                plan_mission(t,[known],dict(stops=['NASA',dict(base,**change)]))
+        with self.assertRaises(ValueError):
+            plan_mission(t,[],dict(stops=[base,base]))
+        t['elevations'][12]=None
+        with self.assertRaises(ValueError):
+            plan_mission(t,[known],dict(stops=['NASA',base]))
+    def test_custom_stops_obey_slope_and_obstacles(self):
+        t=self.custom_terrain()
+        a=dict(type='custom',name='A',lat=-4,lon=137)
+        b=dict(type='custom',name='B',lat=-4.004,lon=137.004)
+        for y in range(5):t['elevations'][y*5+2]=None
+        with self.assertRaises(ValueError):
+            plan_mission(t,[],dict(stops=[a,b]))
+        t=self.custom_terrain();t['elevations'][24]=100
+        with self.assertRaises(ValueError):
+            plan_mission(t,[],dict(stops=[a,b],maxSlopeDegrees=5))

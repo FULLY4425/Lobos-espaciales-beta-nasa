@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.js';
 import {slopeAt} from './route.js';
 
 // Coordinates are meters: east = X, height = Y, south = Z. No vertical exaggeration.
-export function createTerrain3D(canvas, terrain, onSelect) {
+export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false) {
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
   renderer.setClearColor('#11191c');
@@ -106,6 +106,7 @@ export function createTerrain3D(canvas, terrain, onSelect) {
   canvas.onpointerup=e=>{
     pointers.delete(e.pointerId);
     if(!moved&&e.button===0&&worldMode==='globe'){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);if(raycaster.intersectObject(site).length||raycaster.intersectObject(ring).length)setMode('terrain');}
+    if(!moved&&e.button===0&&worldMode==='terrain'){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hit=raycaster.intersectObject(mesh)[0];if(hit&&onPlace(hit.point.x/m+w/2,hit.point.z/m+h/2))return;}
     if(!moved&&e.button===0&&worldMode==='terrain'&&pickable){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const hits=raycaster.intersectObject(pickable);const surface=raycaster.intersectObject(mesh)[0];const hit=hits.find(hit=>!surface||hit.distance<=surface.distance+15);if(hit)onSelect(pickTargets[hit.index]);}
   };
   canvas.onpointercancel=e=>{pointers.delete(e.pointerId);moved=true;};

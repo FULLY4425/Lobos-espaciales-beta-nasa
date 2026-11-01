@@ -69,15 +69,42 @@ def route_metrics(t, path):
 
 
 def plan_mission(t, targets, payload):
-    names, limit = payload.get('stops'), payload.get('maxSlopeDegrees',20)
-    if not isinstance(names,list) or not 2<=len(names)<=20 or any(not isinstance(n,str) for n in names):
+    entries, limit = payload.get('stops'), payload.get('maxSlopeDegrees',20)
+    if not isinstance(entries,list) or not 2<=len(entries)<=20:
         raise ValueError('Selecciona entre 2 y 20 objetivos.')
     if isinstance(limit,bool) or not isinstance(limit,(int,float)) or not math.isfinite(limit) or not 5<=limit<=40:
         raise ValueError('La pendiente debe estar entre 5 y 40 grados.')
     lookup = {p['name']:p for p in targets}
-    if any(n not in lookup for n in names) or len(set(names))!=len(names):
-        raise ValueError('Objetivos desconocidos o repetidos.')
-    stops, path = [lookup[n] for n in names], []
+    stops, names, path = [], set(), []
+    for entry in entries:
+        if isinstance(entry,str):
+            if entry not in lookup:
+                raise ValueError('Objetivos desconocidos o repetidos.')
+            stop = lookup[entry]
+        elif isinstance(entry,dict) and entry.get('type')=='custom':
+            name, lat, lon = entry.get('name'), entry.get('lat'), entry.get('lon')
+            if not isinstance(name,str) or not name.strip() or len(name)>60:
+                raise ValueError('El nombre del punto debe tener entre 1 y 60 caracteres.')
+            name = name.strip()
+            if name in lookup:
+                raise ValueError('El nombre del punto coincide con un objetivo científico.')
+            if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in (lat,lon)):
+                raise ValueError('Las coordenadas del punto deben ser números finitos.')
+            gx, gy = (lon-t['west'])/t['degreeStep'], (t['north']-lat)/t['degreeStep']
+            if not 0<=gx<=t['width']-1 or not 0<=gy<=t['height']-1:
+                raise ValueError('El punto está fuera del terreno disponible.')
+            x,y = grid_point(t,dict(lat=lat,lon=lon))
+            elevation = t['elevations'][y*t['width']+x]
+            if elevation is None:
+                raise ValueError('El punto está en una zona sin elevación válida.')
+            stop = dict(type='custom',name=name,lat=lat,lon=lon,elevation=elevation,
+                        elevationSource='terrain',scientificObservation=False)
+        else:
+            raise ValueError('Objetivo no válido. Usa un objetivo científico o un punto personalizado.')
+        if stop['name'] in names:
+            raise ValueError('Objetivos desconocidos o repetidos.')
+        names.add(stop['name'])
+        stops.append(stop)
     for a,b in zip(stops,stops[1:]):
         segment = find_path(t,grid_point(t,a),grid_point(t,b),limit)
         if segment is None:

@@ -135,3 +135,21 @@ humana. La altitud indicada corresponde a la cámara, no a un sensor real.
 
 Procedencia y atribución de la textura global:
 [`public/imagery/mars-global-metadata.json`](public/imagery/mars-global-metadata.json).
+
+### Objetivos personalizados
+
+En **Mis objetivos**, pulsa **Marcar punto en el mapa** y toca el terreno 3D
+o cambia a Mapa 2D y toca una posición. También puedes elegir **Agregar por
+coordenadas**. Asigna un nombre y confirma si quieres añadirlo al recorrido.
+Puedes mezclar estos puntos con los objetivos ChemCam y usar la misma función
+de cálculo, exportación y caminata animada.
+
+Los puntos se guardan en el navegador (hasta 50) y se pueden seleccionar o
+eliminar desde el panel. No se sincronizan entre compañeros. La exportación
+de misión incluye las coordenadas de los puntos usados. El servidor valida
+coordenadas finitas, cobertura, elevación y pendiente usando sus propios datos;
+las alturas enviadas por el cliente se ignoran. Cada ruta admite 2–20 paradas.
+Los puntos propios no se presentan como observaciones científicas.
+
+La API mantiene las paradas científicas como cadenas y acepta puntos propios:
+`{"stops":["Stornoway",{"type":"custom","name":"Mi punto","lat":-4.73324341,"lon":137.3998236}],"maxSlopeDegrees":20}`.
