@@ -51,8 +51,7 @@ La cámara necesita HTTPS o `localhost`, permisos y un navegador compatible con
 (`hit-test`). Se comprueba la capacidad en el navegador y el inicio puede ser
 rechazado si faltan permisos o funciones del visor.
 
-Android con un navegador compatible y servicios AR del dispositivo es una
-opción para probar. La disponibilidad de passthrough/AR en Quest u otras gafas
+Utiliza un dispositivo cuyo navegador y sistema admitan las funciones WebXR requeridas. La disponibilidad de passthrough/AR en Quest u otras gafas
 depende de su navegador, sistema y soporte WebXR; no se garantiza por marca.
 Si no hay WebXR se ofrecen cámara HUD y vista previa. No se instala un SDK
 nativo de visor ni se usa una captura de cámara sin autorización.
@@ -113,7 +112,7 @@ El conector ofrece la misma aplicación y `/api/ksp`, evitando conexiones del
 navegador desde Render al puerto local del juego. El servicio público en Render
 no puede acceder a tu KSP: muestra un mensaje para iniciar el conector local.
 
-Para usar un teléfono o visor conectado al PC hace falta servir esta misma
+Para usar un visor conectado al PC hace falta servir esta misma
 aplicación/conector mediante HTTPS de confianza accesible en tu red privada,
 por ejemplo con un proxy inverso hacia `127.0.0.1:7173`. Los dispositivos deben
 confiar en su certificado y poder alcanzar el PC. Eso requiere configuración
@@ -155,7 +154,7 @@ datos obsoletos y lecturas del adaptador con un cliente simulado. Pruebas de
 navegador de HUD, permisos/cierre de cámara con dispositivo de cámara simulado,
 importación de misión, telemetría simulada y rechazo de sesión WebXR.
 
-**Pendiente:** prueba de aceptación en un visor/teléfono AR real y en una partida
+**Pendiente:** prueba de aceptación en un visor AR real y en una partida
 real de KSP 1 con el mod kRPC. Este entorno no dispone de esos dispositivos ni
 del juego; no se afirma validación física ni rendimiento medido en visor.
 

@@ -5,7 +5,7 @@
 - En línea: https://lobos-espaciales-python.onrender.com/
 - En tu PC: inicia el [servidor Python](INSTALACION_LOCAL.md) y abre http://localhost:5173/.
 
-El sitio abre con el terreno 3D de Glen Torridon. En escritorio el panel de control está a la izquierda; en móvil aparece debajo del mapa. El botón **Objetivos** abre la ficha y el selector científico. **Ampliar** ocupa la ventana; Escape devuelve el tamaño normal.
+El sitio abre con el terreno 3D de Glen Torridon. El panel de control está a la izquierda y se adapta al tamaño de la ventana. El botón **Objetivos** abre la ficha y el selector científico. **Ampliar** ocupa la ventana; Escape devuelve el tamaño normal.
 
 ## Mapa, capas y cámaras
 
@@ -22,7 +22,7 @@ El sitio abre con el terreno 3D de Glen Torridon. En escritorio el panel de cont
 | Vuelo orbital | Rotación automática; pulsa de nuevo o interactúa con el terreno para detenerla. |
 | + / − / ⌖ | Acerca, aleja o restablece la vista. |
 
-En 3D, arrastra para girar e inclinar; Mayús + arrastre o botón derecho desplaza. La rueda amplía. En móvil, un dedo gira y dos dedos desplazan/amplían. En 2D, arrastra para desplazar y usa la rueda o los botones de zoom.
+En 3D, arrastra para girar e inclinar; Mayús + arrastre o botón derecho desplaza. La rueda amplía. Con entrada táctil, un dedo gira y dos dedos desplazan/amplían. En 2D, arrastra para desplazar y usa la rueda o los botones de zoom.
 
 Con el lienzo 3D enfocado, las flechas giran/inclinan; W/A/S/D desplazan y 0 restablece. En la vista de superficie, arrastrar o las flechas permite mirar; W/A/S/D permiten desplazarse libremente sobre el terreno; al alejarse más de 30 m de la ruta se solicita un recálculo. También se puede navegar con los botones y selectores de la interfaz.
 
@@ -100,7 +100,7 @@ Ambos menús reciben la misión de esa pestaña y también aceptan importar el J
 | KSP no conecta desde Render | Ejecuta el conector en el PC del juego y abre su dirección local. |
 | La guía KSP se pausa | Revisa telemetría, calibración y desvío de la ruta; no se recalcula sobre el terreno del juego. |
 | Cámara o WebXR no disponibles | Usa vista previa; revisa permisos, HTTPS y soporte del dispositivo. |
-| Sin conexión | La PWA puede mostrar recursos guardados, pero calcular/exportar necesita el servidor Python. |
+| Sin conexión | Recupera la conexión al servidor para cargar recursos, calcular y exportar. |
 
 ## Recálculo y tormentas simuladas
 

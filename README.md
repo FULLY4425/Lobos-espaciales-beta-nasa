@@ -39,7 +39,7 @@ Es un prototipo independiente inspirado en NASA Space Apps. No implica afiliaci�
 4. Deja la pendiente en **20°** y pulsa **Calcular recorrido**. El ejemplo produce unos **1.31 km**, **+59.6 m** de ascenso y **50 minutos** simulados, sin regreso.
 5. Pulsa **Seguir astronauta** e **Iniciar / pausar recorrido**. En **Navegación paso a paso**, activa o prueba la voz. Usa **1× o 5×** para oír los avisos con calma.
 
-El panel de control está a la izquierda en escritorio y debajo del mapa en móvil. Consulta la [guía completa](docs/USO.md) para crear objetivos, usar las cámaras, exportar y abrir los menús KSP/AR.
+El panel de control está a la izquierda y se adapta al espacio disponible. Consulta la [guía completa](docs/USO.md) para crear objetivos, usar las cámaras, exportar y abrir los menús KSP/AR.
 
 ## Ejecutar en tu computadora
 
@@ -54,12 +54,8 @@ python3 server.py
 En Windows, usa `py -3 server.py`. Abre **http://localhost:5173/** y mantén la terminal abierta. No abras `index.html` directamente ni uses un servidor exclusivamente estático: las rutas y exportaciones necesitan la API Python.
 
 - [Instalación y solución de problemas en Windows, macOS y Linux](docs/INSTALACION_LOCAL.md)
-- [PWA y Android](docs/ANDROID.md)
-- [Python en Android con Pydroid 3 o Termux](docs/PYTHON_EN_ANDROID.md)
-- [APK de prueba: instalación, compilación y límites](android/README.md)
 - [Alojamiento y despliegue en Render](docs/DESPLIEGUE.md)
 
-El APK existente es una compilación de prueba anterior; no se ha recompilado para incluir todas las novedades web. Para probar las funciones actuales, usa el navegador o la PWA actualizada.
 
 ## KSP ahora; casco después
 
@@ -101,7 +97,7 @@ En **Entorno · simulación** elige despejado, polvo atmosférico o tormenta loc
 - Las alturas del modelo no se exageran en 3D. La precisión horizontal absoluta y la alineación vertical con las alturas científicas no están verificadas independientemente.
 - No hay clima actual, radiación local, capa CRISM integrada ni autonomía de trajes. Los datos de NASA Science mostrados son contexto planetario general.
 - Los puntos propios se guardan localmente, hasta 50; no se sincronizan entre compañeros. Las misiones exportadas incluyen los puntos utilizados.
-- Las voces dependen del navegador y dispositivo. Calcular y exportar requiere el servidor Python; la caché de la PWA no lo sustituye.
+- Las voces dependen del navegador y dispositivo. Calcular y exportar requiere el servidor Python; la aplicación necesita acceso al servidor.
 
 ## Documentación y desarrollo
 

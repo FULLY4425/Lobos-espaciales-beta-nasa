@@ -25,7 +25,7 @@ no sustituye al servicio Python.
 2. Render inicia un despliegue al detectar el commit; no hace falta disparar otro.
 3. Comprueba que ese despliegue llegue al estado `live`.
 4. Abre `/api/health` y calcula una ruta en la URL pública.
-5. Si cambiaste recursos de la PWA, comprueba la versión de caché y vuelve a abrir la app.
+5. Comprueba las pantallas del explorador, KSP y AR en el navegador. Las cachés heredadas se retiran automáticamente al abrir la versión actual.
 
 El nombre del servicio web actual es `lobos-espaciales-python`. El `render.yaml`
 del repositorio es una plantilla para crear infraestructura; el servicio actual

@@ -10,7 +10,6 @@
 | Prueba KSP con juego | PC con KSP 1, mod kRPC compatible y cliente Python de `integrations/requirements-ksp.txt`. |
 | Pruebas JavaScript | Node.js moderno; se han usado las API actuales de `node:test`. |
 | Cámara / WebXR | Contexto seguro, permisos y soporte del dispositivo. |
-| APK de prueba | Herramientas Android específicas; ver [guía Android](../android/README.md). |
 
 ## Responsabilidades
 
@@ -43,7 +42,7 @@ El cálculo A* y las métricas de misión pertenecen al servidor. JavaScript rep
 | `ksp.html`, `ar.html`, `src/ar.js` | Laboratorio KSP y pantalla AR; la página KSP omite cámara y WebXR. |
 | `src/ar-xr.js`, `src/ar-tracking.js` | Maqueta WebXR y proyección relativa de telemetría KSP. |
 | `integrations/ksp_server.py` | Servidor local y muestreo de telemetría, con caducidad y reconexión. |
-| `sw.js`, `src/pwa.js` | Caché de recursos y flujo PWA. La API siempre necesita red. |
+| `src/connection.js`, `sw.js` | Estado de conexión y retirada de la caché heredada; no se instala una aplicación independiente. |
 | `scripts/build.py` | Copia una distribución ejecutable en `dist/`. |
 | `scripts/collect-data.py` | Recopilación de tabla y terreno con trazabilidad. |
 
@@ -126,8 +125,8 @@ La [validación registrada](VALIDACION.md) separa pruebas unitarias, comprobacio
 1. Describe el comportamiento que quieres cambiar y comprueba el estado actual en las guías.
 2. Conserva la procedencia y las unidades de los datos; no añadas capas científicas sin validar su cobertura.
 3. Si cambias el planificador, valida obstáculos, límites, entradas y métricas. Si cambias indicaciones o telemetría, ejecuta las pruebas JavaScript correspondientes.
-4. Si cambias un recurso que necesita funcionar en la PWA, revisa su inclusión en `sw.js` y actualiza la versión de caché.
-5. Actualiza guías y [validación](VALIDACION.md) sin presentar telemetría simulada como prueba en KSP ni emulación móvil como dispositivo físico.
+4. Comprueba que la distribución contiene los recursos web actuales. `sw.js` se conserva solo para retirar cachés heredadas; no añadas un flujo de instalación.
+5. Actualiza guías y [validación](VALIDACION.md) sin presentar telemetría simulada como prueba en KSP ni emulación de pantalla como dispositivo físico.
 
 El servidor HTTP incluido es de desarrollo. El despliegue público actual es un prototipo detrás de Render, no una infraestructura certificada de navegación o de casco.
 

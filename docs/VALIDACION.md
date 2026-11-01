@@ -23,9 +23,8 @@ Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de 
 - Creación de objetivos propios en 2D/3D y por coordenadas, rechazo fuera de cobertura, persistencia al recargar, eliminación y ruta combinada con un objetivo científico.
 - Indicaciones: selección de voz, inicio/pausa, llegada, recálculo y cancelación con motor de voz simulado. Alternativa de texto cuando no existe síntesis. No se afirma haber escuchado todas las voces de dispositivos reales.
 - Menú KSP separado: transferencia de misión, estado sin conector y demostración del HUD. Se comprobaron cero solicitudes a cámara o consulta WebXR en esa página.
-- HUD AR: misión cargada, interfaz móvil sin desbordamiento, simulación, inicio/cierre con cámara de prueba de Chromium y alternativa ante rechazo de sesión WebXR.
+- HUD AR: misión cargada, interfaz compacta sin desbordamiento, simulación, inicio/cierre con cámara de prueba de Chromium y alternativa ante rechazo de sesión WebXR.
 - KSP: calibración, recálculo por desvío y pausa fuera de cobertura con telemetría simulada, y respuesta `503` del conector cuando no hay juego/dependencia disponible.
-- PWA en comprobaciones previas: manifiesto, control del service worker, consulta del mapa guardado sin red y rechazo de cálculo/exportación sin servidor.
 
 ## Distribución y servicio público
 
@@ -33,23 +32,16 @@ Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de 
 
 Se verificaron en Render los recursos publicados y respuestas HTTP de salud, planificación y exportación, incluyendo puntos personalizados. La aplicación pública es un prototipo; no sustituye las pruebas físicas que faltan.
 
-Las capturas del README documentan la interfaz web. Una captura o emulación de tamaño móvil no acredita uso en hardware real.
-
-## Registro del APK anterior
-
-En una etapa previa se generó un APK de depuración y se comprobaron metadatos, contenido y firmas v2/v3 con herramientas oficiales Android. La huella está en [downloads/SHA256SUMS.txt](../downloads/SHA256SUMS.txt).
-
-Ese APK no se ha recompilado para todas las funciones web posteriores y no se probó en Android físico ni emulador. Para el estado actual del proyecto, utiliza navegador/PWA. Consulta [android/README.md](../android/README.md) antes de instalar o recompilar.
+Las capturas del README documentan la interfaz web. Una captura o emulación de pantalla no acredita uso en un visor físico.
 
 ## Pendiente de validar
 
 | Área | Falta por comprobar |
 | --- | --- |
 | KSP real | Instalar una combinación compatible de KSP 1 y servidor/cliente kRPC, aceptar la conexión y conducir un vehículo con el HUD calibrado. |
-| AR físico | Permisos, detección de superficies, estabilidad de maqueta, visibilidad, entrada y finalización en un teléfono/visor concreto. |
+| AR físico | Permisos, detección de superficies, estabilidad de maqueta, visibilidad, entrada y finalización en un visor concreto. |
 | Casco de astronauta | Hardware, SDK, sensores, óptica, latencia, interacción, ergonomía y ensayos específicos. No hay un casco integrado. |
 | Rendimiento | FPS, consumo, temperatura y autonomía medidos en hardware real. Las optimizaciones actuales son de arquitectura y carga de recursos. |
-| Android/PWA | Instalación física y compatibilidad de voz, WebGL y caché por dispositivo. |
 | Ciencia | Precisión horizontal absoluta, alineación vertical de las alturas científicas, obstáculos pequeños y modelos de movilidad humana. |
 
 La etiqueta PDS y la coincidencia numérica de coordenadas no demuestran por sí solas exactitud absoluta. Las rutas no validan resistencia del suelo, seguridad, comunicaciones, radiación ni autonomía de un traje.
@@ -61,3 +53,13 @@ conserva destino y restricciones de pendiente, y rechaza puntos sin salida.
 En navegador se verificaron cambios de escenario, desvío del astronauta,
 recálculo KSP con telemetría simulada y bloqueo fuera del terreno. Las condiciones
 atmosféricas son supuestos de entrenamiento, no predicciones validadas.
+
+## Distribución web actual
+
+La versión actual se ejecuta en el navegador con el servidor Python y conserva las
+funciones de mapa, clima simulado, navegación, KSP y AR. El endpoint `sw.js`
+solo permite retirar trabajadores y cachés heredados; no instala una app.
+
+Se verificó en navegador la retirada de cachés heredadas conservando puntos
+personalizados, preferencias de voz y cachés ajenas. También se comprobaron
+mapa 3D, tormenta simulada, exportación JSON y transferencia al menú KSP.
