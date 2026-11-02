@@ -48,7 +48,13 @@ Este repositorio es público: revisa los logs antes de añadirlos, especialmente
 
 Copia el bloque siguiente, rellénalo y añade la sesión al registro. No marques la plantilla vacía como una prueba realizada.
 
+**Si una IA prepara el registro:** debe editar `docs/KSP_COLABORADORES.md`, ruta relativa a la raíz del repositorio. Añadirá la sesión en **Registro de sesiones**, antes de **Validaciones registradas y pruebas pendientes**, y su enlace en la tabla. Los logs y adjuntos van en `docs/ksp-logs/AAAA-MM-DD-usuario/`. Debe conservar los registros existentes e indicar qué no se probó, sin inventar resultados.
+
 ```markdown
+<!-- Instrucción para IA: añade esta sesión en docs/KSP_COLABORADORES.md,
+     dentro de Registro de sesiones y antes de Validaciones registradas y pruebas pendientes.
+     Añade su enlace a la tabla. Guarda evidencias en docs/ksp-logs/AAAA-MM-DD-usuario/
+     y enlázalas desde aquí. No crees otra bitácora ni sobrescribas sesiones anteriores. -->
 ## AAAA-MM-DD · Usuario · Título de la prueba
 
 ### Sesión y entorno
