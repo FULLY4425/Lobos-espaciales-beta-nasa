@@ -112,8 +112,21 @@ def plan_ksp_mission(terrain, payload):
         segment = find_path(terrain, a['grid'], b['grid'], limit, blocked)
         if segment is None:
             raise ValueError(f"Sin paso entre {a['name']} y {b['name']}: revisa pendiente, agua, cobertura y restricciones simuladas.")
+        # Preserve physical endpoints inside coarse cells; A* still validates cells.
+        def exact(stop):
+            east,south=to_local(terrain['center'],stop['lat'],stop['lon'],terrain['bodyRadius'])
+            return (east/terrain['cellMeters']+(terrain['width']-1)/2,
+                    south/terrain['cellMeters']+(terrain['height']-1)/2)
+        first,last=exact(a),exact(b)
+        if len(segment)==1:
+            segment=[first,last] if math.dist(first,last)>1e-8 else [first]
+        else:
+            if math.dist(first,segment[0])>1e-8:segment.insert(0,first)
+            if math.dist(last,segment[-1])>1e-8:segment.append(last)
         path.extend(segment if not path else segment[1:]); indices.append(len(path)-1)
-    metrics = route_metrics(terrain, path)
+    for stop,index in zip(stops,indices):stop['pathIndex']=index
+    metrics = route_metrics(terrain, [(math.floor(x+.5),math.floor(y+.5)) for x,y in path])
+    metrics['distance']=sum(math.dist(a,b)*terrain['cellMeters'] for a,b in zip(path,path[1:]))
     metrics['durationMinutes'] = math.ceil(metrics['distance']/(speed*environment['speedFactor'])/60)
     return dict(name=f"Ruta de superficie · {terrain['body']}", schema='ksp-surface-mission-v1',
                 context=dict(kind='ksp-surface', body=terrain['body'], bodyRadius=terrain['bodyRadius'], terrainId=terrain['id']),
@@ -121,7 +134,7 @@ def plan_ksp_mission(terrain, payload):
                 stops=stops, stopPathIndices=indices, gridPath=path,
                 route=[grid_to_geo(terrain, x, y) for x, y in path], metrics=metrics,
                 maxSlopeDegrees=limit, speedMS=speed, avoidWater=avoid_water,
-                assumptions=dict(speedMS=speed,effectiveSpeedMS=speed*environment['speedFactor'],terrainCellMeters=terrain['cellMeters'],obstaclesBelowResolution=False),
+                assumptions=dict(speedMS=speed,effectiveSpeedMS=speed*environment['speedFactor'],terrainCellMeters=terrain['cellMeters'],obstaclesBelowResolution=False,endpointDetail='Coordenadas exactas; relieve dentro de cada celda no resuelto.'),
                 readOnly=True, notice='Guía sobre alturas muestreadas. No detecta rocas pequeñas ni controla el vehículo.')
 
 

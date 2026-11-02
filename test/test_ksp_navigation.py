@@ -19,6 +19,42 @@ class NativeKspTests(unittest.TestCase):
     def payload(self,t):
         return dict(terrainId=t['id'],body=t['body'],stops=[self.stop(t,'Salida',3,16),self.stop(t,'Destino',28,16)])
 
+    def test_distinct_positions_in_same_coarse_cell_keep_physical_distance(self):
+        t=self.flat();t['cellMeters']=2000
+        a=self.stop(t,'Salida',16.1,16.1);b=self.stop(t,'Destino',16.4,16.1)
+        payload=dict(terrainId=t['id'],body=t['body'],stops=[a,b],weather='dust',speedMS=2)
+        mission=plan_ksp_mission(t,payload)
+        self.assertAlmostEqual(mission['metrics']['distance'],600,places=4)
+        self.assertEqual(len(mission['gridPath']),2)
+        self.assertAlmostEqual(mission['route'][0]['lat'],a['lat'])
+        self.assertAlmostEqual(mission['route'][-1]['lon'],b['lon'])
+        self.assertEqual(mission['metrics']['durationMinutes'],7)
+        self.assertEqual(mission['metrics'],plan_ksp_mission(t,payload)['metrics'])
+        t['elevations'][16*t['width']+16]=None
+        with self.assertRaises(ValueError):plan_ksp_mission(t,payload)
+
+    def test_replay_reported_zero_distance_missions_from_claude_evidence(self):
+        import zipfile,json
+        from pathlib import Path
+        source=Path(__file__).resolve().parents[1]/'docs/ksp-logs/2026-11-02-FULLY4425-v172/conector-sesion-v172.zip'
+        with zipfile.ZipFile(source) as z:
+            terrains={}
+            for name in z.namelist():
+                if '/terrain-' in name:
+                    t=json.loads(z.read(name));terrains[t['id']]=t
+            count=0
+            for name in z.namelist():
+                if '/mission-' not in name:continue
+                m=json.loads(z.read(name));t=terrains.get(m['context']['terrainId'])
+                if not t or m['metrics']['distance']!=0:continue
+                payload={key:m[key] for key in ['stops','maxSlopeDegrees','speedMS','avoidWater']}
+                payload.update(terrainId=t['id'],body=t['body'],weather=m['environment']['scenario'])
+                result=plan_ksp_mission(t,payload)
+                self.assertGreater(result['metrics']['distance'],170)
+                self.assertLess(result['metrics']['distance'],1600)
+                count+=1
+            self.assertEqual(count,17)
+
     def test_projection_roundtrip_at_poles_and_longitude_wrap(self):
         for center in [dict(lat=0,lon=179.999),dict(lat=89.9,lon=-179.9),dict(lat=-65,lon=30)]:
             for x,y in [(200.,-75.),(-100.,120.),(0.,0.)]:

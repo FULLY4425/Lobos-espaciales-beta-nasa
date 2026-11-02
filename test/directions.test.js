@@ -32,3 +32,5 @@ test('opposite incoming and outgoing directions announce a U-turn',()=>{
  const result=buildDirections([[0,0],[1,0],[2,0],[1,0],[0,0]],terrain);
  assert.ok(result.steps.some(s=>s.kind==='uturn'));
 });
+
+test('KSP fractional endpoints preserve distance and intermediate arrival anchor',()=>{const t={...terrain,cellMeters:2000},path=[[2.1,2],[2.2,2],[2.4,2]],stops=[{name:'A',grid:[2,2],pathIndex:0},{name:'B',grid:[2,2],pathIndex:1},{name:'C',grid:[2,2],pathIndex:2}],result=buildDirections(path,t,stops);assert.ok(Math.abs(result.distance-600)<1e-8);assert.ok(result.steps.some(s=>s.text.includes('B')));assert.ok(result.steps.every(s=>Number.isFinite(s.distance)));});

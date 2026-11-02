@@ -38,8 +38,14 @@ def validate_sample(sample):
     }
 
 
+class SceneTransition(Exception):
+    """KSP temporarily has no active vessel during a scene change."""
+
+
 def read_vessel_sample(vessel, session_id,include_flight=False):
+    if vessel is None:raise SceneTransition()
     orbit=vessel.orbit
+    if orbit is None:raise SceneTransition()
     body = orbit.body
     flight = vessel.flight(body.reference_frame)
     # Heading is defined relative to local north, unlike body-fixed Cartesian axes.
@@ -204,7 +210,18 @@ class Telemetry:
                     # All RPC calls here are reads. No control/autopilot access.
                     read_started=time.monotonic()
                     read_extra=time.monotonic()-self.last_flight_read>=1
-                    body, sample = read_vessel_sample(vessel, session_id,include_flight=read_extra)
+                    try:
+                        body, sample = read_vessel_sample(vessel, session_id,include_flight=read_extra)
+                    except SceneTransition:
+                        if self.sample is not None:self.record('scene-transition',dict(message='Cambio de escena: esperando vehículo; guía en pausa.'))
+                        with self.lock:
+                            self.sample=None
+                            self.message='Cambio de escena: esperando un vehículo activo.'
+                            if self.work:
+                                self.work=None
+                                self.job.update(status='failed',error='Cambio de escena durante el muestreo.')
+                        self.stopped.wait(1)
+                        continue
                     sample['rpcReadMs']=round((time.monotonic()-read_started)*1000,2)
                     if read_extra:
                         try:

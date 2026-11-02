@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.7.4 «Compartir sin cuenta» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.7.5 «Guía de precisión» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -41,6 +41,10 @@ La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alt
 ## Mapas 2D/3D y orientación (v1.6.0)
 
 La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y regiones de relieve. Incluye objetivos documentados y propios, cámaras de superficie/seguimiento, explorador y recorridos virtuales, polvo/tormenta de entrenamiento con recálculo, voz, HUD y maqueta WebXR con la textura de Duna. [Guía y límites](docs/DUNA_EXPLORADOR.md). [PNG completo original](public/imagery/duna-global.png) · [Alturas completas](public/data/duna-global.json) · [Metadatos](public/imagery/duna-global-metadata.json). Marte queda disponible en el botón secundario. Incluye el espacio KSP, con el mapa real de Duna del catálogo SCANsat, texturas georreferenciadas, curvas de nivel, escala vertical visual, malla, norte y seguimiento del vehículo. Marte conserva sus funciones y añade capas de altura/fotografía. [Uso, fuentes y formato de texturas](docs/KSP_MAPAS_3D.md). El escaneo de Duna tiene 2 km por muestra; para conducir usa kRPC local con una región más fina.
+
+## Correcciones de la prueba en Firefox (v1.7.5)
+
+La ruta conserva la posición exacta de los destinos dentro de celdas grandes para evitar «0 m» prematuros. El clima solo recalcula al cambiar de escenario y su ciclo opcional se identifica explícitamente. Se registran llegada, paso de largo, avisos de conducción y salida de cobertura; los cambios de escena sin vehículo esperan en la misma conexión. Se reutilizan cálculos de relieve y se evita dibujar la región oculta tras el atlas. [Hallazgos, validación y pendientes](docs/KSP_REVISION_V175.md).
 
 ## Permiso antes de enviar (v1.7.3)
 

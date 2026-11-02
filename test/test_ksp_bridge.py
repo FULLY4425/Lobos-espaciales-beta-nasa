@@ -29,6 +29,25 @@ class KspBridgeTests(unittest.TestCase):
         telemetry.sample['receivedAt'] -= 4
         self.assertEqual(telemetry.snapshot()[0], 503)
 
+    def test_scene_transition_keeps_rpc_connection_and_waits(self):
+        telemetry=Telemetry()
+        class SpaceCenter:
+            reads=0
+            @property
+            def active_vessel(self):
+                self.reads+=1
+                if self.reads==2:telemetry.stopped.set()
+                return None
+        connection=SimpleNamespace(space_center=SpaceCenter(),close=Mock())
+        client=SimpleNamespace(connect=Mock(return_value=connection))
+        with patch.dict(sys.modules,{'krpc':client}),patch.object(telemetry.stopped,'wait') as wait:
+            telemetry.run()
+        client.connect.assert_called_once()
+        self.assertEqual(connection.space_center.reads,2)
+        self.assertEqual(wait.call_args.args,(1,))
+        self.assertEqual(telemetry.snapshot()[0],503)
+        connection.close.assert_called_once()
+
     def test_sampler_only_reads_flight_data_and_closes_connection(self):
         telemetry = Telemetry()
         body = SimpleNamespace(name='Duna', equatorial_radius=320000., reference_frame=object())

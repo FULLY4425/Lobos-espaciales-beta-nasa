@@ -1,3 +1,4 @@
+import {elevationAt} from './terrain-style.js';
 // Directions describe the computed route; simplified geometry is never used to navigate.
 export function distanceText(meters) {
   return meters>=1000?`${(meters/1000).toFixed(1)} kilómetros`:`${Math.max(0,Math.round(meters/5)*5)} metros`;
@@ -21,9 +22,9 @@ function turn(a,b,c) {
 export function buildDirections(path,terrain,stops=[]) {
   if(path.length<2)return {distance:0,steps:[]};
   const lengths=[0],m=terrain.cellMeters;
-  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],az=terrain.elevations[a[1]*terrain.width+a[0]],bz=terrain.elevations[b[1]*terrain.width+b[0]];lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,bz-az));}
+  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],az=elevationAt(terrain,a),bz=elevationAt(terrain,b);lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,bz-az));}
   const distance=lengths.at(-1),anchors=[0],waypoints=new Map();let cursor=0;
-  for(const stop of stops.slice(1,-1)){const [x,y]=Array.isArray(stop.grid)?stop.grid:[Math.round((stop.lon-terrain.west)/terrain.degreeStep),Math.round((terrain.north-stop.lat)/terrain.degreeStep)];let found=-1;for(let i=cursor;i<path.length;i++)if(path[i][0]===x&&path[i][1]===y){found=i;break;}if(found>=0){cursor=found;anchors.push(found);waypoints.set(found,[...(waypoints.get(found)||[]),stop.name]);}}
+  for(const stop of stops.slice(1,-1)){const [x,y]=Array.isArray(stop.grid)?stop.grid:[Math.round((stop.lon-terrain.west)/terrain.degreeStep),Math.round((terrain.north-stop.lat)/terrain.degreeStep)];let found=Number.isInteger(stop.pathIndex)&&stop.pathIndex>=cursor&&stop.pathIndex<path.length?stop.pathIndex:-1;if(found<0)for(let i=cursor;i<path.length;i++)if(path[i][0]===x&&path[i][1]===y){found=i;break;}if(found>=0){cursor=found;anchors.push(found);waypoints.set(found,[...(waypoints.get(found)||[]),stop.name]);}}
   anchors.push(path.length-1);
   const indices=new Set();for(let i=1;i<anchors.length;i++)for(const index of simplifiedIndices(path,anchors[i-1],anchors[i],1.05))indices.add(index);
   const simple=[...indices].sort((a,b)=>a-b),steps=[{kind:'depart',icon:'↑',text:'Inicia el recorrido y sigue la ruta marcada',distance:0,index:0}];

@@ -706,8 +706,8 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
   - Comprobar la voz y los avisos en Firefox.
   - Comparar el repintado de v1.4.0 y v1.7.2 en el mismo navegador.
   - Medir los FPS de KSP con una herramienta externa.
-- Respuesta o revisión de otro colaborador: pendiente.
-- Nueva versión probada y resultado: v1.7.2 (este registro).
+- Respuesta o revisión de otro colaborador: correcciones revisadas en [v1.7.5](KSP_REVISION_V175.md); validación automatizada, pendiente repetir en KSP/Firefox.
+- Nueva versión probada y resultado: v1.7.2 (este registro; no se ha probado v1.7.5 en este PC).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes

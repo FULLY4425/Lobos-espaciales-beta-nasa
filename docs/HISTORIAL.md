@@ -2,6 +2,14 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.5 «Guía de precisión» — 2 de noviembre de 2026 (hora de México)
+
+- Correcciones basadas en el reporte real de Firefox: extremos exactos de ruta en celdas grandes, espera de cambios de escena sin conexiones en ráfaga y recálculo solo ante un escenario distinto.
+- Ciclo climático opcional con intervalo visible y registro de activación; eventos de llegada, paso de largo, conducción y salida de cobertura.
+- Caché de relieve/curvas/clima y menos dibujo oculto; aviso para abrir localhost al conectar el juego desde la web remota.
+- Se conservan mapas, navegación, diagnóstico, consentimiento y recepción sin cuenta de v1.7.4.
+- Validación y pruebas reales aún pendientes: [revisión del reporte](KSP_REVISION_V175.md).
+
 ## v1.7.4 «Compartir sin cuenta» — 2 de noviembre de 2026 (hora de México)
 
 - Registro automático de una identidad técnica por instalación después del consentimiento. Los probadores no necesitan correo, contraseña ni alta manual en `ksp_testers`.

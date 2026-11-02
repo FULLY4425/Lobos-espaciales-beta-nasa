@@ -1,6 +1,7 @@
+import {elevationAt} from './terrain-style.js';
 export function waypointDistances(mission,terrain){
  const lengths=[0],path=mission.gridPath,m=terrain.cellMeters;
- for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,terrain.elevations[b[1]*terrain.width+b[0]]-terrain.elevations[a[1]*terrain.width+a[0]]));}
+ for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,elevationAt(terrain,b)-elevationAt(terrain,a)));}
  if(Array.isArray(mission.stopPathIndices)&&mission.stopPathIndices.length===mission.stops.length)return mission.stopPathIndices.map(i=>lengths[i]||0);
  let cursor=0;return mission.stops.map(stop=>{const x=Math.round((stop.lon-terrain.west)/terrain.degreeStep),y=Math.round((terrain.north-stop.lat)/terrain.degreeStep);for(let i=cursor;i<path.length;i++)if(path[i][0]===x&&path[i][1]===y){cursor=i;break;}return lengths[cursor]||0;});
 }
@@ -19,6 +20,6 @@ export async function replanMission(mission,terrain,position,progress,weather,re
 }
 export function scenarioEnvironment(config,key,terrain){const preset=config.scenarios[key];return {...preset,weather:key,sourceType:'synthetic',notice:config.notice,restrictions:preset.zones.map(z=>({name:z.name,lon:terrain.west+z.xFraction*(terrain.width-1)*terrain.degreeStep,lat:terrain.north-z.yFraction*(terrain.height-1)*terrain.degreeStep,radiusMeters:z.radiusCells*terrain.cellMeters}))};}
 export function positionAtProgress(path,terrain,progress){
- const m=terrain.cellMeters,lengths=[0];for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,terrain.elevations[b[1]*terrain.width+b[0]]-terrain.elevations[a[1]*terrain.width+a[0]]));}
+ const m=terrain.cellMeters,lengths=[0];for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];lengths.push(lengths.at(-1)+Math.hypot((b[0]-a[0])*m,(b[1]-a[1])*m,elevationAt(terrain,b)-elevationAt(terrain,a)));}
  if(path.length<2)return {x:path[0]?.[0]||0,y:path[0]?.[1]||0};const distance=Math.max(0,Math.min(1,progress))*lengths.at(-1);let i=1;while(i<lengths.length-1&&lengths[i]<distance)i++;const f=(distance-lengths[i-1])/(lengths[i]-lengths[i-1]||1);return {x:path[i-1][0]+(path[i][0]-path[i-1][0])*f,y:path[i-1][1]+(path[i][1]-path[i-1][1])*f};
 }
