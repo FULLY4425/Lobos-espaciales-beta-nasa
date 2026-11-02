@@ -153,6 +153,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-01 | No identificado en el registro original | Copia anterior a `92c7046` | HUD con KSP 1.12.5 · Crater Crawler en Kerbin | Parcial; incidencias y pendientes documentados | [Leer sesión](#2026-11-01--prueba-real-del-hud-ksp-1125) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `cbdc7ce` (v1.1.0) y `154cbff` (v1.2.0) | Mapa nativo en Duna · rumbo v1.2.0 · SCANsat 21.1 | Parcial; guía y recálculo correctos, destino no alcanzado | [Leer sesión](#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `8b63480` (v1.3.1) | Satélite SCANsat en Duna · CSV real importado al mapa | Funcionó; importación y ruta sobre alturas SCANsat reales | [Leer sesión](#2026-11-01--fully4425--mapa-scansat-real-de-duna) |
+| 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, audio no comprobado | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -470,6 +471,125 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
   - Conducir un rover dentro de una región importada de SCANsat.
 - Respuesta o revisión de otro colaborador: pendiente.
 - Nueva versión probada y resultado: —
+- Estado: en revisión.
+
+## 2026-11-01 · FULLY4425 · Travesía v1.4.0 sobre mapa SCANsat
+
+> Registro preparado por una IA (Claude) que condujo el rover con teclado y ratón en el equipo de FULLY4425. kRPC solo se usó para leer datos. Entre 21:16 y 21:33 el usuario también manejó el rover y la página; ese tramo se describe, pero no cuenta como resultado.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425; pruebas ejecutadas por Claude (IA).
+- Fecha, hora y zona horaria: 2026-11-01, 20:59–21:45, UTC−6.
+- Aplicación: versión y commit probado: v1.4.0 `2cb6daa`. Durante la prueba se publicó v1.5.0 (`56f3726`), que no se probó.
+- KSP: versión y distribución: KSP 1.12.5, Steam.
+- kRPC: versión del mod y del cliente Python: 0.7.0 / `krpc==0.7.0`.
+- Python / sistema operativo / navegador: 3.13.17 / Windows 10 Pro / navegador integrado de la app de Claude.
+- Equipo: CPU, RAM y GPU: i5-11400H (12 hilos), 23,7 GB de RAM, RTX 3050 Laptop.
+- Mods relevantes y versiones (o stock): SCANsat 21.1, kRPC 0.7.0 y los de las sesiones anteriores.
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector: mapa nativo con mapa SCANsat importado y conector.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; rover Crater Crawler (de −0,16° −74,79° a 2,07° −73,95°). Satélite SCANsat en órbita 352 × 235 km.
+- Duración aproximada de la sesión: 45 min.
+- Resultado general: funcionó / parcial / bloqueado: parcial.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- **Conector:** `.venv\Scripts\python.exe -u integrations/ksp_server.py` (v1.4.0). Al reiniciar KSP, el usuario tuvo que pulsar **Start server** en kRPC.
+- **Mapa SCANsat:** CSV exportado por el usuario a las 19:19, de 1126 × 563 y con el 83,5 % de los píxeles. El mapa grande de SCANsat medía 2276 px y no cabía en pantalla, así que no se pudo exportar de nuevo.
+- **Regiones:** `scripts/import-scansat.py` con 17 × 17 celdas de 2000 m, centradas en el rover. Hubo dos regiones de 289/289 celdas.
+- **Avisos:** umbral de 5 m/s, anticipación de 6 s, radio de llegada de 8 m. Pendiente máxima de 20°.
+
+### Pasos de la prueba
+
+1. Actualizar a v1.4.0 y ejecutar las pruebas: 35 de Python y 28 de Node aprobadas.
+2. Pasar al rover, importar la región SCANsat y "Conectar KSP usando este mapa".
+3. Conducir hacia distintos destinos: paso de largo, aviso de velocidad, llegada y parada.
+4. Detener el conector 20 s, reiniciarlo y observar la recuperación.
+5. Probar la voz y medir el rendimiento.
+
+### Resultado esperado
+
+- **Llegada:** solo con proximidad física (≤ 8 m) y parada continua de 3 s; si se pasa, "Destino sobrepasado".
+- **Desconexión:** pausa y recuperación con datos frescos.
+- **Voz:** el estado de la voz indica cuándo habla.
+
+### Resultado observado y experiencia de uso
+
+- **Llegada (correcto):**
+  - 21:41:00, a 7,9 m y 0,3 m/s: "Dentro del radio: detente para confirmar llegada (3 s)."
+  - 21:41:03, a 0,0 m/s: "Destino alcanzado y vehículo detenido.", también por voz.
+- **Paso de largo (correcto):**
+  - 21:13:14, al pasar a 9 m: "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta.", también por voz.
+  - Se repitió en otros pasos.
+- **Aviso de velocidad (correcto):**
+  - "Reduce velocidad: 8.5 m/s; destino próximo." a unos 20 m del destino.
+  - "Reduce velocidad: 5.0 m/s; destino próximo." más tarde.
+- **Vista oculta (correcto):** "Vista oculta: guía pausada. Se comprobará la conexión al volver."; la guía continuó al mostrarla de nuevo.
+- **Desconexión (parcial):**
+  - 21:41:46, al detener el conector: "Sin conexión al juego: Failed to fetch…".
+  - Al reiniciarlo: "KSP 1 conectado…" y "La conexión kRPC cambió. Vuelve a muestrear la región."
+  - Con el mapa SCANsat importado, "Conectar KSP usando este mapa" no reactivó la guía. Hubo que volver a importar el JSON; después volvió a confirmar la llegada a las 21:43:02.
+- **Destino en la misma celda de 2 km:** la ruta sale "0 m" y el banner de ruta queda oculto; sí se actualizan la distancia física y la llegada.
+- **Conducción en pendientes de Duna:** con los frenos activados el rover se desliza a unos 0,9 m/s en pendientes de 13–16°. En esas zonas no puede cumplir la parada de 3 s; hizo falta ir a una zona de unos 4°.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | El usuario inició kRPC; el conector se reconectó tras los cambios de escena ([rendimiento](ksp-logs/2026-11-01-FULLY4425-travesia/rendimiento.txt)). |
+| Posición y cuerpo correctos | Correcto | Duna, Crater Crawler; distancias coherentes con kRPC. |
+| Rumbo frente a la navball | No probado | |
+| Muestreo de alturas | No aplica | Se usaron alturas de SCANsat. |
+| Destinos y cálculo de ruta | Correcto | 10 misiones en el ZIP del conector. Con destinos en la misma celda la ruta sale "0 m". |
+| Recálculo al desviarse | No probado | No hubo desvío real de una ruta con varias celdas. |
+| Pausa por desconexión / salida de región | Parcial | Pausa correcta; la recuperación sobre un mapa importado exige reimportarlo. La salida de la región ocurrió en el tramo del usuario y no quedó registrada. |
+| Indicaciones y voz | Correcto en la interfaz; audio no probado | El estado mostró "Hablando: …". La IA no puede oír. |
+| Importación / exportación de mapas | Correcto | CSV real → JSON → mapa ([región](ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json)). Exportar desde SCANsat falló por el tamaño del mapa grande. |
+| Fluidez y consumo de recursos | Medido parcialmente | Repintado de 0,74 ms de media; KSP al ~21 % de la CPU y 7,4 GB de RAM; FPS no medidos ([rendimiento](ksp-logs/2026-11-01-FULLY4425-travesia/rendimiento.txt)). |
+
+### Logs y evidencias
+
+- **Cronología con mensajes, voz y distancias:** [registro-travesia.txt](ksp-logs/2026-11-01-FULLY4425-travesia/registro-travesia.txt).
+- **ZIP del conector, sesiones 1 y 2:** [conector-sesion-1.zip](ksp-logs/2026-11-01-FULLY4425-travesia/conector-sesion-1.zip) y [conector-sesion-2.zip](ksp-logs/2026-11-01-FULLY4425-travesia/conector-sesion-2.zip). Contienen telemetría, eventos (`browser-arrival` 03:41:04Z), misiones, regiones y `connector.log`. Se sustituyó el usuario de Windows en las rutas.
+- **Logs de KSP:**
+  - [ksp-log-travesia.zip](ksp-logs/2026-11-01-FULLY4425-travesia/ksp-log-travesia.zip): ejecución desde las 20:54.
+  - [player-log-travesia.zip](ksp-logs/2026-11-01-FULLY4425-travesia/player-log-travesia.zip): se sustituyó el nombre de Steam.
+- **Datos de SCANsat:**
+  - CSV: [scansat-duna-1919-csv.zip](ksp-logs/2026-11-01-FULLY4425-travesia/scansat-duna-1919-csv.zip).
+  - Imagen: [scansat-duna-1919-altimetria.png](ksp-logs/2026-11-01-FULLY4425-travesia/scansat-duna-1919-altimetria.png).
+  - Regiones: [duna-rover-scansat.json](ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat.json) y [duna-rover-scansat-2.json](ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json).
+- **Rendimiento:** [rendimiento.txt](ksp-logs/2026-11-01-FULLY4425-travesia/rendimiento.txt).
+- **Errores de navegador:** no se registraron.
+- **Evidencias que faltan:**
+  - La sesión del navegador de 21:05 se descartó por el límite de 6 sesiones.
+  - No se descargó el paquete `ksp-test-session-v1`; las métricas se leyeron directamente de IndexedDB.
+  - No se publican capturas porque mostraban el escritorio del usuario.
+
+### Errores encontrados
+
+1. **No se recupera el mapa importado tras reiniciar el conector.** Pasos: mapa SCANsat conectado → conector reiniciado a las 21:42:03. Mensaje: "La conexión kRPC cambió. Vuelve a muestrear la región." Ni "Conectar KSP usando este mapa" ni "Calcular ruta" reactivan la guía; con un mapa importado no hay región kRPC que muestrear. Hubo que volver a importar el JSON. Ocurrió una vez; impacto medio.
+2. **Ruta de "0 m" con el destino en la misma celda.** Con celdas de 2000 m, un destino a 1200 m da la métrica "0 m · ~0 min" y oculta el banner de ruta. Ocurre siempre que el destino cae en la celda del vehículo; impacto bajo, porque la distancia física y la llegada siguen funcionando.
+3. **"Repetir" no dice nada tras la llegada.** Ocurrió una vez; impacto bajo.
+4. **Mapa grande de SCANsat más grande que la ventana (mod SCANsat, no de la aplicación).** Con `BigMapWidth` 2276 y posición −832,69 no se puede mover ni exportar. Volvió a ocurrir.
+
+### Mejoras y sugerencias
+
+- **Botón para reconectar un mapa importado** (prioridad media). Tras un reinicio del conector, ofrecer "Volver a conectar este mapa" en lugar de pedir un nuevo muestreo cuando la fuente es SCANsat.
+- **Destino en la celda del vehículo** (prioridad baja). Indicar "destino en la celda actual" en lugar de "0 m".
+- **Rover que se desliza** (prioridad baja). Avisar cuando un vehículo con frenos sigue moviéndose y no puede confirmar la llegada.
+
+### Seguimiento
+
+- Pendientes:
+  - Confirmar con una persona que la voz se oye.
+  - Medir los FPS de KSP.
+  - Probar el recálculo al desviarse de una ruta de varias celdas.
+  - Comprobar la salida de la región con registro.
+  - Comprobar el rumbo frente a la navball en v1.4.0.
+  - Probar v1.5.0.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.4.0 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes
