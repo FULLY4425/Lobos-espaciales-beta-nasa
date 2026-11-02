@@ -4,3 +4,6 @@ dist/
 __pycache__/
 *.pyc
 .venv/
+
+# Local KSP session evidence; review and copy selected files into docs/ksp-logs to share.
+ksp-sessions/

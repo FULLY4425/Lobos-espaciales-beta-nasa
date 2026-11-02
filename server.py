@@ -28,11 +28,14 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def record_ksp_artifact(self, kind, data):
+        pass  # Public web server does not persist local game evidence.
+
     def do_GET(self):
         pathname=unquote(urlsplit(self.path).path)
         if pathname=='/api/ksp/demo/terrain':
             return self.reply(200,dict(status='complete',terrain=KSP_DEMO))
-        if pathname in ('/api/ksp','/api/ksp/terrain'):
+        if pathname in ('/api/ksp','/api/ksp/terrain','/api/ksp/info','/api/ksp/session','/api/ksp/session/export'):
             return self.reply(503,dict(status='unavailable',error='KSP requiere el conector local integrations/ksp_server.py en el PC del juego.',readOnly=True))
         if pathname=='/api/health':
             return self.reply(200,dict(status='ok',engine='python',targets=len(TARGETS)))
@@ -59,9 +62,13 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(payload,dict):
                 raise ValueError('Se requiere un objeto JSON.')
             if pathname=='/api/ksp/maps/validate':
-                return self.reply(200,archive(read_archive(payload)))
+                result=archive(read_archive(payload))
+                self.record_ksp_artifact('terrain',result['terrain'])
+                return self.reply(200,result)
             if pathname=='/api/ksp/maps/plan':
-                return self.reply(200,plan_archive(payload))
+                result=plan_archive(payload)
+                self.record_ksp_artifact('mission',result)
+                return self.reply(200,result)
             mission=plan_ksp_mission(KSP_DEMO,payload) if pathname=='/api/ksp/demo/plan' else plan_mission(TERRAIN,TARGETS,payload)
             self.reply(200,mission,attachment=pathname=='/api/export')
         except (ValueError,TypeError) as exc:

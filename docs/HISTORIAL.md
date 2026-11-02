@@ -2,6 +2,19 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.4.0 «Travesía KSP» — 2 de noviembre de 2026
+
+- Avisos anticipados de velocidad cerca de giros/destino y del borde de cobertura; umbrales ajustables, sin enviar controles al vehículo.
+- Llegada por distancia física y parada continua de 3 s; detección de paso de largo y separación entre velocidad estimada y aviso de conducción.
+- Capas 2D de conectividad, pendiente y elevación, consulta por celda y recarga de región conservando destinos pendientes.
+- Cola de voz con prioridades y caducidad, estado de reproducción y corrección de mensajes de error/conexión.
+- Pausa deliberada al ocultar la vista, recuperación con datos frescos y diferenciación frente a una desconexión real.
+- Registro local automático del conector con sesiones únicas, telemetría, regiones, rutas, eventos y ZIP; sesiones del navegador recuperables y descargables con límites y contadores explícitos.
+- Diagnóstico de versión, instancia y puertos; mensaje claro ante puerto ocupado. Métricas de CPU de repintado y consultas HTTP en el paquete del navegador.
+- Incorporación del análisis de la prueba real de Duna y aclaración del log del conector ausente, sin inventar evidencias.
+- Validación: 34 pruebas Python y 27 JavaScript (61 en total), más navegador con telemetría simulada. La conducción y SCANsat reales con esta versión siguen pendientes.
+- Guía: [KSP_TRAVESIA.md](KSP_TRAVESIA.md). Se mantienen las funciones previas de Marte, KSP, HUD y AR; la bitácora permanece como documento.
+
 ## v1.3.1 «Bitácora KSP» — 2 de noviembre de 2026
 
 - La bitácora pasa a ser únicamente un documento en `docs/KSP_COLABORADORES.md`, por preferencia del equipo.

@@ -23,6 +23,10 @@ Desde GitHub puedes editar este documento con el botón del lápiz y subir los a
 
 Este repositorio es público: revisa los logs antes de añadirlos, especialmente claves, correos, nombres de usuario y rutas personales. Usa archivos de texto o ZIP revisados para logs extensos y respeta los límites de archivos de GitHub. No añadas el juego, ejecutables, credenciales ni tu instalación completa de KSP.
 
+## Captura automática desde v1.4.0
+
+El conector guarda sesiones únicas en `ksp-sessions/` y el mapa permite descargar evidencias, recuperar sesiones del navegador y distinguir datos reales/demo/offline. Consulta [KSP_TRAVESIA.md](KSP_TRAVESIA.md) para límites y archivos incluidos. Recoge `KSP.log` y `Player.log` por separado antes de reiniciar: no se copian automáticamente.
+
 ## Qué evidencias recopilar
 
 - **`KSP.log`** de la carpeta de instalación, correspondiente a la sesión del problema. Si aportas `Player.log`, identifica instalación y sesión.
@@ -325,8 +329,7 @@ rumbo del conector igual al de la navball en v1.2.0.
 - Log de la ejecución con la conducción: [ksp-player-prev-duna.zip](ksp-logs/2026-11-01-FULLY4425/ksp-player-prev-duna.zip)
   contiene el `Player-prev.log` de Unity (ejecución de 16:59 a 17:32). Es parcial:
   Unity lo dejó relleno de bytes nulos y solo conserva parte del texto.
-- Log del conector: [conector-v1.2.0.log](ksp-logs/2026-11-01-FULLY4425/conector-v1.2.0.log)
-  contiene la salida del conector v1.2.0 (17:24–17:30).
+- Log del conector: el registro original menciona `conector-v1.2.0.log` (17:24–17:30), pero el archivo no se incluyó en los adjuntos del repositorio. **Evidencia pendiente de aportar**; se retira el enlace inexistente sin reconstruir ni inventar ese log.
 - Errores de navegador: no se registraron errores de consola.
 - Misión / mapa: [registro-mapa-nativo-duna.txt](ksp-logs/2026-11-01-FULLY4425/registro-mapa-nativo-duna.txt)
   recoge los textos del mapa y la voz con hora, coordenadas y destinos. Es una
@@ -471,18 +474,24 @@ Contenido completo incorporado desde el antiguo `docs/VALIDACION.md` el 2 de nov
 
 Estado documental: **2 de noviembre de 2026**. Este documento recoge comprobaciones realizadas durante el desarrollo; no es una certificación científica, de seguridad, de rendimiento AR ni de compatibilidad de hardware.
 
+### Validación de v1.4.0 «Travesía KSP»
+
+Comprobaciones automatizadas y de navegador, no una sesión de juego real: avisos anticipados a 15 m/s, llegada física tras detenerse 3 s, ZIP de evidencias, guardado y recuperación del navegador, pausa al ocultar, desconexión real simulada y recuperación, recarga de región con destino conservado e interfaz compacta. Se probaron límites de disco, errores de almacenamiento y colas de voz con un motor simulado. No se afirma haber escuchado audio ni conducido esta versión dentro de KSP.
+
+Se mantiene pendiente: completar llegada con rover real, desconexión con guía activa, CSV exportado realmente por SCANsat, voz audible y medidas de rendimiento de juego/hardware. La comparación real del rumbo de v1.2.0 sí quedó registrada en la sesión anterior; no se vuelve a presentar como pendiente de aquella versión.
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 31 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia y marco de rumbo. |
+| `python3 -m unittest discover -s test -v` | 34 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
+| `node test/ksp-guidance.test.js` | 9 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
 
-
-Total registrado: **49 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **61 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 
@@ -521,7 +530,7 @@ Las capturas del README documentan la interfaz web. Una captura o emulación de 
 
 | Área | Falta por comprobar |
 | --- | --- |
-| KSP real | Conexión y conducción breve en Kerbin comprobadas con la versión anterior (véase la bitácora de colaboradores). Falta probar el mapa nativo con el juego, llegar al destino, Duna, la suspensión fuera de cobertura y sesiones largas. La corrección del rumbo del conector implementada en v1.2.0 aún necesita compararse con la navball en el juego real. |
+| KSP real | Pruebas parciales de versiones previas en Kerbin y Duna registradas arriba; rumbo v1.2.0 contrastado con la navball. Falta repetir con v1.4.0, confirmar llegada y detención, desconexión con guía activa, sesiones largas, audio y SCANsat exportado desde el juego. |
 | AR físico | Permisos, detección de superficies, estabilidad de maqueta, visibilidad, entrada y finalización en un visor concreto. |
 | Casco de astronauta | Hardware, SDK, sensores, óptica, latencia, interacción, ergonomía y ensayos específicos. No hay un casco integrado. |
 | Rendimiento | FPS, consumo, temperatura y autonomía medidos en hardware real. Las optimizaciones actuales son de arquitectura y carga de recursos. |

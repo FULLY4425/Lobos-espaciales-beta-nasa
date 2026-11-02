@@ -28,6 +28,10 @@ exportaciones. Render no puede conectarse directamente al juego de tu PC.
 
 Desde v1.2.0 «Atlas KSP» puedes descargar la región muestreada, volver a cargarla y convertir archivos de alturas SCANsat. Consulta [mapas descargables y fuentes de datos](KSP_MAPAS_DATOS.md). Se admite preparación sin el juego con una salida manual, y reutilización del mapa con telemetría local del mismo cuerpo. El modo sin juego sigue necesitando el servidor Python para calcular rutas.
 
+## Asistencia de conducción y evidencias
+
+Desde v1.4.0 «Travesía KSP», el mapa avisa según velocidad, distingue llegada física y paso de largo, muestra zonas alcanzables y permite recargar cobertura conservando destinos. Las sesiones se registran localmente y se pueden descargar. Consulta [KSP_TRAVESIA.md](KSP_TRAVESIA.md) para umbrales, guardado, recuperación y límites. Actualiza y reinicia el conector para activar el registro en disco.
+
 ## Preparar el conector
 
 Sigue la [instalación de KSP 1 y kRPC](AR_KSP.md). Se mantiene el mismo cliente
@@ -152,5 +156,4 @@ es local y las métricas aproximadas. El modo no reemplaza un navegador orbital.
 Se verificaron la geometría geográfica, muestreo, agua, pendientes, rechazo de
 contextos incorrectos y de datos obsoletos, así como el flujo HTTP del conector
 con un cuerpo y telemetría simulados. En navegador se probaron 2D/3D, destinos,
-exportación, persistencia y recálculo. **La validación en una partida real de
-KSP 1 sigue pendiente**: este entorno no tiene el juego instalado.
+exportación, persistencia y recálculo. Hay [pruebas parciales en una partida real de versiones anteriores](KSP_COLABORADORES.md#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120). La conducción con las funciones nuevas de v1.4.0 y el flujo SCANsat real siguen pendientes; este entorno no tiene el juego instalado.

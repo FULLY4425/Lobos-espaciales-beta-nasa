@@ -175,3 +175,7 @@ del juego; no se afirma validación física ni rendimiento medido en visor.
 ![Menú de laboratorio KSP, sin partida conectada](captura-ksp.png)
 
 Los escenarios de polvo del HUD son hipotéticos. Consulta [CLIMA_RECALCULO.md](CLIMA_RECALCULO.md) para el comportamiento del recálculo y sus límites.
+
+## Actualización v1.4.0
+
+Reinicia el conector para cargar el diagnóstico de versión/instancia y el registro automático de evidencias locales. El mapa nativo incorpora asistencia de conducción, llegada física y recuperación al volver a la ventana; el HUD anterior conserva su calibración y ahora actualiza el aviso de conexión al recibir datos. Detalles: [KSP_TRAVESIA.md](KSP_TRAVESIA.md).

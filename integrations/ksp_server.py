@@ -6,6 +6,8 @@ import threading
 import time
 import uuid
 import json
+import logging
+from logging.handlers import RotatingFileHandler
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -14,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from http.server import ThreadingHTTPServer
 from server import Handler
 from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_mission
+from integrations.ksp_session import SessionRecorder, VERSION
 
 
 def validate_sample(sample):
@@ -44,8 +47,11 @@ def read_vessel_sample(vessel, session_id):
 
 
 class Telemetry:
-    def __init__(self, rpc_port=50000, stream_port=50001):
+    def __init__(self, rpc_port=50000, stream_port=50001, recorder=None):
         self.rpc_port, self.stream_port = rpc_port, stream_port
+        self.recorder=recorder
+        self.instance_id=uuid.uuid4().hex
+        self.started_at=datetime.now(timezone.utc).isoformat()
         self.lock = threading.Lock()
         self.sample = None
         self.stopped = threading.Event()
@@ -54,11 +60,17 @@ class Telemetry:
         self.work = None
         self.terrain = None
 
+    def info(self):
+        return dict(version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None)
+
+    def record(self, kind, data):
+        if self.recorder:self.recorder.event(kind,data)
+
     def snapshot(self):
         with self.lock:
             if self.sample and time.time()-self.sample['receivedAt'] <= 3:
-                return 200, dict(status='connected', telemetry=self.sample, protocol='ksp-surface-v1', capabilities=['telemetry','terrain-sampling','surface-planning'],readOnly=True)
-            return 503, dict(status='unavailable', error=self.message, readOnly=True)
+                return 200, dict(status='connected', telemetry=self.sample, protocol='ksp-surface-v1', connector=self.info(), capabilities=['telemetry','terrain-sampling','surface-planning'],readOnly=True)
+            return 503, dict(status='unavailable', error=self.message, connector=self.info(), readOnly=True)
 
     def request_terrain(self, payload):
         status, data = self.snapshot()
@@ -71,6 +83,7 @@ class Telemetry:
             self.work = dict(terrain=terrain,index=0,checked=False,hasOcean=False)
             self.terrain = None
             self.job = dict(status='queued',id=terrain['id'],completed=0,total=terrain['width']*terrain['height'])
+            self.record('sampling-start',dict(id=terrain['id'],body=terrain['body'],size=terrain['width'],cellMeters=terrain['cellMeters']))
             return dict(self.job)
 
     def terrain_status(self):
@@ -126,6 +139,7 @@ class Telemetry:
                         self.terrain=terrain
                         self.work=None
                         self.job['status']='complete'
+                        if self.recorder:self.recorder.artifact('terrain',terrain)
                         return
                 if time.monotonic()-batch_start>.08:
                     return
@@ -134,6 +148,7 @@ class Telemetry:
                 if self.work is work:
                     self.work=None
                     self.job.update(status='failed',error=f'No se pudo muestrear el terreno: {error}')
+                    self.record('sampling-failed',dict(error=str(error)))
 
     def plan_surface(self, payload):
         status,data=self.snapshot()
@@ -148,13 +163,20 @@ class Telemetry:
             raise ValueError('La conexión kRPC cambió. Vuelve a muestrear el terreno.')
         if terrain['body']!=sample['body'] or terrain['bodyRadius']!=sample['bodyRadius']:
             raise ValueError('El cuerpo activo cambió. Vuelve a cargar el terreno.')
-        return plan_ksp_mission(terrain,payload)
+        try:
+            mission=plan_ksp_mission(terrain,payload)
+            if self.recorder:self.recorder.artifact('mission',mission)
+            return mission
+        except ValueError as error:
+            self.record('planning-failed',dict(error=str(error)))
+            raise
 
     def run(self):
         try:
             import krpc
         except ImportError:
             self.message = 'Instala las dependencias de integrations/requirements-ksp.txt.'
+            logging.error(self.message)
             return
         while not self.stopped.is_set():
             connection = None
@@ -162,15 +184,20 @@ class Telemetry:
                 connection = krpc.connect(name='Ojo de Marte · solo lectura', address='127.0.0.1',
                                           rpc_port=self.rpc_port, stream_port=self.stream_port, timeout=2)
                 session_id = uuid.uuid4().hex
+                logging.info('Conexión kRPC establecida · solo lectura')
+                self.record('krpc-connected',dict(session=session_id))
                 while not self.stopped.is_set():
                     vessel = connection.space_center.active_vessel
                     # All RPC calls here are reads. No control/autopilot access.
                     body, sample = read_vessel_sample(vessel, session_id)
                     with self.lock:
                         self.sample = sample
+                    if self.recorder:self.recorder.sample(sample)
                     self._sample_batch(body,sample)
                     self.stopped.wait(.2)  # Five samples per second, no busy loop.
-            except Exception:
+            except Exception as error:
+                logging.warning('kRPC no disponible: %s',error)
+                self.record('krpc-unavailable',dict(error=str(error)))
                 with self.lock:
                     self.sample = None
                     if self.work:
@@ -188,7 +215,25 @@ class Telemetry:
 
 def create_handler(telemetry):
     class LocalHandler(Handler):
+        def record_ksp_artifact(self, kind, data):
+            if telemetry.recorder:telemetry.recorder.artifact(kind,data)
+
+        def log_message(self, format, *args):
+            logging.debug(format,*args)
+
         def do_GET(self):
+            path=urlsplit(self.path).path
+            if path=='/api/ksp/info':return self.reply(200,telemetry.info())
+            if path=='/api/ksp/session':return self.reply(200,telemetry.recorder.status() if telemetry.recorder else dict(enabled=False))
+            if path=='/api/ksp/session/export':
+                if not telemetry.recorder:return self.reply(503,dict(error='Registro de disco desactivado. Usa la descarga del navegador.'))
+                content=telemetry.recorder.export()
+                self.send_response(200)
+                self.send_header('Content-Type','application/zip')
+                self.send_header('Content-Length',str(len(content)))
+                self.send_header('Content-Disposition',f'attachment; filename="ksp-session-{telemetry.recorder.id}.zip"')
+                self.send_header('Cache-Control','no-store')
+                self.end_headers();self.wfile.write(content);return
             if urlsplit(self.path).path == '/api/ksp':
                 status, data = telemetry.snapshot()
                 return self.reply(status, data)
@@ -198,11 +243,11 @@ def create_handler(telemetry):
 
         def do_POST(self):
             path=urlsplit(self.path).path
-            if path not in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan'):
-                return super().do_POST()
             origin=self.headers.get('Origin')
-            if origin and urlsplit(origin).netloc!=self.headers.get('Host'):
+            if path.startswith('/api/ksp/') and origin and urlsplit(origin).netloc!=self.headers.get('Host'):
                 return self.reply(403,dict(error='Origen no permitido.'))
+            if path not in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/session/events'):
+                return super().do_POST()
             try:
                 length=int(self.headers.get('Content-Length','0'))
                 if not 0<length<=16384:
@@ -210,6 +255,13 @@ def create_handler(telemetry):
                 payload=json.loads(self.rfile.read(length))
                 if not isinstance(payload,dict):
                     raise ValueError('Se requiere un objeto JSON.')
+                if path=='/api/ksp/session/events':
+                    events=payload.get('events')
+                    if not isinstance(events,list) or len(events)>20:raise ValueError('Lote de eventos no válido.')
+                    for event in events:
+                        if not isinstance(event,dict) or not isinstance(event.get('type'),str) or len(event['type'])>60 or not isinstance(event.get('text'),str) or len(event['text'])>2000:raise ValueError('Evento no válido.')
+                    for event in events:telemetry.record('browser-'+event['type'],dict(text=event['text']))
+                    return self.reply(200,dict(recorded=bool(telemetry.recorder)))
                 if path=='/api/ksp/terrain':
                     return self.reply(202,telemetry.request_terrain(payload))
                 if path=='/api/ksp/terrain/cancel':
@@ -230,19 +282,32 @@ def main():
     parser.add_argument('--port', type=int, default=7173)
     parser.add_argument('--rpc-port', type=int, default=50000)
     parser.add_argument('--stream-port', type=int, default=50001)
+    parser.add_argument('--session-dir',default='ksp-sessions',help='Carpeta local de evidencias, una sesión única por arranque')
+    parser.add_argument('--no-session-log',action='store_true',help='Desactiva el registro de disco')
     args = parser.parse_args()
     telemetry = Telemetry(args.rpc_port, args.stream_port)
-
+    try:httpd = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(telemetry))
+    except OSError as error:
+        parser.exit(1,f'No se pudo abrir el puerto {args.port}: {error}. Comprueba http://localhost:{args.port}/api/ksp/info y detén el conector anterior antes de reiniciar.\n')
+    recorder=None if args.no_session_log else SessionRecorder(args.session_dir)
+    telemetry.recorder=recorder
+    handlers=[logging.StreamHandler()]
+    if recorder and not recorder.error:
+        try:handlers.append(RotatingFileHandler(recorder.path/'connector.log',maxBytes=1024*1024,backupCount=2,encoding='utf-8'))
+        except OSError as error:recorder.error=str(error)
+    logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(message)s',handlers=handlers)
     worker = threading.Thread(target=telemetry.run, daemon=True)
     worker.start()
-    httpd = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(telemetry))
-    print(f'Ojo de Marte + KSP 1: http://localhost:{args.port}/ — solo lectura', flush=True)
+    logging.info('Ojo de Marte KSP v%s · instancia %s · http://localhost:%s/ksp-map.html · solo lectura',VERSION,telemetry.instance_id,args.port)
+    if recorder:logging.info('Evidencias locales: %s',recorder.path.resolve())
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         telemetry.stopped.set()
+        worker.join(timeout=3)
+        if recorder:recorder.event('stop',dict(reason='server-stop'))
         httpd.server_close()
 
 

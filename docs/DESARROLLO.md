@@ -114,6 +114,7 @@ node test/directions.test.js
 node test/ar-tracking.test.js
 node test/replanning.test.js
 node test/ksp-geo.test.js
+node test/ksp-guidance.test.js
 python3 scripts/build.py
 ```
 
@@ -165,3 +166,7 @@ servidor y están disponibles en el despliegue web. Los detalles están en
 ## Bitácora de pruebas KSP
 
 Las experiencias de los colaboradores se registran en [KSP_COLABORADORES.md](KSP_COLABORADORES.md), mediante commits o pull requests. El documento incluye una plantilla y una tabla para enlazar sesiones y logs.
+
+## Conducción y sesiones KSP (v1.4.0)
+
+`src/ksp-guidance.js` implementa conectividad y estado físico de llegada; `src/speech-queue.js` ordena anuncios. `src/ksp-session.js` conserva sesiones del navegador y métricas de CPU/HTTP. `integrations/ksp_session.py` escribe evidencias locales acotadas en carpetas únicas; el conector expone diagnóstico, eventos y exportación ZIP en loopback. El servidor público no persiste evidencias de juego. [Formato, límites y pruebas pendientes](KSP_TRAVESIA.md).
