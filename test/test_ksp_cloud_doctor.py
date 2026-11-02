@@ -51,3 +51,30 @@ class CloudDoctorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:report=self.client(root,send).doctor()
         self.assertFalse(report['ready'])
         self.assertEqual([x['name'] for x in report['checks'] if not x['ok']],['storage'])
+
+class ProjectPresetTests(unittest.TestCase):
+    def test_preset_configures_public_project_without_creating_auth(self):
+        import contextlib
+        import io
+        from unittest.mock import patch
+        from integrations.ksp_cloud import main
+        with tempfile.TemporaryDirectory() as root:
+            config=Path(root)/'config.json'
+            with patch('sys.argv',['ksp_cloud.py','--config',str(config),'configure-project']), contextlib.redirect_stdout(io.StringIO()):
+                self.assertIsNone(main())
+            data=json.loads(config.read_text())
+            self.assertEqual(data['url'],'https://crwzshdtvsqukheckxai.supabase.co')
+            self.assertTrue(data['publishable_key'].startswith('sb_publishable_'))
+            self.assertTrue(data['enabled'])
+            self.assertFalse((config.parent/'auth.json').exists())
+
+    def test_invalid_preset_does_not_write_configuration(self):
+        import contextlib
+        import io
+        from unittest.mock import patch
+        from integrations.ksp_cloud import main
+        with tempfile.TemporaryDirectory() as root:
+            config=Path(root)/'config.json';profile=Path(root)/'bad.json'
+            profile.write_text('{"schema":"wrong"}')
+            with patch('integrations.ksp_cloud.PROJECT_PROFILE',profile), patch('sys.argv',['ksp_cloud.py','--config',str(config),'configure-project']), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):main()
+            self.assertFalse(config.exists())

@@ -2,19 +2,17 @@
 
 El conector puede enviar sus evidencias a un proyecto **de tu cuenta de Supabase**, conservando siempre la copia local. La navegación, la demo y Marte siguen funcionando sin configurar este servicio.
 
-**Estado de entrega (2 de noviembre de 2026):** el propietario ya creó el proyecto `crwzshdtvsqukheckxai`, URL `https://crwzshdtvsqukheckxai.supabase.co`. La integración forma parte de la versión 1.7; desde la revisión v1.7.1 incluye diagnóstico por etapas y SQL de verificación. Cliente, cola y controles están probados con respuestas simuladas. Quedan por comprobar en la cuenta real la aplicación del SQL, los usuarios autorizados, el aislamiento y el primer envío. La conexión administrativa a Supabase todavía no está disponible en esta sesión; no se afirma haber configurado el proyecto remotamente.
+**Estado verificado (2 de noviembre de 2026):** el proyecto `crwzshdtvsqukheckxai` está activo. Se aplicó la migración `ksp_evidence_initial_v17`: bucket privado `ksp-evidence`, tablas, políticas RLS e índice de sesiones. Hay un usuario autorizado como administrador de evidencias, con aprobación explícita del propietario. Pasaron las nueve comprobaciones estructurales y una prueba transaccional de aislamiento con roles reales, revertida sin dejar usuarios ni sesiones de prueba. La API deniega acceso anónimo (HTTP 401). **Falta el primer envío real desde el conector en el PC de KSP**; no se afirma que ya se hayan recibido logs reales.
+
+Las funciones privilegiadas de consulta de autorización residen en `ksp_private`, con `search_path` vacío y comprobación de `auth.uid()`. Las funciones públicas del diagnóstico son envoltorios `SECURITY INVOKER`, sin acceso a datos de otros usuarios.
 
 [Proyecto en Dashboard](https://supabase.com/dashboard/project/crwzshdtvsqukheckxai) · [Ejemplo de configuración sin secretos](../supabase/ksp-cloud.example.json). Las credenciales de Supabase se configuran en el PC de KSP, no en la página pública de Render.
 
 ## 1. Crear el lugar donde recibirás los archivos
 
-1. Abre [el proyecto existente](https://supabase.com/dashboard/project/crwzshdtvsqukheckxai). No necesitas crear otro ni cambiar de plan para continuar la configuración actual.
-2. Ejecuta en **SQL Editor** el archivo [supabase/ksp_evidence.sql](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/blob/main/supabase/ksp_evidence.sql) del repositorio. Usa preferentemente un proyecto nuevo dedicado a estas evidencias. El SQL crea:
-   - bucket **privado** `ksp-evidence`, con ZIP de hasta 50 MB;
-   - tabla `ksp_sessions`, índice de sesiones con versión, usuario, fecha, muestras y ubicación del archivo;
-   - tabla `ksp_testers`, usuarios autorizados;
-   - políticas que limitan a cada probador a su carpeta, y permiten al administrador leer las de todos.
-3. En **Authentication → Users**, crea un usuario de la aplicación para ti y otro para cada probador autorizado. Son cuentas de **Supabase Auth**, distintas de la cuenta con la que administras el proyecto. Configura sus contraseñas mediante el mecanismo del Dashboard; no las pongas en GitHub ni en este chat.
+1. Abre [el proyecto existente](https://supabase.com/dashboard/project/crwzshdtvsqukheckxai). La estructura inicial **ya está aplicada**; no crees otro proyecto ni vuelvas a ejecutar el bootstrap para configurar el PC.
+2. Para comprobar la estructura, ejecuta [ksp_evidence_verify.sql](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/blob/main/supabase/ksp_evidence_verify.sql) en SQL Editor. Los nueve resultados deben ser `true`. El bootstrap [ksp_evidence.sql](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/blob/main/supabase/ksp_evidence.sql) se conserva para instalaciones nuevas.
+3. Tu usuario de la aplicación ya existe y está autorizado como administrador de evidencias. En **Authentication → Users**, crea los usuarios adicionales para cada probador autorizado. Son cuentas de **Supabase Auth**, distintas de la cuenta con la que administras el proyecto. Configura sus contraseñas mediante el mecanismo del Dashboard; no las pongas en GitHub ni en este chat.
 4. Copia el UUID del usuario e inclúyelo en la lista de autorizados desde SQL Editor:
 
    ```sql
@@ -34,12 +32,15 @@ El script está pensado para un proyecto dedicado. Si utilizas uno existente, re
 Actualiza el repositorio. Detén el conector antes de configurar o cambiar de usuario. Desde la raíz:
 
 ```powershell
-# Windows: reemplaza URL y clave pública por las de tu proyecto.
-.venv\Scripts\python.exe integrations/ksp_cloud.py configure --url https://crwzshdtvsqukheckxai.supabase.co --key sb_publishable_TU_CLAVE --interval 300
-.venv\Scripts\python.exe integrations/ksp_cloud.py login --email TU-CORREO
+# Desde la carpeta del repositorio actualizado, en el PC donde corre KSP:
+.venv\Scripts\python.exe integrations/ksp_cloud.py configure-project
+.venv\Scripts\python.exe integrations/ksp_cloud.py login
+.venv\Scripts\python.exe integrations/ksp_cloud.py doctor
 ```
 
 En macOS/Linux usa `.venv/bin/python`. La contraseña se pide de manera oculta en la terminal; utiliza la de tu usuario **Supabase Auth**, no tu contraseña de administración de Supabase. No se guarda esa contraseña: se conservan tokens de acceso/renovación en `.ksp-cloud/auth.json`.
+
+`configure-project` toma la URL y clave **publishable pública** del perfil versionado `public/data/ksp-evidence-project.json`; no contiene contraseñas, tokens de sesión ni claves de administrador. Para otro proyecto se conserva `configure --url URL --key CLAVE_PUBLICA`.
 
 La URL, clave pública e intervalo se guardan en `.ksp-cloud/config.json`. Toda la carpeta `.ksp-cloud/` está excluida de Git. Los archivos de autenticación se crean con permisos de propietario en sistemas POSIX; en Windows protégelos con los permisos de tu usuario y no compartas esa carpeta.
 
@@ -135,3 +136,9 @@ Después de aplicar el SQL e iniciar sesión:
 6. Para probar aislamiento, utiliza dos probadores autorizados y verifica que cada cuenta solo puede consultar sus filas/archivos, mientras tu usuario administrador puede leer ambas.
 
 **Pendiente de activar:** este último ensayo y la aplicación de las políticas deben hacerse contra el proyecto real que crearás. Las pruebas del repositorio usan un servicio simulado; no demuestran por sí solas que una cuenta externa esté configurada. Supabase conserva las evidencias; Render sigue alojando la web y no necesita guardar estos archivos en su disco temporal.
+
+## Comprobaciones reales y límites actuales
+
+La prueba de aislamiento en PostgreSQL comprobó que un probador ve su propia sesión, no actualiza la de otro ni reasigna su propietario; una identidad no autorizada no ve sesiones y el administrador sí puede consultar ambas. Los datos temporales se revirtieron y se comprobó que no quedaron usuarios ni sesiones de prueba. Esto no sustituye la prueba de subida/descarga de un ZIP mediante Auth y Storage desde el PC.
+
+El asesor de seguridad de Supabase no señaló problemas en las tablas/políticas creadas; indicó que la [protección de contraseñas filtradas de Auth está desactivada](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). No se cambió el plan ni la configuración de contraseñas. El asesor de rendimiento señaló el [índice de sesiones aún sin uso](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index), esperado mientras no haya envíos; se conserva para consultas por usuario/fecha.

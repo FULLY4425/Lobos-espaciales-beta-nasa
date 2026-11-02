@@ -44,7 +44,7 @@ La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y 
 
 ## Evidencias privadas en Supabase (parte de v1.7)
 
-El proyecto ya existe en la cuenta del propietario. La revisión v1.7.1 añade `python integrations/ksp_cloud.py doctor` y un SQL de verificación de la configuración. La instalación y el primer envío en la cuenta real siguen pendientes de acceso y comprobación.
+El proyecto de Supabase ya tiene tablas, bucket privado y políticas aplicadas; el propietario está autorizado y el aislamiento se comprobó en la base real. La revisión v1.7.1 incluye `configure-project`, `login` y `doctor` para conectar el PC de KSP. Falta el primer envío real del conector. [Configuración y estado](docs/KSP_NUBE.md).
 
 El conector incorpora envío opcional de ZIP a un proyecto privado propio, reintentos con cola local, pausa/reanudación y un índice de sesiones. La activación requiere crear el proyecto, aplicar las políticas e iniciar sesión como probador; sin configurar no se envía nada. [Configurar y consultar evidencias](docs/KSP_NUBE.md). No se utilizan claves de administrador en los equipos de prueba.
 

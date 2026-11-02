@@ -7,8 +7,9 @@
 - Integración del servidor de evidencias Supabase en la serie 1.7, conservando todas las funciones de Duna y Render. Actualización del estado del proyecto existente, sin crear otra cuenta ni exponer credenciales.
 - Comando `ksp_cloud.py doctor` con comprobaciones independientes de autenticación, usuario autorizado, índice de sesiones y listado de su carpeta. Diagnóstico sin subir archivos, con código de salida y recomendaciones por etapa.
 - SQL de verificación de bucket privado, RLS, funciones y políticas; ejemplo de configuración deshabilitado y sin claves reales para el proyecto del propietario.
-- Validación: 56 pruebas Python y 40 JavaScript (96). Pruebas nuevas de diagnóstico correcto, falta de Auth, permisos/esquema y fallo de Storage, sin revelar tokens ni leer evidencias.
-- Pendiente externo: conexión administrativa al proyecto, aplicación/verificación del SQL, usuarios y primer envío real con prueba de aislamiento. No se afirma que esas acciones se hayan ejecutado.
+- Validación: 58 pruebas Python y 40 JavaScript (98). Pruebas nuevas de diagnóstico correcto, falta de Auth, permisos/esquema y fallo de Storage, sin revelar tokens ni leer evidencias.
+- Activación real: migración aplicada, nueve comprobaciones estructurales aprobadas, autorización del propietario confirmada y prueba transaccional de aislamiento entre probadores/administrador, revertida sin dejar datos de prueba. Funciones privilegiadas en esquema privado y RPC público invocador.
+- Perfil público del proyecto y comando `configure-project` para configurar el PC sin copiar claves manualmente. La API bloquea el acceso anónimo; queda pendiente el primer envío real de archivos desde el conector.
 
 ## v1.7.0 «Duna Explorador» — 1 de noviembre de 2026 (hora de México)
 

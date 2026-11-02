@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 DEFAULT_CONFIG=Path('.ksp-cloud/config.json')
+PROJECT_PROFILE=Path(__file__).resolve().parents[1]/'public/data/ksp-evidence-project.json'
 MAX_ARCHIVE=50*1024*1024
 SESSION_ID=re.compile(r'^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}Z-[a-f0-9]{12}$')
 
@@ -290,6 +291,7 @@ def main():
     parser.add_argument('--config',type=Path,default=DEFAULT_CONFIG)
     sub=parser.add_subparsers(dest='command',required=True)
     configure=sub.add_parser('configure');configure.add_argument('--url',required=True);configure.add_argument('--key',required=True);configure.add_argument('--interval',type=int,default=300)
+    preset=sub.add_parser('configure-project');preset.add_argument('--interval',type=int,default=300)
     login=sub.add_parser('login');login.add_argument('--email')
     sub.add_parser('logout');sub.add_parser('status');sub.add_parser('doctor')
     args=parser.parse_args()
@@ -297,6 +299,11 @@ def main():
         if args.command=='configure':
             data=validate_config(dict(url=args.url,publishable_key=args.key,interval_seconds=args.interval,enabled=True));atomic_json(args.config,data)
             print('Destino configurado. Ejecuta login; el próximo arranque del conector enviará su sesión automáticamente.')
+        elif args.command=='configure-project':
+            profile=read_json(PROJECT_PROFILE)
+            if profile.get('schema')!='ksp-cloud-project-v1':raise CloudError('Perfil del proyecto no válido.')
+            data=validate_config(dict(profile,interval_seconds=args.interval,enabled=True));atomic_json(args.config,data)
+            print('Proyecto Lobos espaciales configurado. Ejecuta login y doctor antes de iniciar el conector.')
         elif args.command=='logout':
             (args.config.parent/'auth.json').unlink(missing_ok=True);print('Sesión de Supabase eliminada de este equipo. Se conservan las evidencias locales.')
         elif args.command=='login':

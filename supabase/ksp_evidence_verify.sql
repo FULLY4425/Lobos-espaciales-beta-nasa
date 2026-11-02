@@ -17,6 +17,10 @@ union all
 select 'session_policies', (select count(*)=3 from pg_policies where schemaname='public'
     and tablename='ksp_sessions' and policyname in ('ksp_sessions_read','ksp_sessions_insert','ksp_sessions_update'))
 union all
+select 'private_role_functions', exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='ksp_private' and p.proname='ksp_is_tester' and p.prosecdef)
+union all
+select 'public_rpc_invoker', exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='ksp_is_tester' and not p.prosecdef)
+union all
 select 'storage_policies', (select count(*)=4 from pg_policies where schemaname='storage'
     and tablename='objects' and policyname in ('ksp_evidence_read','ksp_evidence_insert','ksp_evidence_update','ksp_evidence_delete'));
 -- All true confirms expected objects exist, not that every possible policy is safe.
