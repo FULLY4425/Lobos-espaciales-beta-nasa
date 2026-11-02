@@ -1,0 +1,56 @@
+Prueba v1.7.2 «Duna Explorador» con KSP real · Firefox + conector local · rover Crater Crawler en Duna
+Sesión 2026-11-02, FULLY4425; conducción hecha por el usuario. La IA (Claude) ayudó a
+instalar y arrancar el conector y a abrir el mapa en Firefox, y después reconstruyó
+esta cronología a partir de la carpeta del conector (events.jsonl, telemetry.jsonl,
+mission-*.json, terrain-*.json, computer.jsonl, analysis.json). Hora local UTC-6.
+La IA no vio la pantalla durante la conducción: no hay lecturas del DOM ni de la voz.
+
+== Preparación
+14:09:49 Conector v1.7.2 (commit b83dcae) arrancado desde el clon git; psutil 7.0.0.
+         kRPC "timed out" hasta que se pulsó Start server en KSP.
+14:12:14 kRPC conectado · solo lectura. Vehículo activo: satélite "Nave Espacial Sin
+         Nombre", órbita polar 328,6 × 269,0 km, i 88,47°, periodo 5571 s, 62,5 EC.
+14:50:24 Firefox en http://localhost:7173/ksp-map.html conectado ("connected").
+         (Antes se había abierto la URL de Render, que no llega al conector local.)
+14:53:22 Cambio al rover: el conector registró 5 reconexiones en 15 s con
+         "'NoneType' object has no attribute 'orbit'" y se estabilizó a las 14:53:37.
+         Mapa: "Cambió el vehículo. Revisa los destinos y calcula desde su posición."
+15:02:24 Mapa SCANsat cargado por el usuario (duna-rover-scansat-2.json de la sesión
+         anterior, 17 × 17 · 2000 m): "Terreno cargado. Agrega destinos…".
+
+== Primer tramo (14:53-15:25)
+Rover parado en 2,06836°, -73,94740° (donde quedó el 2026-11-01).
+15:05-15:09 Rutas SCANsat-CSV de 15,7 km, 16,8 km y 38,1 km (pendiente 15°).
+15:07:28 Muestreo kRPC de 33 × 33 celdas de 25 m ("Muestreando una región nueva;
+         guía en pausa.") -> terreno KSP1-kRPC-bedrock.
+15:10-15:25 Conducción rápida: hasta 55,6 m/s, con saltos (situación "flying" varias
+         veces entre 15:10:44 y 15:11:36; pico de 4,4 g). ~24 km recorridos hasta
+         4,32057°, -76,45725°, fuera de la región importada.
+15:25:42 Cambio breve al satélite anterior (352,4 × 235,3 km, i 72,24°).
+15:26:15 Rover de nuevo en -0,16211°, -74,79067°: la posición del 2026-11-01 a las
+         21:04. Todo indica que se cargó una partida guardada.
+
+== Segundo tramo: Destino 1 (-0,14, -74,78) -> Destino 2 (1,9709, -73,8006)
+15:28:09 Nueva región SCANsat centrada en 2,1184°, -73,8060°.
+15:28:30 Ruta inicial 14 485 m, +867 m de ascenso, 161 min a 2 m/s.
+15:28:42 Desde aquí la ruta se recalculó cada 20 s con motivo "weather"; clima de
+         entrenamiento "dust". La duración estimada cambió entre 121, 161 y 242 min
+         sin cambiar la distancia.
+15:31-15:42 La distancia de la ruta bajó por escalones de celda: 13 657 -> 11 657 ->
+         9 657 -> 7 657 -> 6 828 -> 4 828 -> 2 000 -> 0 m.
+         Velocidad media en movimiento 15,8 m/s (umbral de aviso 5 m/s).
+15:44:24 Mínima distancia física a Destino 2: 152 m, a 21,7 m/s.
+15:44:44 Nueva ruta "initial" de 28 971 m: volvía a incluir Destino 1 (vuelta atrás).
+15:45:17-15:45:38 Nuevos destinos cerca del rover; rutas de 0 m (misma celda).
+15:46:07 Mínima distancia a "Destino 1" (2,0517, -73,8077): 12 m, a 14,2 m/s.
+15:46:51 El rover se detuvo en 2,04105°, -73,91698° y no se movió hasta 16:50.
+15:47:03 Firefox: "NetworkError when attempting to fetch resource." y "Cierre de vista"
+         (pestaña cerrada o recargada).
+
+== Resultado
+No hay evento de llegada (browser-arrival) ni texto "Destino alcanzado" en el registro:
+el rover no estuvo nunca a 8 m o menos de un destino detenido 3 s. Tampoco hay
+eventos "Destino sobrepasado" ni avisos de velocidad en events.jsonl de esta versión
+(v1.7.2 no registra esos textos como eventos, o no se mostraron; no se puede saber sin
+ver la pantalla).
+Telemetría: 8603 muestras de 14:12 a 16:50; 69 misiones; 6 terrenos; dropped 0.

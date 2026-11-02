@@ -154,6 +154,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-01 | FULLY4425 (asistida por IA) | `cbdc7ce` (v1.1.0) y `154cbff` (v1.2.0) | Mapa nativo en Duna · rumbo v1.2.0 · SCANsat 21.1 | Parcial; guía y recálculo correctos, destino no alcanzado | [Leer sesión](#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `8b63480` (v1.3.1) | Satélite SCANsat en Duna · CSV real importado al mapa | Funcionó; importación y ruta sobre alturas SCANsat reales | [Leer sesión](#2026-11-01--fully4425--mapa-scansat-real-de-duna) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, voz audible confirmada por el usuario | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
+| 2026-11-02 | FULLY4425 (conducción del usuario; registro asistido por IA) | `b83dcae` (v1.7.2) | Duna Explorador en Firefox: conector local, mapa SCANsat importado, travesía de ~14 km, diagnóstico del PC | Parcial; conexión, rutas y diagnóstico correctos; sin llegada confirmada (mínimo 152 m del destino a 21,7 m/s) | [Leer sesión](#2026-11-02--fully4425--duna-explorador-v172-en-firefox) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -589,6 +590,124 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
   - Probar v1.5.0.
 - Respuesta o revisión de otro colaborador: pendiente.
 - Nueva versión probada y resultado: v1.4.0 (este registro).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Duna Explorador v1.7.2 en Firefox
+
+> El usuario condujo el rover. Claude (IA) ayudó a instalar v1.7.2, arrancar el conector y abrir el mapa en Firefox, y después reconstruyó este registro desde la carpeta de evidencias del conector. La IA no vio la pantalla mientras se conducía, así que no hay lecturas de textos en pantalla ni de la voz. kRPC solo se usó para leer datos.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425.
+- Fecha, hora y zona horaria: 2026-11-02, 14:09–16:50, UTC−6. Conducción entre 14:53 y 15:47.
+- Aplicación: versión y commit probado: v1.7.2 `b83dcae`.
+- KSP: versión y distribución: KSP 1.12.5, Steam.
+- kRPC: versión del mod y del cliente Python: 0.7.0 / `krpc==0.7.0`; `psutil` 7.0.0.
+- Python / sistema operativo / navegador: 3.13 / Windows 10 Pro / Firefox.
+- Equipo: CPU, RAM y GPU: i5-11400H (12 hilos), 23,7 GB de RAM, RTX 3050 Laptop.
+- Mods relevantes y versiones (o stock): SCANsat 21.1, kRPC 0.7.0.
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector: mapa nativo con mapa SCANsat importado, conector y diagnóstico del PC.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; rover Crater Crawler. Dos satélites SCANsat llamados "Nave Espacial Sin Nombre": uno en órbita polar de 328,6 × 269,0 km (i 88,47°) y el anterior, de 352,4 × 235,3 km (i 72,24°).
+- Duración aproximada de la sesión: 2 h 40 min (55 min de conducción).
+- Resultado general: funcionó / parcial / bloqueado: parcial.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- **Conector:** `.venv\Scripts\python.exe -u integrations/ksp_server.py` desde el clon git (v1.7.2), con `psutil` para el diagnóstico del PC. Hubo que pulsar **Start server** en kRPC.
+- **Firefox:** primero se abrió la URL de Render (`lobos-espaciales-python.onrender.com`). Desde ahí no se llega al conector local. Funcionó con `http://localhost:7173/ksp-map.html`.
+- **Mapa:** se cargó `duna-rover-scansat-2.json` de la sesión anterior con "Cargar mapa KSP (.json)". Para abrirlo, la IA copió la ruta al portapapeles y el usuario la pegó en el diálogo de Firefox. Después se generó otra región SCANsat centrada en 2,118°, −73,806°.
+- **Rutas:** pendiente máxima de 15°, 2 m/s, evitando agua. Clima de entrenamiento "dust".
+
+### Pasos de la prueba
+
+1. Arrancar el conector v1.7.2 y conectar Firefox en localhost.
+2. Pasar al rover y cargar el mapa SCANsat.
+3. Añadir destinos, calcular rutas y conducir.
+4. Revisar las evidencias del conector (telemetría, misiones, diagnóstico del PC).
+
+### Resultado esperado
+
+- Ruta sobre alturas SCANsat y guía hasta el destino.
+- Llegada confirmada solo a ≤ 8 m y con el rover parado 3 s.
+- Diagnóstico del PC y del vuelo guardado en la carpeta de la sesión.
+
+### Resultado observado y experiencia de uso
+
+- **Conexión (correcto):**
+  - Firefox mostró "connected" a las 14:50:24.
+  - Al cambiar de vehículo, la guía mostró "Cambió el vehículo. Revisa los destinos y calcula desde su posición."
+  - Durante el cambio de escena, el conector se reconectó 5 veces en 15 s; luego se estabilizó.
+- **Primer tramo (14:53–15:25):**
+  - Rutas de 15,7 km, 16,8 km y 38,1 km, y un muestreo kRPC de 33 × 33 celdas de 25 m.
+  - El rover fue a hasta 55,6 m/s, con varios saltos (situación "flying", pico de 4,4 g). Recorrió unos 24 km y salió de la región.
+  - A las 15:26 el rover reapareció en −0,162°, −74,791°, la posición del 2026-11-01 a las 21:04. Probablemente se cargó una partida guardada.
+- **Segundo tramo (15:28–15:47):**
+  - Ruta de Destino 1 (−0,14, −74,78) a Destino 2 (1,9709, −73,8006): 14 485 m, +867 m de ascenso.
+  - Unos 14 km recorridos a una media de 15,8 m/s en movimiento.
+  - La distancia de la ruta bajó por escalones de 2 km hasta 0 m.
+  - Lo más cerca que pasó de Destino 2 fue 152 m, a 21,7 m/s. Lo más cerca de otro destino añadido después, 12 m, a 14,2 m/s.
+  - El rover se detuvo a las 15:46:51 en 2,041°, −73,917°, sin ningún destino dentro de 8 m.
+  - No hay evento de llegada. Comportamiento correcto según la regla de llegada.
+- **Recálculo por clima:**
+  - Con el clima "dust", la ruta se recalculó cada 20 s (motivo `weather`): 55 de las 69 misiones de la sesión.
+  - La duración estimada saltaba entre 121, 161 y 242 min con la misma distancia.
+- **Diagnóstico del PC (correcto):**
+  - `computer.jsonl` con 1915 muestras, y `flight.jsonl` y `analysis.json` con picos y recomendaciones.
+  - FPS siempre `null`: kRPC no los ofrece.
+- **Cierre:** a las 15:47:03 Firefox registró "NetworkError…" y "Cierre de vista". El conector siguió grabando hasta las 16:50.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | 5 reconexiones en 15 s en cada cambio de vehículo, con `'NoneType' object has no attribute 'orbit'`; luego estable ([registro](ksp-logs/2026-11-02-FULLY4425-v172/registro-v172.txt)). |
+| Posición y cuerpo correctos | Correcto | Duna; satélites y rover con sus órbitas y coordenadas. |
+| Rumbo frente a la navball | No probado | |
+| Muestreo de alturas | Correcto | Muestreo kRPC de 33 × 33 celdas de 25 m a las 15:07. |
+| Destinos y cálculo de ruta | Correcto | 69 misiones sobre SCANsat-CSV en el ZIP. Destinos en la misma celda: "0 m" (ya conocido). |
+| Recálculo al desviarse | No probado aparte | Los recálculos fueron por clima cada 20 s, no por desvío. |
+| Pausa por desconexión / salida de región | Parcial | "Telemetría perdida. Guía en pausa…" en los cambios de vehículo. La salida de la región ocurrió en el primer tramo; no se vio su mensaje en pantalla. |
+| Llegada y detención | No alcanzada | Mínimo 152 m de Destino 2 y 12 m de otro destino, siempre a más de 14 m/s. |
+| Indicaciones y voz | No observado | La IA no vio la pantalla; v1.7.2 no guarda esos textos como eventos. |
+| Importación / exportación de mapas | Correcto | JSON SCANsat cargado en Firefox. |
+| Fluidez y consumo de recursos | Medido parcialmente | KSP al ~21 % de la CPU y hasta 7,9 GB; conector 75 MB; repintado de 9,6 ms de media y 173 ms de máximo en Firefox. FPS no disponibles ([rendimiento](ksp-logs/2026-11-02-FULLY4425-v172/rendimiento-v172.txt)). |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-v172.txt](ksp-logs/2026-11-02-FULLY4425-v172/registro-v172.txt).
+- **Rendimiento:** [rendimiento-v172.txt](ksp-logs/2026-11-02-FULLY4425-v172/rendimiento-v172.txt).
+- **ZIP del conector:** [conector-sesion-v172.zip](ksp-logs/2026-11-02-FULLY4425-v172/conector-sesion-v172.zip). Contiene telemetría, `flight.jsonl`, `computer.jsonl`, `analysis.json`, eventos, 69 misiones, 6 terrenos y `connector.log`. Se sustituyó el usuario de Windows en las rutas.
+- **Mapa usado:** [duna-rover-scansat-2.json](ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json), de la sesión anterior.
+- **Evidencias que faltan:**
+  - Capturas de pantalla.
+  - Textos de la guía y la voz durante la conducción.
+  - Logs de KSP.
+  - Paquete de sesión del navegador.
+
+### Errores encontrados
+
+1. **Recálculo cada 20 s por el clima, con duración inestable.** Con el clima "dust", la ruta se recalcula cada 20 s aunque no cambie nada; la duración estimada salta entre 121, 161 y 242 min. Se crean decenas de misiones (55 en 19 min). Impacto bajo o medio: llena la carpeta de evidencias y la ETA no es fiable.
+2. **Reconexiones en ráfaga al cambiar de vehículo.** `'NoneType' object has no attribute 'orbit'` mientras KSP cambia de escena; 5 sesiones kRPC nuevas en 15 s. Impacto bajo: se recupera solo.
+3. **Ruta de "0 m" con el destino a cientos de metros (ya conocido).** Desde las 15:42, con el rover a unos 600 m o más de Destino 2, la ruta ya marcaba 0 m porque ambos estaban en la misma celda de 2 km.
+4. **Repintado más lento que en v1.4.0.** 9,6 ms de media y 173 ms de máximo, frente a 0,74 / 2,3 ms. El navegador es distinto (Firefox) y el atlas es más grande; hace falta compararlo en el mismo navegador.
+
+### Mejoras y sugerencias
+
+- **Recalcular por clima solo cuando cambie el clima** (prioridad media). O, al menos, no guardar una misión nueva si la ruta es idéntica.
+- **Guardar en `events.jsonl` los textos de llegada, paso de largo y aviso de velocidad** (prioridad media), para poder verificarlos sin capturas.
+- **Avisar cuando el vehículo sale de la región importada** (prioridad baja) y registrarlo como evento.
+- **Advertir si se abre la versión de Render con KSP** (prioridad baja): "Esta página no puede llegar a tu conector local; abre localhost:7173".
+
+### Seguimiento
+
+- Pendientes:
+  - Confirmar la llegada en v1.7.2 acercándose a menos de 5 m/s.
+  - Comprobar la voz y los avisos en Firefox.
+  - Comparar el repintado de v1.4.0 y v1.7.2 en el mismo navegador.
+  - Medir los FPS de KSP con una herramienta externa.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.2 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes

@@ -1,0 +1,25 @@
+Rendimiento · sesión 2026-11-02 (v1.7.2), hora local UTC-6
+Equipo: Intel Core i5-11400H (12 hilos), 23,7 GB RAM, NVIDIA GeForce RTX 3050 Laptop, Windows 10 Pro.
+Origen: computer.jsonl (diagnóstico del PC de v1.7.2, cada 5 s, 1915 muestras),
+analysis.json y browser-performance-snapshot de events.jsonl.
+
+== PC (14:09-16:50)
+CPU total: media 26,0 %, máximo 46,8 %
+KSP_x64: media 255 % de un núcleo (≈21 % de 12 hilos), máximo 364 %; memoria máx. 7909 MB
+Conector Python v1.7.2: memoria máx. 75 MB
+RAM del sistema: media 61,2 %, máximo 67,1 %
+FPS de KSP: null en todas las muestras (kRPC no los ofrece).
+
+== kRPC
+Lectura por muestra (rpcReadMs): media 8,8 ms, p95 37,1 ms, máximo 116,9 ms.
+
+== Navegador (Firefox, último resumen antes de cerrar la vista)
+Repintado CPU: 2154 veces, 20 593 ms en total (9,6 ms de media), máximo 173 ms.
+  En v1.4.0 (2026-11-01) la media fue 0,74 ms y el máximo 2,3 ms; el atlas completo
+  de v1.7 es bastante más costoso. Navegador distinto (Firefox frente al de la app).
+Consultas HTTP: 1991, 28 238 ms en total (14 ms de media), máximo 1911 ms.
+Son medidas del navegador; no equivalen a FPS de KSP ni a tiempo de GPU.
+
+== Recomendaciones automáticas de analysis.json (por reglas)
+- "Revisar desconexiones kRPC y cambios de escena con sus marcas de tiempo."
+- "Repintados lentos del navegador: comparar 2D, detalle del globo y curvas; no equivale a FPS de KSP."
