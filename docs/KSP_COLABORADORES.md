@@ -153,7 +153,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-01 | No identificado en el registro original | Copia anterior a `92c7046` | HUD con KSP 1.12.5 · Crater Crawler en Kerbin | Parcial; incidencias y pendientes documentados | [Leer sesión](#2026-11-01--prueba-real-del-hud-ksp-1125) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `cbdc7ce` (v1.1.0) y `154cbff` (v1.2.0) | Mapa nativo en Duna · rumbo v1.2.0 · SCANsat 21.1 | Parcial; guía y recálculo correctos, destino no alcanzado | [Leer sesión](#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `8b63480` (v1.3.1) | Satélite SCANsat en Duna · CSV real importado al mapa | Funcionó; importación y ruta sobre alturas SCANsat reales | [Leer sesión](#2026-11-01--fully4425--mapa-scansat-real-de-duna) |
-| 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, audio no comprobado | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
+| 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, voz audible confirmada por el usuario | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -544,7 +544,7 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 | Destinos y cálculo de ruta | Correcto | 10 misiones en el ZIP del conector. Con destinos en la misma celda la ruta sale "0 m". |
 | Recálculo al desviarse | No probado | No hubo desvío real de una ruta con varias celdas. |
 | Pausa por desconexión / salida de región | Parcial | Pausa correcta; la recuperación sobre un mapa importado exige reimportarlo. La salida de la región ocurrió en el tramo del usuario y no quedó registrada. |
-| Indicaciones y voz | Correcto en la interfaz; audio no probado | El estado mostró "Hablando: …". La IA no puede oír. |
+| Indicaciones y voz | Correcto | El estado mostró "Hablando: …". La IA no puede oír, pero FULLY4425 confirmó después haber oído "Destino alcanzado y vehículo detenido" (Microsoft Helena, es-ES). |
 | Importación / exportación de mapas | Correcto | CSV real → JSON → mapa ([región](ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json)). Exportar desde SCANsat falló por el tamaño del mapa grande. |
 | Fluidez y consumo de recursos | Medido parcialmente | Repintado de 0,74 ms de media; KSP al ~21 % de la CPU y 7,4 GB de RAM; FPS no medidos ([rendimiento](ksp-logs/2026-11-01-FULLY4425-travesia/rendimiento.txt)). |
 
@@ -582,7 +582,6 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 ### Seguimiento
 
 - Pendientes:
-  - Confirmar con una persona que la voz se oye.
   - Medir los FPS de KSP.
   - Probar el recálculo al desviarse de una ruta de varias celdas.
   - Comprobar la salida de la región con registro.

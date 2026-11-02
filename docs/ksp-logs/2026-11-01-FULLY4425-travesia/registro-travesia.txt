@@ -67,4 +67,5 @@ Voces disponibles: Microsoft Helena, Laura y Pablo (es-ES).
 21:43:42 "Probar voz": speechSynthesis.speaking = true durante ≥ 4 s y el estado mostró
          "Hablando: Hola. Soy tu guía de KSP. Continúa recto y, en cincuenta metros, gira a la derecha."
 "Repetir" tras la llegada no emitió ninguna frase.
-La IA no puede oír el audio: la audibilidad queda sin comprobar.
+La IA no puede oír el audio. Después de la sesión, FULLY4425 confirmó haber oído
+"Destino alcanzado y vehículo detenido" por los altavoces.
