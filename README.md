@@ -125,7 +125,8 @@ En **Entorno · simulación** elige despejado, polvo atmosférico o tormenta loc
 | [AR y KSP](docs/AR_KSP.md) | Menú de prueba, instalación del mod, conector, calibración y futuro casco. |
 | [Referencias](docs/REFERENCIAS.md) | Fuentes científicas, imágenes, dependencias y créditos. |
 | [Arquitectura y API](docs/DESARROLLO.md) | Estructura, contratos, pruebas, distribución y contribuciones. |
-| [Validación](docs/VALIDACION.md) | Evidencia disponible y pruebas pendientes con hardware real. |
+| [Validación](docs/VALIDACION.md) | Comprobaciones técnicas y pruebas pendientes. |
+| [Bitácora KSP](docs/KSP_COLABORADORES.md) | Experiencias reales de los probadores, incidencias, evidencias y sugerencias. |
 
 Pruebas de Python:
 
@@ -142,6 +143,6 @@ node test/replanning.test.js
 node test/ksp-geo.test.js
 ```
 
-**Estado de validación:** 31 pruebas Python y 18 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD anterior tiene una prueba parcial en KSP 1.12.5; faltan la validación real del mapa nativo, la importación de una exportación de SCANsat y las pruebas en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
+**Estado de validación:** 31 pruebas Python y 18 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD anterior tiene una prueba parcial en KSP 1.12.5; faltan la validación real del mapa nativo, la importación de una exportación de SCANsat y las pruebas en un visor o casco físico. La sesión real está en la [bitácora KSP](docs/KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125); las comprobaciones técnicas, en [VALIDACION.md](docs/VALIDACION.md).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

@@ -7,6 +7,7 @@
 - La bitácora pasa a ser únicamente un documento en `docs/KSP_COLABORADORES.md`, por preferencia del equipo.
 - Retirada de la página de reportes, sus scripts, estilos, formulario de issues y pruebas específicas.
 - Plantilla detallada para experiencias, logs, resultados, errores, mejoras y sugerencias; registro compartido mediante commits o pull requests.
+- Incorporación a la bitácora del registro real de KSP 1.12.5 anteriormente ubicado en `VALIDACION.md`, conservando mediciones, errores y pendientes.
 - Accesos del mapa y HUD dirigidos al documento. Se conservan las funciones del proyecto de Marte, mapas KSP, conector, HUD y AR.
 - Comprobación de enlaces y distribución; la suite vigente conserva 49 pruebas.
 
@@ -34,7 +35,7 @@
 
 ### Registro de prueba real incorporado entre versiones
 
-El [merge cbdc7ce](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/cbdc7ce) añadió la prueba parcial del HUD anterior con KSP 1.12.5 y kRPC 0.7.0: conexión, conducción, avisos y recálculo; también registró el error de rumbo abordado en v1.2.0. Es una prueba del HUD anterior, no del mapa nativo nuevo. Véase [VALIDACION.md](VALIDACION.md).
+El [merge cbdc7ce](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/commit/cbdc7ce) añadió la prueba parcial del HUD anterior con KSP 1.12.5 y kRPC 0.7.0: conexión, conducción, avisos y recálculo; también registró el error de rumbo abordado en v1.2.0. Es una prueba del HUD anterior, no del mapa nativo nuevo. Véase la [sesión en la bitácora](KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125).
 
 ## v1.1.0 «Horizonte KSP» — 1 de noviembre de 2026
 
