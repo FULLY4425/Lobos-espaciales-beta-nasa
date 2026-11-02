@@ -29,3 +29,8 @@ export function arrivalState(previous,{distance,speed,now,eligible=true,radius=8
  return state;
 }
 export function cleanError(message){return String(message||'Error desconocido').trim().replace(/[.\s]+$/,'');}
+export function surfaceContext(t,sample,grid){
+ const outside=!grid||!Number.isFinite(grid.x)||!Number.isFinite(grid.y)||grid.x<0||grid.y<0||grid.x>t.width-1||grid.y>t.height-1;
+ const airborne=sample.surfaceAltitude>Math.max(30,Math.min(100,t.cellMeters*2));
+ return {usable:!outside&&!airborne,outside,airborne,message:airborne?`Vehículo en vuelo; esta guía es de superficie${outside?' y su posición queda fuera de la región':''}. Selecciona un rover en la región o carga cobertura al aterrizar.`:outside?'Vehículo fuera de la región muestreada. Carga una región que incluya el vehículo y sus destinos.':'Posición dentro de la región; guía de superficie disponible.'};
+}

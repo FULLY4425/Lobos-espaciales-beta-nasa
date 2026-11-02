@@ -478,20 +478,20 @@ Estado documental: **2 de noviembre de 2026**. Este documento recoge comprobacio
 
 Comprobaciones automatizadas y de navegador, no una sesión de juego real: avisos anticipados a 15 m/s, llegada física tras detenerse 3 s, ZIP de evidencias, guardado y recuperación del navegador, pausa al ocultar, desconexión real simulada y recuperación, recarga de región con destino conservado e interfaz compacta. Se probaron límites de disco, errores de almacenamiento y colas de voz con un motor simulado. No se afirma haber escuchado audio ni conducido esta versión dentro de KSP.
 
-Se mantiene pendiente: completar llegada con rover real, desconexión con guía activa, CSV exportado realmente por SCANsat, voz audible y medidas de rendimiento de juego/hardware. La comparación real del rumbo de v1.2.0 sí quedó registrada en la sesión anterior; no se vuelve a presentar como pendiente de aquella versión.
+Se mantiene pendiente: completar llegada con rover real, desconexión con guía activa, conducción sobre el mapa importado de SCANsat, voz audible y medidas de rendimiento de juego/hardware. La comparación real del rumbo de v1.2.0 y el flujo SCANsat real de v1.3.1 sí quedaron registrados en las sesiones anteriores. El CSV archivado se convierte de nuevo y reproduce sus alturas y ruta en las pruebas automatizadas de v1.4.0.
 
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 34 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 35 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
-| `node test/ksp-guidance.test.js` | 9 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
+| `node test/ksp-guidance.test.js` | 10 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
 
-Total registrado: **61 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **63 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 
@@ -512,7 +512,7 @@ La bitácora se conserva únicamente como documento Markdown con plantilla, regi
 
 ### Mapas descargables (v1.2.0)
 
-CSV de prueba con el formato del exportador SCANsat 21.1: importación, huecos bloqueados, rechazo de columnas ambiguas y números no finitos, y conservación de coordenadas/alturas. En Chromium se comprobaron carga, salida manual, planificación, relieve 3D, descarga/reimportación, pérdida de conector y tamaño compacto sin errores JavaScript. Se repitió el flujo del conector con cuerpo y telemetría simulados. No se ha procesado todavía una exportación de una partida real en esta validación.
+CSV de prueba con el formato del exportador SCANsat 21.1: importación, huecos bloqueados, rechazo de columnas ambiguas y números no finitos, y conservación de coordenadas/alturas. En Chromium se comprobaron carga, salida manual, planificación, relieve 3D, descarga/reimportación, pérdida de conector y tamaño compacto sin errores JavaScript. Se repitió el flujo del conector con cuerpo y telemetría simulados. Ese registro inicial usó datos de prueba; la sesión posterior de SCANsat real, incluida arriba, completa el flujo de exportación e importación.
 
 ### Pruebas reales de KSP registradas en la bitácora
 
@@ -530,7 +530,7 @@ Las capturas del README documentan la interfaz web. Una captura o emulación de 
 
 | Área | Falta por comprobar |
 | --- | --- |
-| KSP real | Pruebas parciales de versiones previas en Kerbin y Duna registradas arriba; rumbo v1.2.0 contrastado con la navball. Falta repetir con v1.4.0, confirmar llegada y detención, desconexión con guía activa, sesiones largas, audio y SCANsat exportado desde el juego. |
+| KSP real | Pruebas parciales de versiones previas en Kerbin y Duna registradas arriba; rumbo v1.2.0 contrastado con la navball. Falta repetir con v1.4.0, confirmar llegada y detención, desconexión con guía activa, sesiones largas, audio y conducción sobre el mapa importado de SCANsat. |
 | AR físico | Permisos, detección de superficies, estabilidad de maqueta, visibilidad, entrada y finalización en un visor concreto. |
 | Casco de astronauta | Hardware, SDK, sensores, óptica, latencia, interacción, ergonomía y ensayos específicos. No hay un casco integrado. |
 | Rendimiento | FPS, consumo, temperatura y autonomía medidos en hardware real. Las optimizaciones actuales son de arquitectura y carga de recursos. |

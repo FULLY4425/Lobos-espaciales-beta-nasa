@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {reachableTerrain,edgeDistance,drivingAdvice,arrivalState,cleanError} from '../src/ksp-guidance.js';
+import {reachableTerrain,edgeDistance,drivingAdvice,arrivalState,cleanError,surfaceContext} from '../src/ksp-guidance.js';
 import {createSpeechQueue} from '../src/speech-queue.js';
 import {createSession,appendRecord} from '../src/ksp-session.js';
 function flat(){return {width:9,height:9,cellMeters:25,elevations:Array(81).fill(100),water:Array(81).fill(false)};}
@@ -12,3 +12,5 @@ test('speech status finishes before latest guidance; urgent alerts preempt',()=>
 test('speech queue drops expired guidance and pause cannot revive old messages',()=>{let now=0;const played=[],done=[];const q=createSpeechQueue({now:()=>now,play:(t,f)=>{played.push(t);done.push(f);},cancel:()=>{}});q.submit('Estado',{priority:1});q.submit('Viejo');now=9000;done.shift()();assert.deepEqual(played,['Estado']);q.submit('Actual');q.submit('Pendiente');q.clear();done.shift()();assert.deepEqual(played,['Estado','Actual']);});
 test('sessions have unique IDs, explicit source and visible retention counters',()=>{const a=createSession('demo'),b=createSession('live');assert.notEqual(a.id,b.id);assert.equal(a.mode,'demo');assert.equal(b.mode,'live');appendRecord(a,'samples',{speed:1},2);appendRecord(a,'samples',{speed:2},2);appendRecord(a,'samples',{speed:3},2);assert.equal(a.dropped.samples,1);assert.deepEqual(a.samples.map(x=>x.speed),[2,3]);assert.equal(a.schema,'ksp-test-session-v1');});
 test('error message punctuation is normalized without altering meaning',()=>{assert.equal(cleanError('Sin paso.. '),'Sin paso');});
+
+test('orbital vehicle on a coarse SCANsat map has an explicit surface/context message',()=>{const t={...flat(),cellMeters:2000};const orbital=surfaceContext(t,{surfaceAltitude:325000},{x:50,y:50});assert.equal(orbital.usable,false);assert.ok(orbital.message.includes('en vuelo'));assert.ok(orbital.message.includes('fuera de la región'));assert.equal(surfaceContext(t,{surfaceAltitude:1},{x:4,y:4}).usable,true);assert.equal(surfaceContext(t,{surfaceAltitude:500},{x:4,y:4}).usable,false);});

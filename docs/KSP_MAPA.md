@@ -111,7 +111,7 @@ nuevo desvío constante. El HUD anuncia el recálculo cuando la voz está activa
 La guía se pausa si pierde telemetría, si no encuentra un paso, si el vehículo
 sale de la región o si cambia el cuerpo. Al cambiar de vehículo se invalida
 la ruta anterior. Una conexión kRPC nueva requiere volver a muestrear la región.
-En vuelo por encima de máximo(30 m, 2 × celda), la guía terrestre se suspende;
+En vuelo por encima de máximo(30 m, mínimo(100 m, 2 × celda)), la guía terrestre se suspende;
 no se convierte en un navegador orbital o de aterrizaje.
 
 Después de un fallo revisa el mensaje, corrige el contexto y pulsa **Reintentar**
@@ -156,4 +156,4 @@ es local y las métricas aproximadas. El modo no reemplaza un navegador orbital.
 Se verificaron la geometría geográfica, muestreo, agua, pendientes, rechazo de
 contextos incorrectos y de datos obsoletos, así como el flujo HTTP del conector
 con un cuerpo y telemetría simulados. En navegador se probaron 2D/3D, destinos,
-exportación, persistencia y recálculo. Hay [pruebas parciales en una partida real de versiones anteriores](KSP_COLABORADORES.md#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120). La conducción con las funciones nuevas de v1.4.0 y el flujo SCANsat real siguen pendientes; este entorno no tiene el juego instalado.
+exportación, persistencia y recálculo. Hay [pruebas parciales en una partida real de versiones anteriores](KSP_COLABORADORES.md#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120). El flujo SCANsat real ya está documentado y su CSV se reproduce automáticamente. Falta conducir con las funciones nuevas de v1.4.0 y sobre esa región importada; este entorno no tiene el juego instalado.

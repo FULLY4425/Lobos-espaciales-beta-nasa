@@ -34,7 +34,9 @@ Para volver a conducir, abre la aplicación en el servidor local del conector y 
 4. Busca el archivo `*_data.csv` en `GameData/SCANsat/PluginData/`.
 5. Confirma que la cabecera sea `Row,Column,Lat,Long,Height`, con comas como separador y punto decimal. Algunas configuraciones regionales pueden producir números ambiguos con comas decimales; el importador los rechaza.
 
-El formato se verificó contra el [exportador de SCANsat 21.1](https://github.com/KSPModStewards/SCANsat/blob/21.1/SCANsat/SCAN_Map/SCANmapExporter.cs): omite coordenadas inválidas y puntos sin cobertura, y escribe alturas y coordenadas con tres decimales. La prueba de extremo a extremo con un archivo exportado por el juego sigue pendiente; las pruebas incluidas usan CSV de prueba con esa estructura.
+**Ancho y ventana de SCANsat 21.1:** el equipo observó que aumentar «Map Width» también agranda Big Map; a 4096 px no cabía en la ventana para exportar. Ajusta el ancho al espacio disponible o amplía la ventana. En la [prueba real registrada](KSP_COLABORADORES.md#2026-11-01--fully4425--mapa-scansat-real-de-duna), un ajuste de 1280 produjo una exportación de 1126 × 563; usa las dimensiones efectivas del archivo para estimar resolución. La exportación a mayor resolución sigue pendiente.
+
+El formato se verificó contra el [exportador de SCANsat 21.1](https://github.com/KSPModStewards/SCANsat/blob/21.1/SCANsat/SCAN_Map/SCANmapExporter.cs): omite coordenadas inválidas y puntos sin cobertura, y escribe alturas y coordenadas con tres decimales. El equipo ya registró una exportación real de SCANsat y su importación con v1.3.1: 280/289 celdas y una ruta de 11 314 m. Desde v1.4.0 una prueba automatizada reproduce las alturas y ruta del CSV archivado. Sigue pendiente conducir un rover sobre esa región importada.
 
 ### Convertir solo la región que necesitas
 

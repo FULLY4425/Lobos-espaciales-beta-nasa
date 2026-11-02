@@ -79,3 +79,19 @@ class PortableKspMapsTests(unittest.TestCase):
         self.assertIs(actual_body,body)
         self.assertEqual(sample['heading'],151)
         self.assertEqual(sample['speed'],2)
+
+    def test_archived_real_scansat_csv_reproduces_region_and_route(self):
+        import zipfile
+        from pathlib import Path
+        root=Path(__file__).resolve().parents[1]/'docs/ksp-logs/2026-11-01-FULLY4425-scansat'
+        with zipfile.ZipFile(root/'scansat-duna-csv.zip') as z:
+            text=z.read(z.namelist()[0]).decode('utf-8-sig')
+        result=scansat_region(io.StringIO(text),body='Duna',radius=320000,latitude=-13.268,longitude=-133.961,size=17,cell=2000)
+        archived=json.loads((root/'duna-region-scansat.json').read_text())
+        self.assertEqual(result['terrain']['elevations'],archived['terrain']['elevations'])
+        self.assertEqual(result['conversion']['cellsWithData'],280)
+        mission=json.loads((root/'mision-ruta-scansat.json').read_text())
+        request=dict(mission['request'],terrainId=result['terrain']['id'])
+        route=plan_archive(dict(map=result,mission=request))
+        self.assertAlmostEqual(route['metrics']['distance'],mission['response']['metrics']['distance'])
+        self.assertEqual(route['gridPath'],[tuple(p) for p in mission['response']['gridPath']])

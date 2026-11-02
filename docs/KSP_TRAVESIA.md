@@ -35,6 +35,10 @@ La guía muestra distancia al borde y avisa con anticipación. **Cargar nueva re
 
 Ocultar la vista pausa consultas y voz de forma deliberada, sin presentarlo como una avería de kRPC. Al volver se solicita telemetría fresca antes de seguir. Una desconexión real pausa la guía; la recuperación espera datos válidos. El tiempo oculto o desconectado no cuenta como parada confirmada en el destino.
 
+## Vehículos en vuelo y fuentes importadas
+
+Al conectar un satélite o vehículo fuera de la región se muestra el motivo explícito aunque no haya una misión activa. El cálculo de superficie queda desactivado mientras esté fuera de cobertura o su altura sobre el suelo supere máximo(30 m, mínimo(100 m, 2 × celda)). Selecciona un rover en la región para conducir. La descripción del relieve cambia entre kRPC, CSV SCANsat y demo, sin atribuir un mapa importado a kRPC.
+
 ## Evidencias automáticas del conector
 
 Cada arranque crea una carpeta nueva en `ksp-sessions/FECHA-IDENTIFICADOR/`:
@@ -85,4 +89,4 @@ En Render, los endpoints locales devuelven indisponibilidad; las sesiones de la 
 
 Se probaron avisos, llegada física, paso de largo, conectividad, cola de voz, límites de registro, recuperación, cambio de región, ZIP y persistencia del navegador con datos simulados. Se conservan las evidencias reales anteriores de Duna, que corresponden a versiones previas.
 
-Falta repetir con v1.4.0 en el juego: llegar y detenerse, desconectar/reconectar, conducir cerca del borde, escuchar la voz y medir rendimiento con hardware real. También sigue pendiente escanear Duna con SCANsat y convertir una exportación real. La excepción registrada de DynamicBatteryStorage pertenece a ese mod y no se atribuye a la aplicación.
+Falta repetir con v1.4.0 en el juego: llegar y detenerse, desconectar/reconectar, conducir cerca del borde, escuchar la voz y medir rendimiento con hardware real. El equipo registró durante el desarrollo una exportación real de SCANsat con v1.3.1. Su CSV archivado reproduce en los tests de v1.4.0 las 280 alturas y la ruta de 11 314 m; falta conducir un rover sobre ese mapa. La excepción registrada de DynamicBatteryStorage pertenece a ese mod y no se atribuye a la aplicación.

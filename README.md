@@ -147,6 +147,6 @@ node test/ksp-geo.test.js
 node test/ksp-guidance.test.js
 ```
 
-**Estado de validación:** 34 pruebas Python y 27 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD y el mapa nativo cuentan con pruebas parciales de versiones anteriores en KSP 1.12.5. Falta repetir la conducción con v1.4.0, validar una exportación real de SCANsat y probar un visor o casco físico. La sesión real está en la [bitácora KSP](docs/KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125); las comprobaciones técnicas, en [VALIDACION.md](docs/KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
+**Estado de validación:** 35 pruebas Python y 28 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD y el mapa nativo cuentan con pruebas parciales de versiones anteriores en KSP 1.12.5. Falta repetir la conducción con v1.4.0, conducir un rover sobre el mapa SCANsat importado y probar un visor o casco físico. El CSV real archivado ya reproduce su región y ruta en pruebas automatizadas. La sesión real está en la [bitácora KSP](docs/KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125); las comprobaciones técnicas, en [VALIDACION.md](docs/KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

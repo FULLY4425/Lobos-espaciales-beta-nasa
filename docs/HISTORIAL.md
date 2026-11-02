@@ -11,8 +11,10 @@
 - Pausa deliberada al ocultar la vista, recuperación con datos frescos y diferenciación frente a una desconexión real.
 - Registro local automático del conector con sesiones únicas, telemetría, regiones, rutas, eventos y ZIP; sesiones del navegador recuperables y descargables con límites y contadores explícitos.
 - Diagnóstico de versión, instancia y puertos; mensaje claro ante puerto ocupado. Métricas de CPU de repintado y consultas HTTP en el paquete del navegador.
-- Incorporación del análisis de la prueba real de Duna y aclaración del log del conector ausente, sin inventar evidencias.
-- Validación: 34 pruebas Python y 27 JavaScript (61 en total), más navegador con telemetría simulada. La conducción y SCANsat reales con esta versión siguen pendientes.
+- Incorporación del análisis de las pruebas reales de Duna y SCANsat; reproducción automatizada del CSV/región/ruta real archivado, sin inventar evidencias.
+- Mensaje explícito para vehículos en vuelo/fuera de cobertura, bloqueo del cálculo terrestre en ese contexto y descripción de la fuente importada corregida.
+- Aclaración del log del conector antiguo ausente.
+- Validación: 35 pruebas Python y 28 JavaScript (63 en total), más navegador con telemetría simulada. La conducción con esta versión y con un rover sobre el mapa SCANsat siguen pendientes.
 - Guía: [KSP_TRAVESIA.md](KSP_TRAVESIA.md). Se mantienen las funciones previas de Marte, KSP, HUD y AR; la bitácora permanece como documento.
 
 ## v1.3.1 «Bitácora KSP» — 2 de noviembre de 2026
