@@ -1,6 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 import {slopeAt} from './route.js';
 import {nearestOnRoute} from './ar-tracking.js';
+import {elevationRGB,drawContours} from './terrain-style.js';
 
 // Coordinates are meters: east = X, height = Y, south = Z. No vertical exaggeration.
 export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false, navigation=null,events={}) {
@@ -69,6 +70,8 @@ export function createTerrain3D(canvas, terrain, onSelect, onPlace=()=>false, na
     const ctx=textureCanvas.getContext('2d');ctx.fillStyle='#5d5144';ctx.fillRect(0,0,textureCanvas.width,textureCanvas.height);
     if(next.satellite&&next.image.complete&&next.image.naturalWidth)ctx.drawImage(next.image,0,0,textureCanvas.width,textureCanvas.height);
     else for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=z[y*w+x];if(v===null)continue;const n=(v-floor)/(ceiling-floor||1);ctx.fillStyle=next.relief?`hsl(28 25% ${28+n*35}%)`:'#766657';ctx.fillRect(x*12,y*12,12,12);}
+    if(next.surfaceStyle&&next.surfaceStyle!=='photo'){ctx.globalAlpha=next.surfaceStyle==='mixed'?.65:1;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=z[y*w+x];if(v===null)continue;ctx.fillStyle=`rgb(${elevationRGB(v,floor,ceiling).join(',')})`;ctx.fillRect(x*12,y*12,12,12);}ctx.globalAlpha=1;}
+    if(next.contours)drawContours(ctx,terrain,{x:0,y:0,scale:12},10);
     if(next.slopes)for(let y=0;y<h;y++)for(let x=0;x<w;x++){const s=slopeAt(terrain,x,y);ctx.fillStyle=s>next.maxSlope?'#ef614b99':s>10?'#e8c26444':'#74b9a422';ctx.fillRect(x*12,y*12,12,12);}
     texture.needsUpdate=true;clearOverlays();pickable=null;
     for(const zone of next.weather?.restrictions||[]){const cx=(zone.lon-terrain.west)/terrain.degreeStep,cy=(terrain.north-zone.lat)/terrain.degreeStep,r=zone.radiusMeters/m;const ring=[];for(let i=0;i<65;i++){const a=i/64*Math.PI*2;ring.push(point(cx+Math.cos(a)*r,cy+Math.sin(a)*r,8));}overlays.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ring),new THREE.LineBasicMaterial({color:'#ff725c'})));}

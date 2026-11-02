@@ -2,6 +2,18 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.6.0 «Atlas de relieve» — 1 de noviembre de 2026 (hora de México)
+
+- Espacio KSP dentro de la página principal, con el mismo mapa nativo independiente y pausa de consultas/guía al ocultarlo. Se conserva el explorador original de Marte, globo, caminatas, clima simulado, voz, HUD y AR.
+- Catálogo de tres regiones reales de Duna: las dos regiones del rover en la sesión Travesía (289/289 muestras) y la región previa de SCANsat (280/289), todas con muestreo de 2 km.
+- Proyección de texturas por cuerpo, radio y coordenadas; máscaras de cobertura derivadas de los CSV reales, incluido el escaneo de 529220 muestras (83.5% global). Carga de PNG/JPG/WebP propios con metadatos validados, sin subida automática.
+- Relieve KSP con colores de elevación, curvas, malla, orientación cardinal, etiquetas y escala vertical visual 1×/3×/5×. Alturas, distancias, pendientes y cálculo de rutas mantienen sus valores físicos.
+- Localización y seguimiento del vehículo, rumbo y coordenadas, cámara libre y selección de coordenadas/altura sobre el terreno 3D. Reutilización de geometría y repintado bajo demanda.
+- Capas de fotografía, alturas y mezcla, curvas y leyenda en el explorador de Marte. La textura mars-global sigue siendo contexto visual de Marte; no se presenta como terreno exportado del juego.
+- Sincronización de los registros reales nuevos del equipo sin reescribir sus resultados. La bitácora continúa como documento.
+- Validación: 47 pruebas Python + 36 JavaScript (83), construcción de distribución y Chromium con mapas reales archivados/telemetría simulada: catálogo, texturas, 2D/3D, controles, interfaz compacta, pausa, métricas de ruta, llegada, pérdida/recuperación y evidencias. Falta comprobar esta visualización v1.6.0 en KSP real y su voz audible.
+- Guía: [KSP_MAPAS_3D.md](KSP_MAPAS_3D.md).
+
 ## v1.5.0 «Evidencias KSP» — 1 de noviembre de 2026 (hora de México)
 
 - Cliente opcional de Supabase con autenticación individual de probadores, renovación de sesión y rechazo de claves de administrador en el conector.

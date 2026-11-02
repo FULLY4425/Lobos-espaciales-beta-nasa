@@ -607,18 +607,27 @@ Se mantiene pendiente: completar llegada con rover real, desconexión con guía 
 
 Pruebas con servicio simulado: cola duradera tras reinicio, pérdida de red, fallo del índice, reintentos idempotentes, pausa persistente, aislamiento entre identidades locales, autenticación/renovación, límites de logs y exclusión de archivos privados. En navegador se comprobaron controles y estado sin exponer tokens. El proyecto Supabase real aún no está creado: quedan pendientes la aplicación y verificación de RLS y el primer envío contra esa cuenta.
 
+### Validación de v1.6.0 «Atlas de relieve»
+
+Pruebas automatizadas de capas, proyección equirectangular/local, cruce de longitud, rechazo de otro cuerpo/radio, curvas de los triángulos reales sin rellenar huecos y máscaras de cobertura SCANsat. El catálogo integra las dos regiones y el mapa de 529220 píxeles de la sesión Travesía recién sincronizada, además del mapa anterior.
+
+En Chromium: página principal con capas de Marte, mapa KSP integrado, carga de catálogo/texturas reales archivadas, 2D/3D, escala vertical/malla/norte, pausa al cambiar de espacio y vista de 390 px. Con telemetría simulada se comprueban seguimiento/centrado, invariancia de métricas al cambiar la escala visual, avisos, llegada detenida, evidencias, pérdida/recuperación e importación. Las nuevas comprobaciones de la interfaz no equivalen a conducir v1.6.0 en el juego. Las pruebas reales de v1.4.0 figuran arriba con sus propios resultados y pendientes. [Uso y fuentes](KSP_MAPAS_3D.md).
+
+Estado de Supabase actualizado: el propietario indicó que creó el proyecto. La aplicación/verificación de SQL/RLS y el primer envío real no se han comprobado desde este entorno.
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 45 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 47 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 | `node test/ksp-guidance.test.js` | 10 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
+| `node test/terrain-style.test.js` | 8 pruebas aprobadas. | Paleta/curvas, huecos, proyecciones, cuerpo/radio, límites geográficos y cobertura del CSV real. |
 
-Total registrado: **73 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **83 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 

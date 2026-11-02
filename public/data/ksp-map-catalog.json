@@ -1,0 +1,25 @@
+{
+  "maps": [
+    {
+      "id": "duna-rover-travesia",
+      "label": "Duna · Travesía · última región del rover",
+      "terrain": "/docs/ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json",
+      "textureMetadata": "/public/imagery/ksp-duna-travesia-metadata.json",
+      "note": "289/289 muestras, 2000 m/celda, 32 km de ancho. Región real del rover; usa kRPC para conducción fina."
+    },
+    {
+      "id": "duna-rover-inicial",
+      "label": "Duna · Travesía · región inicial del rover",
+      "terrain": "/docs/ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat.json",
+      "textureMetadata": "/public/imagery/ksp-duna-travesia-metadata.json",
+      "note": "289/289 muestras, 2000 m/celda, 32 km de ancho. Región real del rover; usa kRPC para conducción fina."
+    },
+    {
+      "id": "duna-scansat-real",
+      "label": "Duna · SCANsat real · región de 32 km",
+      "terrain": "/docs/ksp-logs/2026-11-01-FULLY4425-scansat/duna-region-scansat.json",
+      "textureMetadata": "/public/imagery/ksp-duna-scansat-metadata.json",
+      "note": "280/289 muestras, 2000 m/celda. Preparación regional; usa kRPC para conducir con más detalle."
+    }
+  ]
+}

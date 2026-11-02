@@ -1,0 +1,16 @@
+{
+  "schema": "ksp-texture-v1",
+  "body": "Duna",
+  "bodyRadius": 320000,
+  "projection": "equirectangular",
+  "west": -180,
+  "east": 180,
+  "north": 90,
+  "south": -90,
+  "pixelConvention": "scansat",
+  "image": "/docs/ksp-logs/2026-11-01-FULLY4425-scansat/scansat-duna-altimetria-1126x563.png",
+  "credit": "FULLY4425 · SCANsat 21.1 · exportación de altimetría de Duna con capa Ore",
+  "kind": "game-altimetry",
+  "note": "Mapa de colores de altimetría exportado del juego, no fotografía ni textura de Marte. La proyección se verificó contra las columnas Row,Column,Lat,Long del CSV archivado; solo hay cobertura parcial.",
+  "coverageUrl": "/public/imagery/ksp-duna-scansat-coverage.json"
+}

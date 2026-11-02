@@ -1,5 +1,7 @@
 # Guía de uso · Ojo de Marte
 
+**Nuevo en v1.6.0:** [mapas 2D/3D, texturas, curvas de nivel y orientación](KSP_MAPAS_3D.md).
+
 ## Abrir el explorador
 
 - En línea: https://lobos-espaciales-python.onrender.com/

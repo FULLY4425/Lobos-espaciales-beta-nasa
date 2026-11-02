@@ -1,0 +1,16 @@
+{
+  "schema": "ksp-texture-v1",
+  "body": "Duna",
+  "bodyRadius": 320000,
+  "projection": "equirectangular",
+  "west": -180,
+  "east": 180,
+  "north": 90,
+  "south": -90,
+  "pixelConvention": "scansat",
+  "image": "/docs/ksp-logs/2026-11-01-FULLY4425-travesia/scansat-duna-1919-altimetria.png",
+  "credit": "FULLY4425 · SCANsat 21.1 · Duna 19:19 · altimetría con capa Ore",
+  "kind": "game-altimetry",
+  "note": "529220 filas exportadas del juego, cobertura global parcial 83.5%. No es una fotografía. Máscara procedente del CSV de la sesión Travesía.",
+  "coverageUrl": "/public/imagery/ksp-duna-travesia-coverage.json"
+}

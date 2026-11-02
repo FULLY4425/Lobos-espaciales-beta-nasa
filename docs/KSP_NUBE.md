@@ -113,7 +113,7 @@ Cerrar el conector no garantiza que se termine una transferencia en curso. La ú
 
 Después de aplicar el SQL e iniciar sesión:
 
-1. Arranca el conector y comprueba versión **1.5.0**.
+1. Arranca el conector y comprueba versión **1.6.0** (o posterior).
 2. Abre una sesión KSP, solicita un mapa y una ruta; pulsa **Enviar ahora**.
 3. Espera a que el estado indique el envío confirmado.
 4. En Supabase comprueba la fila y descarga su ZIP; revisa el manifiesto y la presencia de telemetría/mapa/misión.

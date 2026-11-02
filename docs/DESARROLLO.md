@@ -174,3 +174,9 @@ Las experiencias de los colaboradores se registran en [KSP_COLABORADORES.md](KSP
 ## Evidencias privadas (v1.5.0)
 
 `integrations/ksp_cloud.py` usa las APIs de Supabase Auth/Storage/PostgREST con una cuenta individual y clave pública. La cola se guarda con el ZIP exacto hasta confirmar Storage e índice; las credenciales se guardan solo en `.ksp-cloud/` local. `supabase/ksp_evidence.sql` define RLS y bucket privado. Las pruebas usan transportes simulados; configuración real y verificación de políticas siguen pendientes. [Guía](KSP_NUBE.md).
+
+## Atlas de relieve (v1.6.0)
+
+`src/terrain-style.js` comparte paleta y curvas entre Marte y KSP. `src/ksp-imagery.js` valida y reproyecta la textura en la malla local; la imagen no modifica elevaciones ni planificación. `public/data/ksp-map-catalog.json` referencia regiones y metadatos, sin duplicar los archivos de evidencias. Las máscaras se regeneran con `scripts/ksp_texture_coverage.py` a partir de los CSV ZIP de las sesiones. El mapa 3D KSP reutiliza marcadores y repinta a demanda; el espacio integrado pausa consultas y guía cuando queda oculto.
+
+Comprobaciones adicionales: `node test/terrain-style.test.js`; las dos pruebas del generador de cobertura están incluidas en `python3 -m unittest discover -s test -v`. [Uso y contrato de textura](KSP_MAPAS_3D.md).

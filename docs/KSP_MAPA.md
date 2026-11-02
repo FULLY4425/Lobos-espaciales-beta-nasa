@@ -1,5 +1,7 @@
 # Mapa y guía nativos para KSP 1
 
+**Nuevo en v1.6.0:** [mapas 2D/3D, texturas, curvas de nivel y orientación](KSP_MAPAS_3D.md).
+
 El proyecto conserva **dos espacios de navegación**:
 
 - **Explorador de Marte:** HiRISE, ChemCam, globo, objetivos, astronautas, voz,
