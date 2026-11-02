@@ -1,0 +1,70 @@
+Prueba v1.4.0 «Travesía KSP» con KSP real · rover Crater Crawler en Duna sobre mapa SCANsat
+Sesión 2026-11-01, FULLY4425, asistida por Claude (IA). Hora local UTC-6.
+Origen: textos de ksp-map.html leídos del DOM cada 0,5 s y llamadas a
+speechSynthesis.speak/cancel interceptadas; distancias/velocidades de scripts kRPC de
+solo lectura. Transcripción sin cambios salvo recortes de líneas repetidas. La
+conducción fue con teclado/ratón en KSP; nunca por kRPC.
+
+== Preparación
+20:59  Conector v1.4.0 (commit 2cb6daa). kRPC apagado tras reiniciar KSP; el usuario
+       pulsó Start server. Satélite "Nave Espacial Sin Nombre" en órbita 352 × 235 km,
+       i 72,24°, periodo 5505 s; mapa pequeño SCANsat 77,1 %.
+21:01  CSV SCANsat exportado por el usuario a las 19:19 (1126 × 563): 529 220 filas
+       (83,5 % de los píxeles). El mapa grande (BigMapWidth 2276, posición -832,69) no
+       cabía en pantalla y no se pudo volver a exportar.
+21:03  Cambio al rover desde la Estación de seguimiento (filtro "Naves").
+21:04  import-scansat.py centrado en el rover (-0.1622, -74.7907), 17 × 17, 2000 m:
+       289/289 celdas. Conectar KSP usando este mapa ->
+       "Posición dentro de la región; guía de superficie disponible."
+       "Relieve de un CSV SCANsat importado; conserva la resolución y los huecos del escaneo."
+       "284/289 celdas conectadas al vehículo con pendiente ≤15° y evitando agua."
+
+== Destino en la misma celda de 2 km
+21:05:54 "Destino a 1200 m · llegada dentro de 8 m y detenido 3 s."; métricas
+         "0 m · +0.0 m · ~0 min" (vehículo y destino en la misma celda); el banner de
+         ruta permanece oculto, la distancia física sí se actualiza.
+21:06:24 Panel del navegador oculto -> "Vista oculta: guía pausada. Se comprobará la
+         conexión al volver." Al mostrar el panel, la guía continuó.
+
+== Paso de largo y aviso de velocidad
+21:13:10 -0.27076°, -74.74733° · 4.3 m/s · "Dentro del radio: detente para confirmar llegada (3 s)."
+21:13:11 "Destino a 9 m …"
+21:13:14 2.8 m/s · "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta."
+         voz: SPEAK "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta."
+21:16:16 voz: SPEAK "Reduce velocidad: 8.5 m/s; destino próximo." (a ~20 m del destino)
+21:16:18 9.5 m/s · "Destino sobrepasado. …"
+21:39:49 evento del conector browser-driving-advice: "Reduce velocidad: 5.0 m/s; destino próximo."
+
+== Interferencia (21:16-21:33)
+El usuario también movió el rover y cambió el mapa a la demo mientras la IA probaba.
+El rover terminó en 2.03°, -73.82° con 109 piezas (antes 115). Ese tramo no se usa
+como resultado.
+
+== Nueva región y llegada confirmada
+21:34  Región SCANsat centrada en 2.03246, -73.82612 (289/289 celdas); conectada.
+21:38  Pendiente 13-16° alrededor: con frenos el rover se desliza a ~0,9 m/s y no
+       cumple la parada; también se pasó dos veces por la latencia entre lectura y clic.
+21:40  Zona de ~4°: destino 15 m adelante, avance por pulsos (frenos fuera 3-6 s).
+21:41:00 2.06843°, -73.94656° · 0.3 m/s · "Dentro del radio: detente para confirmar llegada (3 s)."
+21:41:03 0.0 m/s · "Destino alcanzado y vehículo detenido."
+         voz: SPEAK "Destino alcanzado y vehículo detenido."
+         kRPC: 7,9 m del destino, 0,01 m/s, frenos activados.
+
+== Desconexión y recuperación del conector
+21:41:43 Proceso del conector detenido.
+21:41:46 "Sin conexión al juego: Failed to fetch Abre esta página en localhost:7173 con el conector."
+         (guía en pausa; se mantuvo "Destino alcanzado y vehículo detenido.")
+21:42:03 Conector reiniciado (instancia fb4ca0c8…, nueva carpeta de sesión).
+21:42:04 "KSP 1 conectado · solo lectura · coordenadas reales del juego." y
+         "La conexión kRPC cambió. Vuelve a muestrear la región."
+         "Conectar KSP usando este mapa" + "Calcular ruta" no reactivaron la guía.
+21:42:58 Tras volver a importar el JSON SCANsat y conectar: "Ruta KSP calculada.",
+         "Dentro del radio: detente para confirmar llegada (3 s)."
+21:43:02 "Destino alcanzado y vehículo detenido." (voz 21:43:01)
+
+== Voz
+Voces disponibles: Microsoft Helena, Laura y Pablo (es-ES).
+21:43:42 "Probar voz": speechSynthesis.speaking = true durante ≥ 4 s y el estado mostró
+         "Hablando: Hola. Soy tu guía de KSP. Continúa recto y, en cincuenta metros, gira a la derecha."
+"Repetir" tras la llegada no emitió ninguna frase.
+La IA no puede oír el audio: la audibilidad queda sin comprobar.

@@ -1,0 +1,25 @@
+Rendimiento · sesión 2026-11-01 (v1.4.0), hora local UTC-6
+Equipo: Intel Core i5-11400H (12 hilos), 23,7 GB RAM, NVIDIA GeForce RTX 3050 Laptop, Windows 10 Pro.
+
+== Navegador (IndexedDB ksp-session-journal-v1, medidas de ksp-map.html)
+Sesión live 2026-11-02T03:34:17Z (21:34-21:42 local), 325 muestras, 52 eventos, dropped 0:
+  repintado CPU: 689 veces, 506,9 ms en total (0,74 ms de media), máximo 2,3 ms
+  consultas HTTP: 657, 119 665 ms en total (182 ms de media), máximo 2365,8 ms
+    (el máximo coincide con la caída del conector)
+Sesión live 2026-11-02T03:42:55Z (tras reiniciar el conector), 40 muestras:
+  repintado 84 / 62,1 ms / máx 2,2 ms; HTTP 79 / 12 418,7 ms / máx 318,9 ms
+Sesión live 2026-11-02T03:30:37Z: repintado 380 / 110,4 ms / máx 1 ms; HTTP 140 / máx 317 ms
+Nota: con el límite de 6 sesiones, la sesión live de 21:05 se descartó al crearse sesiones
+nuevas (demo/offline incluidas); no hay sus métricas.
+Son medidas del navegador; no equivalen a FPS de KSP ni a tiempo de GPU.
+
+== Procesos (muestra de 10 s, 21:44, rover parado en Duna, mapa abierto)
+KSP_x64: 250,8 % de un núcleo (≈21 % de 12 hilos), 7446 MB de memoria, 85 hilos
+conector Python v1.4.0: 0,5 % de un núcleo, 44 MB, 4 hilos
+FPS de KSP: no medidos.
+
+== Registro del conector (ZIP de evidencias)
+Sesión 2026-11-02T02-59-17Z: 828 498 bytes de un límite de 33 554 432, dropped 0.
+Eventos: krpc-unavailable 56 y krpc-connected 46, concentrados entre 21:02 y 21:04
+(cambios de escena por la Estación de seguimiento sin vehículo activo); 48
+browser-guide-status, 14 browser-visibility, 10 misiones, 2 regiones.
