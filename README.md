@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.7.1 «Duna Explorador» · 1 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.7.2 «Telemetría de misión» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -41,6 +41,10 @@ La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alt
 ## Mapas 2D/3D y orientación (v1.6.0)
 
 La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y regiones de relieve. Incluye objetivos documentados y propios, cámaras de superficie/seguimiento, explorador y recorridos virtuales, polvo/tormenta de entrenamiento con recálculo, voz, HUD y maqueta WebXR con la textura de Duna. [Guía y límites](docs/DUNA_EXPLORADOR.md). [PNG completo original](public/imagery/duna-global.png) · [Alturas completas](public/data/duna-global.json) · [Metadatos](public/imagery/duna-global-metadata.json). Marte queda disponible en el botón secundario. Incluye el espacio KSP, con el mapa real de Duna del catálogo SCANsat, texturas georreferenciadas, curvas de nivel, escala vertical visual, malla, norte y seguimiento del vehículo. Marte conserva sus funciones y añade capas de altura/fotografía. [Uso, fuentes y formato de texturas](docs/KSP_MAPAS_3D.md). El escaneo de Duna tiene 2 km por muestra; para conducir usa kRPC local con una región más fina.
+
+## Estado del PC y datos de vuelo (v1.7.2)
+
+El conector registra CPU/RAM/disco cada 5 s, consumo de KSP y datos de vuelo/orbita cada 1 s. El mapa muestra el diagnóstico; el ZIP y el índice privado de Supabase incluyen un resumen para analizar fallos y orientar mejoras. Solicita envío al salir del mapa o perder kRPC e intenta una instantánea final al cerrar ordenadamente el conector. Si falla, conserva la cola local. [Instalación, privacidad, archivos y límites](docs/KSP_DIAGNOSTICO.md).
 
 ## Evidencias privadas en Supabase (parte de v1.7)
 

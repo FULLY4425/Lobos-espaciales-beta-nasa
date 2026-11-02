@@ -4,6 +4,8 @@ select 'private_bucket' as check_name,
        exists(select 1 from storage.buckets where id='ksp-evidence' and public=false
               and file_size_limit=52428800) as ok
 union all
+select 'diagnostic_columns', (select count(*)=2 from information_schema.columns where table_schema='public' and table_name='ksp_sessions' and column_name in ('stopped_at','diagnostic_summary'))
+union all
 select 'sessions_rls', exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace
     where n.nspname='public' and c.relname='ksp_sessions' and c.relrowsecurity)
 union all

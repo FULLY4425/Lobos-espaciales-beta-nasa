@@ -623,11 +623,15 @@ Comprobaciones de datos: PNG completo idéntico al original por SHA-256, 529220 
 
 Diagnóstico Supabase probado con respuestas simuladas: comprobaciones independientes de autenticación, autorización, esquema y Storage; sin subida ni lectura de cuerpos de evidencias y sin tokens en el informe. Se incorpora el proyecto existente a la guía y se añade SQL de verificación. La estructura remota ya se aplicó y pasó nueve verificaciones. Se comprobó el aislamiento con roles reales en una transacción revertida, sin dejar usuarios ni sesiones de prueba; el propietario autorizó su rol de administrador de evidencias. La API deniega acceso anónimo. `configure-project` configura el PC sin crear tokens ni iniciar sesión automáticamente. Sigue pendiente el primer envío real de un ZIP desde el conector.
 
+### Validación de v1.7.2 «Telemetría de misión»
+
+Pruebas con datos simulados: lecturas de vuelo opcionales/valores ausentes, lista permitida de procesos, primera medición CPU sin inventar cero, ausencia de identificadores/comandos personales, resumen de tendencias y ZIP con archivos de diagnóstico. Cierre real de un hilo de envío con cliente simulado, respeto de pausa y persistencia ante pérdida de red. En Chromium: CPU/RAM, vuelo, resumen y petición de envío al cerrar/ocultar. Se aplicaron y verificaron las columnas privadas de resumen en Supabase. No son mediciones del PC real del propietario ni un primer envío de juego confirmado. [Guía](KSP_DIAGNOSTICO.md).
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 58 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 66 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
@@ -636,7 +640,7 @@ Diagnóstico Supabase probado con respuestas simuladas: comprobaciones independi
 | `node test/terrain-style.test.js` | 8 pruebas aprobadas. | Paleta/curvas, huecos, proyecciones, cuerpo/radio, límites geográficos y cobertura del CSV real. |
 | `node test/ksp-global.test.js` | 4 pruebas aprobadas. | Escaneo completo, huecos, coordenadas esféricas, regiones seleccionadas y restricciones de tormenta. |
 
-Total registrado: **98 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **106 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 

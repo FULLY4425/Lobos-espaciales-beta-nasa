@@ -1,5 +1,7 @@
 # v1.7.0 «Duna Explorador»
 
+**v1.7.2:** [estado del PC, información de vuelo y evidencias al terminar](KSP_DIAGNOSTICO.md).
+
 [Proyecto](../README.md) · [Configurar KSP](KSP_MAPA.md) · [Texturas y relieve](KSP_MAPAS_3D.md) · [Bitácora](KSP_COLABORADORES.md)
 
 La página principal muestra el **escaneo completo exportado de tu partida**, conservando el explorador de Marte como opción secundaria. Las funciones de exploración se aplican a los datos de Duna; no se colocan imágenes HiRISE ni los 718 objetivos ChemCam sobre otro cuerpo.

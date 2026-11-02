@@ -121,7 +121,7 @@ class SupabaseClient:
             return report
         checks=[
             ('tester', 'POST', '/rest/v1/rpc/ksp_is_tester', {}, 'Autoriza este usuario en public.ksp_testers antes de enviar evidencias.'),
-            ('sessions', 'GET', '/rest/v1/ksp_sessions?select=id,user_id,app_version,archive_path,sha256,archive_bytes,captured_at,started_at,telemetry_samples&limit=0&user_id=eq.'+auth['user_id'], None, 'Aplica supabase/ksp_evidence.sql y revisa los permisos de ksp_sessions.'),
+            ('sessions', 'GET', '/rest/v1/ksp_sessions?select=id,user_id,app_version,archive_path,sha256,archive_bytes,captured_at,started_at,telemetry_samples,stopped_at,diagnostic_summary&limit=0&user_id=eq.'+auth['user_id'], None, 'Aplica supabase/ksp_evidence.sql y revisa los permisos de ksp_sessions.'),
             ('storage', 'POST', '/storage/v1/object/list/ksp-evidence', dict(prefix=auth['user_id']+'/',limit=1,offset=0), 'Crea el bucket privado ksp-evidence y aplica sus políticas de acceso.'),
         ]
         for name,method,path,payload,hint in checks:
@@ -172,7 +172,7 @@ class CloudUploader:
         self.control_path=self.client.path.parent/'upload-control.json'
         self.paused=read_json(self.control_path).get('paused',False) if self.control_path.exists() else False
         self.state=dict(configured=True,paused=self.paused,status='queued',lastSuccess=None,error=None,nextRetry=None)
-        self.lock=threading.Lock();self.stop_event=threading.Event();self.wake=threading.Event();self.thread=None;self.failures=0;self.worker_lock=None
+        self.lock=threading.Lock();self.stop_event=threading.Event();self.wake=threading.Event();self.thread=None;self.failures=0;self.worker_lock=None;self.final_flush=False
         marker=self.recorder.path/'.cloud-upload.json'
         if self.client.config['enabled'] and not marker.exists():
             owner=None
@@ -239,6 +239,14 @@ class CloudUploader:
             row['app_version']=manifest.get('appVersion','unknown')
             row['telemetry_samples']=manifest.get('telemetrySamples')
             row['started_at']=manifest.get('startedAt')
+            row['stopped_at']=manifest.get('stoppedAt')
+            try:
+                with zipfile.ZipFile(io.BytesIO(content)) as bundle:
+                    if bundle.getinfo('analysis.json').file_size>65536:raise ValueError('Summary too large')
+                    summary=json.loads(bundle.read('analysis.json'))
+                if not isinstance(summary,dict) or summary.get('schema')!='ksp-session-analysis-v1':raise ValueError('Invalid summary')
+                json.dumps(summary,allow_nan=False);row['diagnostic_summary']=summary
+            except (KeyError,ValueError,TypeError,zipfile.BadZipFile):row['diagnostic_summary']=None
             self.client.upload(expected,content,auth)
             self.client.index(row,auth)
             previous=state.get('archive_path');cleanup=state.get('cleanup',[])
@@ -253,15 +261,16 @@ class CloudUploader:
             except CloudError:self.set_status(cleanupPending=True)
         return bool(pending)
 
-    def sync_once(self):
+    def sync_once(self,final=False):
         self.recorder.capture_external()
         if self.paused:self.set_status(status='paused');return
         auth=self.client.auth()
         # Only the current session and previously queued sessions are sent automatically.
         queued=[p for p in sorted(self.root.iterdir()) if p.is_dir() and not p.is_symlink() and SESSION_ID.fullmatch(p.name) and ((p/'.cloud-upload.json').exists() or self.include_history) and p!=self.recorder.path]
-        for path in [self.recorder.path,*queued]:
-            if self.paused or self.stop_event.is_set():break
+        for path in [self.recorder.path,*([] if final else queued)]:
+            if self.paused or (self.stop_event.is_set() and not final):break
             self.sync_folder(path,auth)
+            if final:self.sync_folder(path,auth)
         self.set_status(error=None,nextRetry=None)
 
     def run(self):
@@ -276,14 +285,18 @@ class CloudUploader:
                     # No raw HTTP bodies, URLs with tokens or OS exception text in public status.
                     self.set_status(status='retrying',error=str(error) if isinstance(error,CloudError) else 'Envío pendiente: revisa el estado local. La evidencia se conserva.',nextRetry=time.time()+delay)
                 self.wake.wait(delay);self.wake.clear()
-        finally:self.worker_lock.close()
+        finally:
+            if self.final_flush and not self.paused:
+                try:self.sync_once(final=True)
+                except (CloudError,OSError,ValueError,TypeError,KeyError):self.set_status(status='retrying',finalUploadPending=True,error='Cierre sin envío confirmado. Se conserva la sesión para el siguiente arranque.')
+            self.worker_lock.close()
 
     def start(self):
         self.thread=threading.Thread(target=self.run,name='ksp-cloud-upload',daemon=True);self.thread.start()
 
     def close(self):
-        self.stop_event.set();self.wake.set()
-        if self.thread:self.thread.join(timeout=2)
+        self.final_flush=True;self.stop_event.set();self.wake.set()
+        if self.thread:self.thread.join(timeout=15)
 
 
 def main():

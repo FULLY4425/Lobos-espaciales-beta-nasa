@@ -1,5 +1,7 @@
 # v1.4.0 «Travesía KSP»
 
+**v1.7.2:** [estado del PC, información de vuelo y evidencias al terminar](KSP_DIAGNOSTICO.md).
+
 **Nuevo en v1.6.0:** [mapas 2D/3D, texturas, curvas de nivel y orientación](KSP_MAPAS_3D.md).
 
 Actualización basada en la [sesión real de Duna](KSP_COLABORADORES.md#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120). Se conservan el explorador de Marte, los mapas KSP, importación SCANsat, HUD, voz y AR. La bitácora sigue siendo un documento.

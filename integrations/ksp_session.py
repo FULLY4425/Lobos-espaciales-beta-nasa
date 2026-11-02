@@ -1,5 +1,6 @@
 """Local read-only evidence. Cloud upload is optional and runs outside this recorder."""
 import io
+import math
 import json
 import os
 import re
@@ -10,9 +11,9 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION='1.7.1'
+VERSION='1.7.2'
 MAX_EXTERNAL_LOG=16*1024*1024
-GENERATED=re.compile(r'^(session\.json|KSP\.log|Player\.log|events\.jsonl|telemetry\.jsonl|connector\.log(?:\.[12])?|(?:terrain|mission)-[a-f0-9]{32}\.json)$')
+GENERATED=re.compile(r'^(session\.json|KSP\.log|Player\.log|events\.jsonl|telemetry\.jsonl|computer\.jsonl|flight\.jsonl|analysis\.json|connector\.log(?:\.[12])?|(?:terrain|mission)-[a-f0-9]{32}\.json)$')
 
 
 def evidence_files(path):
@@ -45,6 +46,7 @@ class SessionRecorder:
         self.path=Path(root)/self.id
         self.started_at=datetime.now(timezone.utc).isoformat();self.stopped_at=None;self.samples=0;self.external_summary={}
         self.external_logs={k:Path(v) for k,v in (external_logs or {}).items() if k in ('KSP.log','Player.log') and v}
+        self.computer_info=None;self.situations={};self.diagnostic_counts={'computer':0,'flight':0};self.peaks={};self.event_counts={};self.last_analysis=0
         self.limit=max_bytes;self.bytes=0;self.dropped=0;self.error=None;self.last_sample=0;self.lock=threading.Lock()
         try:self.path.mkdir(parents=True,exist_ok=False)
         except OSError as error:self.error=str(error)
@@ -54,7 +56,7 @@ class SessionRecorder:
         with self.lock:return dict(id=self.id,bytes=self.bytes,limitBytes=self.limit,dropped=self.dropped,error=self.error,appVersion=VERSION,telemetrySamples=self.samples)
 
     def _manifest(self):
-        return dict(schema='ksp-connector-session-v1',id=self.id,appVersion=VERSION,readOnly=True,startedAt=self.started_at,stoppedAt=self.stopped_at,bytes=self.bytes,dropped=self.dropped,error=self.error,telemetrySamples=self.samples,externalLogs=self.external_summary,notice='Evidencias de una sesión local. La presencia de telemetría no certifica todas las pruebas. Los logs externos solo se incluyen si se configuran sus rutas.')
+        return dict(schema='ksp-connector-session-v1',id=self.id,appVersion=VERSION,readOnly=True,startedAt=self.started_at,stoppedAt=self.stopped_at,bytes=self.bytes,dropped=self.dropped,error=self.error,telemetrySamples=self.samples,externalLogs=self.external_summary,diagnosticSamples=self.diagnostic_counts,notice='Evidencias de una sesión local. La presencia de telemetría no certifica todas las pruebas. Los logs externos solo se incluyen si se configuran sus rutas.')
 
     def _save_metadata(self):
         try:
@@ -76,15 +78,63 @@ class SessionRecorder:
             except OSError as error:self.error=str(error);self._save_metadata();return False
 
     def event(self, kind, data):
+        with self.lock:
+            key=kind if kind in self.event_counts or len(self.event_counts)<64 else 'other'
+            self.event_counts[key]=self.event_counts.get(key,0)+1
+            if kind=='browser-performance-snapshot':
+                try:
+                    stats=json.loads(data.get('text','{}'))
+                    for source,target in [('renderCpu','browserRenderMaxMs'),('httpRequest','httpRequestMaxMs')]:
+                        value=stats.get(source,{}).get('maxMs')
+                        if isinstance(value,(int,float)) and not isinstance(value,bool) and 0<=value<=1e9:self.peaks[target]=max(self.peaks.get(target,0),value)
+                except (ValueError,TypeError,AttributeError):pass
         if kind=='stop':
-            self.capture_external();self.stopped_at=datetime.now(timezone.utc).isoformat()
+            self.capture_external();self.stopped_at=datetime.now(timezone.utc).isoformat();self.write_analysis()
         item=dict(at=datetime.now(timezone.utc).isoformat(),type=kind,data=data)
         return self._write('events.jsonl',(json.dumps(item,ensure_ascii=False,allow_nan=False)+'\n').encode(),True)
 
     def sample(self, data):
         if time.monotonic()-self.last_sample<1:return
         self.last_sample=time.monotonic()
+        with self.lock:
+            value=data.get('rpcReadMs')
+            if isinstance(value,(int,float)) and 0<=value<=1e9:self.peaks['rpcReadMaxMs']=max(self.peaks.get('rpcReadMaxMs',0),value)
+        with self.lock:
+            for key in ('speed','surfaceAltitude'):
+                value=data.get(key)
+                if isinstance(value,(int,float)) and not isinstance(value,bool) and math.isfinite(value):self.peaks[key]=max(self.peaks.get(key,value),value)
         self._write('telemetry.jsonl',(json.dumps(data,ensure_ascii=False,allow_nan=False)+'\n').encode(),True)
+
+    def diagnostic(self,kind,data):
+        if kind not in ('computer','flight'):raise ValueError('Diagnóstico no válido.')
+        if self._write(kind+'.jsonl',(json.dumps(data,ensure_ascii=False,allow_nan=False)+'\n').encode(),True):
+            with self.lock:
+                self.diagnostic_counts[kind]+=1
+                if kind=='computer':self.computer_info={k:data.get(k) for k in ('os','cpuCount','ramTotalBytes','diskTotalBytes','kspDetected')}
+                if kind=='flight':
+                    state=data.get('situation','unknown')
+                    if state in ('landed','splashed','pre_launch','flying','sub_orbital','orbiting','escaping','docked','unknown'):self.situations[state]=self.situations.get(state,0)+1
+                for key in ('cpuPercent','ramPercent','surfaceAltitude','meanAltitude','verticalSpeed','gForce'):
+                    value=data.get(key)
+                    if isinstance(value,(int,float)) and not isinstance(value,bool):self.peaks[key]=max(self.peaks.get(key,value),value)
+            if time.monotonic()-self.last_analysis>=60:self.write_analysis()
+
+    def analysis(self):
+        with self.lock:
+            recommendations=[]
+            if self.peaks.get('cpuPercent',0)>=90:recommendations.append('CPU elevada: comparar sesiones con malla o detalle 3D menores; no atribuye causalidad a KSP.')
+            if self.peaks.get('ramPercent',0)>=90:recommendations.append('RAM elevada: revisar consumo de KSP y otros programas; no se registra su listado.')
+            losses=self.event_counts.get('krpc-unavailable',0)
+            if losses:recommendations.append('Revisar desconexiones kRPC y cambios de escena con sus marcas de tiempo.')
+            if self.peaks.get('browserRenderMaxMs',0)>100:recommendations.append('Repintados lentos del navegador: comparar 2D, detalle del globo y curvas; no equivale a FPS de KSP.')
+            if self.peaks.get('rpcReadMaxMs',0)>500:recommendations.append('Lectura kRPC lenta: comparar RPC, cambios de escena y diagnóstico adicional antes de atribuir fallos al mapa.')
+            if self.peaks.get('httpRequestMaxMs',0)>2000:recommendations.append('Peticiones locales lentas: comparar carga del conector, muestreo y registro.')
+            if not self.samples:recommendations.append('No hay telemetría de juego: comprobar kRPC antes de evaluar rutas.')
+            return dict(schema='ksp-session-analysis-v1',generatedAt=datetime.now(timezone.utc).isoformat(),telemetrySamples=self.samples,diagnosticSamples=dict(self.diagnostic_counts),peaks=dict(self.peaks),computer=self.computer_info,situations=dict(self.situations),events=dict(self.event_counts),recommendations=recommendations,notice='Resumen automático por reglas; no modifica el código ni demuestra causas. FPS no disponible por kRPC.')
+
+    def write_analysis(self):
+        self.last_analysis=time.monotonic()
+        self._write('analysis.json',json.dumps(self.analysis(),ensure_ascii=False,allow_nan=False).encode())
 
     def artifact(self, kind, data):
         if kind not in ('terrain','mission'):raise ValueError('Tipo de evidencia no válido.')

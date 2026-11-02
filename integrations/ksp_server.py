@@ -1,5 +1,6 @@
 """Local KSP 1/kRPC telemetry server. Never sends vehicle-control commands."""
 import argparse
+import signal
 import math
 import sys
 import threading
@@ -17,6 +18,7 @@ from http.server import ThreadingHTTPServer
 from server import Handler
 from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_mission
 from integrations.ksp_session import SessionRecorder, VERSION
+from integrations.ksp_diagnostics import ComputerMonitor,read_flight
 from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG
 
 
@@ -35,22 +37,27 @@ def validate_sample(sample):
     }
 
 
-def read_vessel_sample(vessel, session_id):
-    body = vessel.orbit.body
+def read_vessel_sample(vessel, session_id,include_flight=False):
+    orbit=vessel.orbit
+    body = orbit.body
     flight = vessel.flight(body.reference_frame)
     # Heading is defined relative to local north, unlike body-fixed Cartesian axes.
     surface = vessel.flight()
-    return body, validate_sample(dict(
+    sample=validate_sample(dict(
         latitude=flight.latitude, longitude=flight.longitude, heading=surface.heading,
         surfaceAltitude=flight.surface_altitude, speed=flight.speed,
         bodyRadius=body.equatorial_radius, body=body.name,
         vessel=vessel.name, vesselId=f"{session_id}:{hash(vessel)}"))
+    if include_flight:sample['flight']=read_flight(vessel,body,dict(flight=flight,surface=surface,orbit=orbit))
+    return body,sample
 
 
 class Telemetry:
     def __init__(self, rpc_port=50000, stream_port=50001, recorder=None):
         self.rpc_port, self.stream_port = rpc_port, stream_port
         self.recorder=recorder
+        self.computer=None
+        self.last_flight_read=0
         self.cloud=None
         self.cloud_error=None
         self.instance_id=uuid.uuid4().hex
@@ -64,7 +71,8 @@ class Telemetry:
         self.terrain = None
 
     def info(self):
-        return dict(version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
+        current=self.sample
+        return dict(computer=self.computer.status() if self.computer else dict(enabled=False),flight=current.get('flight') if current else None,analysis=self.recorder.analysis() if self.recorder else None,version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
 
     def record(self, kind, data):
         if self.recorder:self.recorder.event(kind,data)
@@ -192,7 +200,17 @@ class Telemetry:
                 while not self.stopped.is_set():
                     vessel = connection.space_center.active_vessel
                     # All RPC calls here are reads. No control/autopilot access.
-                    body, sample = read_vessel_sample(vessel, session_id)
+                    read_started=time.monotonic()
+                    read_extra=time.monotonic()-self.last_flight_read>=1
+                    body, sample = read_vessel_sample(vessel, session_id,include_flight=read_extra)
+                    sample['rpcReadMs']=round((time.monotonic()-read_started)*1000,2)
+                    if read_extra:
+                        try:
+                            ut=float(connection.space_center.ut);sample['flight']['universalTime']=ut if math.isfinite(ut) else None
+                        except Exception:sample['flight']['universalTime']=None
+                        self.last_flight_read=time.monotonic()
+                        if self.recorder:self.recorder.diagnostic('flight',dict(sample['flight'],body=sample['body'],vesselId=sample['vesselId']))
+                    elif self.sample and self.sample.get('vesselId')==sample['vesselId']:sample['flight']=self.sample.get('flight')
                     with self.lock:
                         self.sample = sample
                     if self.recorder:self.recorder.sample(sample)
@@ -201,12 +219,16 @@ class Telemetry:
             except Exception as error:
                 logging.warning('kRPC no disponible: %s',error)
                 self.record('krpc-unavailable',dict(error=str(error)))
+                had_sample=self.sample is not None
                 with self.lock:
                     self.sample = None
                     if self.work:
                         self.work=None
                         self.job.update(status='failed',error='Se perdió la conexión durante el muestreo.')
                     self.message = 'Sin telemetría. Abre KSP 1, activa kRPC y selecciona un vehículo.'
+                if had_sample:
+                    if self.recorder:self.recorder.write_analysis()
+                    if self.cloud:self.cloud.control('retry')
                 self.stopped.wait(2)
             finally:
                 if connection:
@@ -271,6 +293,9 @@ def create_handler(telemetry):
                     for event in events:
                         if not isinstance(event,dict) or not isinstance(event.get('type'),str) or len(event['type'])>60 or not isinstance(event.get('text'),str) or len(event['text'])>2000:raise ValueError('Evento no válido.')
                     for event in events:telemetry.record('browser-'+event['type'],dict(text=event['text']))
+                    if any(e['type']=='pagehide' or (e['type']=='visibility' and e['text'].startswith('hidden')) for e in events):
+                        if telemetry.recorder:telemetry.recorder.write_analysis()
+                        if telemetry.cloud:telemetry.cloud.control('retry')
                     return self.reply(200,dict(recorded=bool(telemetry.recorder)))
                 if path=='/api/ksp/terrain':
                     return self.reply(202,telemetry.request_terrain(payload))
@@ -293,6 +318,8 @@ def main():
     parser.add_argument('--rpc-port', type=int, default=50000)
     parser.add_argument('--stream-port', type=int, default=50001)
     parser.add_argument('--session-dir',default='ksp-sessions',help='Carpeta local de evidencias, una sesión única por arranque')
+    parser.add_argument('--no-computer-stats',action='store_true',help='No medir CPU, RAM ni procesos de KSP')
+    parser.add_argument('--no-flight-diagnostics',action='store_true',help='No recoger datos de vuelo adicionales')
     parser.add_argument('--no-session-log',action='store_true',help='Desactiva el registro de disco')
     parser.add_argument('--cloud-config',type=Path,default=DEFAULT_CONFIG,help='Configuración local de Supabase, sin claves de administrador')
     parser.add_argument('--no-cloud-upload',action='store_true',help='No iniciar el envío de evidencias aunque esté configurado')
@@ -300,12 +327,18 @@ def main():
     parser.add_argument('--ksp-log',type=Path,help='KSP.log a incluir en las evidencias (opcional)')
     parser.add_argument('--player-log',type=Path,help='Player.log a incluir en las evidencias (opcional)')
     args = parser.parse_args()
+    def graceful_stop(signum,frame):raise KeyboardInterrupt
+    signal.signal(signal.SIGTERM,graceful_stop)
+    if hasattr(signal,'SIGBREAK'):signal.signal(signal.SIGBREAK,graceful_stop)
     telemetry = Telemetry(args.rpc_port, args.stream_port)
     try:httpd = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(telemetry))
     except OSError as error:
         parser.exit(1,f'No se pudo abrir el puerto {args.port}: {error}. Comprueba http://localhost:{args.port}/api/ksp/info y detén el conector anterior antes de reiniciar.\n')
     recorder=None if args.no_session_log else SessionRecorder(args.session_dir,external_logs={k:v for k,v in (('KSP.log',args.ksp_log),('Player.log',args.player_log)) if v})
     telemetry.recorder=recorder
+    telemetry.computer=ComputerMonitor(recorder,recorder.path if recorder else Path.cwd(),enabled=not args.no_computer_stats)
+    telemetry.computer.start()
+    if args.no_flight_diagnostics:telemetry.last_flight_read=float('inf')
     handlers=[logging.StreamHandler()]
     if recorder and not recorder.error:
         try:handlers.append(RotatingFileHandler(recorder.path/'connector.log',maxBytes=1024*1024,backupCount=2,encoding='utf-8'))
@@ -321,15 +354,17 @@ def main():
             logging.warning(telemetry.cloud_error)
     worker = threading.Thread(target=telemetry.run, daemon=True)
     worker.start()
-    logging.info('Ojo de Marte KSP v%s · instancia %s · http://localhost:%s/ksp-map.html · solo lectura',VERSION,telemetry.instance_id,args.port)
-    if recorder:logging.info('Evidencias locales: %s',recorder.path.resolve())
     try:
+        logging.info('Ojo de Marte KSP v%s · instancia %s · http://localhost:%s/ksp-map.html · solo lectura',VERSION,telemetry.instance_id,args.port)
+        logging.info('Diagnóstico: equipo %s (5 s), vuelo adicional %s (1 s). Desactivar con --no-computer-stats y --no-flight-diagnostics.',not args.no_computer_stats,not args.no_flight_diagnostics)
+        if recorder:logging.info('Evidencias locales: %s',recorder.path.resolve())
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         telemetry.stopped.set()
         worker.join(timeout=3)
+        telemetry.computer.close()
         if recorder:recorder.event('stop',dict(reason='server-stop'))
         if telemetry.cloud:telemetry.cloud.close()
         httpd.server_close()

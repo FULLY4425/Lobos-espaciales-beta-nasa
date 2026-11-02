@@ -58,6 +58,8 @@ create table if not exists public.ksp_sessions (
   telemetry_samples bigint check (telemetry_samples>=0),
   check (split_part(archive_path,'/',1)=user_id::text)
 );
+alter table public.ksp_sessions add column if not exists stopped_at timestamptz;
+alter table public.ksp_sessions add column if not exists diagnostic_summary jsonb;
 alter table public.ksp_sessions enable row level security;
 revoke all on public.ksp_sessions from public, anon, authenticated;
 grant select, insert, update on public.ksp_sessions to authenticated;

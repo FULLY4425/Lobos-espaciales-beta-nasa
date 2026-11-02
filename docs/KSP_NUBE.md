@@ -2,7 +2,7 @@
 
 El conector puede enviar sus evidencias a un proyecto **de tu cuenta de Supabase**, conservando siempre la copia local. La navegación, la demo y Marte siguen funcionando sin configurar este servicio.
 
-**Estado verificado (2 de noviembre de 2026):** el proyecto `crwzshdtvsqukheckxai` está activo. Se aplicó la migración `ksp_evidence_initial_v17`: bucket privado `ksp-evidence`, tablas, políticas RLS e índice de sesiones. Hay un usuario autorizado como administrador de evidencias, con aprobación explícita del propietario. Pasaron las nueve comprobaciones estructurales y una prueba transaccional de aislamiento con roles reales, revertida sin dejar usuarios ni sesiones de prueba. La API deniega acceso anónimo (HTTP 401). **Falta el primer envío real desde el conector en el PC de KSP**; no se afirma que ya se hayan recibido logs reales.
+**Estado verificado (2 de noviembre de 2026):** el proyecto `crwzshdtvsqukheckxai` está activo. Se aplicó la migración `ksp_evidence_initial_v17`: bucket privado `ksp-evidence`, tablas, políticas RLS e índice de sesiones. Hay un usuario autorizado como administrador de evidencias, con aprobación explícita del propietario. Pasaron las comprobaciones estructurales y una prueba transaccional de aislamiento con roles reales, revertida sin dejar usuarios ni sesiones de prueba. La API deniega acceso anónimo (HTTP 401). **Falta el primer envío real desde el conector en el PC de KSP**; no se afirma que ya se hayan recibido logs reales.
 
 Las funciones privilegiadas de consulta de autorización residen en `ksp_private`, con `search_path` vacío y comprobación de `auth.uid()`. Las funciones públicas del diagnóstico son envoltorios `SECURITY INVOKER`, sin acceso a datos de otros usuarios.
 
@@ -142,3 +142,9 @@ Después de aplicar el SQL e iniciar sesión:
 La prueba de aislamiento en PostgreSQL comprobó que un probador ve su propia sesión, no actualiza la de otro ni reasigna su propietario; una identidad no autorizada no ve sesiones y el administrador sí puede consultar ambas. Los datos temporales se revirtieron y se comprobó que no quedaron usuarios ni sesiones de prueba. Esto no sustituye la prueba de subida/descarga de un ZIP mediante Auth y Storage desde el PC.
 
 El asesor de seguridad de Supabase no señaló problemas en las tablas/políticas creadas; indicó que la [protección de contraseñas filtradas de Auth está desactivada](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). No se cambió el plan ni la configuración de contraseñas. El asesor de rendimiento señaló el [índice de sesiones aún sin uso](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index), esperado mientras no haya envíos; se conserva para consultas por usuario/fecha.
+
+## Diagnóstico del equipo y vuelo (v1.7.2)
+
+Los ZIP incorporan `computer.jsonl`, `flight.jsonl` y `analysis.json`. El índice `ksp_sessions` incluye `diagnostic_summary` (JSONB) y `stopped_at`, bajo las mismas políticas de privacidad. La migración `ksp_v17_computer_flight_summary` ya se aplicó al proyecto del propietario. El resumen permite comparar versiones y decidir mejoras sin descargar todos los logs; no identifica por sí solo causas ni modifica el software.
+
+Al ocultar/cerrar el mapa o perder kRPC se solicita una sincronización. En un cierre ordenado del conector se intenta enviar el resumen final, esperando hasta 15 s. Si falla o no se confirma dentro de ese plazo, se conserva la copia y la cola para el siguiente arranque. La pausa manual sigue impidiendo subir. Cerrar a la fuerza o apagar el PC no garantiza un último envío. [Datos, instalación y desactivación](KSP_DIAGNOSTICO.md).

@@ -2,6 +2,17 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.2 «Telemetría de misión» — 2 de noviembre de 2026 (hora de México)
+
+- Diagnóstico de equipo cada 5 s en un hilo independiente: CPU, RAM, disco de evidencias, memoria del conector y procesos de KSP de una lista permitida. Sin nombres de usuario/equipo, direcciones IP, comandos, capturas ni listado de otras aplicaciones.
+- Datos adicionales de vuelo cada segundo, con valores ausentes explícitos: altitud, velocidad vertical/horizontal, orientación, fuerza g, masa/empuje, órbita, recursos stock y tiempo universal. Solo lecturas; se reutilizan los objetos de vuelo de la telemetría básica.
+- Estado de equipo/vuelo y recomendaciones en KSP Map; estadísticas del repintado/peticiones del navegador enviadas periódicamente y al cerrar la vista.
+- Archivos `computer.jsonl`, `flight.jsonl` y `analysis.json` en el ZIP privado; resumen por reglas y fecha de cierre en el índice Supabase, conservando RLS y permisos existentes. Migración de columnas aplicada y verificada.
+- Solicitud de envío al ocultar/cerrar el mapa o perder la conexión del juego; intento final durante cierre ordenado del conector, con espera limitada y cola local durable. Se respeta la pausa manual.
+- psutil 7.0.0 fijado como dependencia del conector; indicadores parciales si falta. Opciones para desactivar estadísticas del equipo o vuelo adicional. FPS de KSP no disponible: no se inventan métricas ni causas.
+- Validación: 66 pruebas Python + 40 JavaScript (106), incluyendo privacidad, lecturas sin control, resumen/exportación, envío final, pausa y fallo de red. Chromium con datos simulados: indicadores, estado de vuelo, resumen y envío al salir. Pendientes mediciones y primer envío desde el PC real de KSP.
+- Guía: [KSP_DIAGNOSTICO.md](KSP_DIAGNOSTICO.md).
+
 ## v1.7.1 «Evidencias de Duna» — 2 de noviembre de 2026 (hora de México)
 
 - Integración del servidor de evidencias Supabase en la serie 1.7, conservando todas las funciones de Duna y Render. Actualización del estado del proyecto existente, sin crear otra cuenta ni exponer credenciales.
