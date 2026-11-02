@@ -8,7 +8,7 @@ Este documento reúne las experiencias de quienes prueban la integración con un
 
 Cada colaborador añade aquí sus resultados, logs, errores, mejoras y sugerencias. También se pueden documentar intentos reales bloqueados por problemas de conexión, indicando qué se intentó. Las pruebas exclusivas de la demo, del explorador de Marte o de AR sin KSP quedan fuera del alcance de esta bitácora.
 
-[Configuración del conector](AR_KSP.md) · [Mapa nativo KSP](KSP_MAPA.md) · [Mapas SCANsat](KSP_MAPAS_DATOS.md) · [Validaciones registradas](#validaciones-registradas-y-pruebas-pendientes)
+[Aprendizajes y protocolo para nuevos experimentos](KSP_APRENDIZAJES.md) · [Configuración del conector](AR_KSP.md) · [Mapa nativo KSP](KSP_MAPA.md) · [Mapas SCANsat](KSP_MAPAS_DATOS.md) · [Validaciones registradas](#validaciones-registradas-y-pruebas-pendientes)
 
 ## Cómo añadir tu experiencia
 
