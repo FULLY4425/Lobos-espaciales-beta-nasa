@@ -7,7 +7,7 @@
 - La bitácora pasa a ser únicamente un documento en `docs/KSP_COLABORADORES.md`, por preferencia del equipo.
 - Retirada de la página de reportes, sus scripts, estilos, formulario de issues y pruebas específicas.
 - Plantilla detallada para experiencias, logs, resultados, errores, mejoras y sugerencias; registro compartido mediante commits o pull requests.
-- Incorporación a la bitácora del registro real de KSP 1.12.5 anteriormente ubicado en `VALIDACION.md`, conservando mediciones, errores y pendientes.
+- Unificación de todo el contenido de `VALIDACION.md` en la bitácora, junto con la prueba real de KSP 1.12.5, conservando mediciones, errores, comprobaciones y pendientes. Retirada del archivo separado y actualización de sus enlaces.
 - Accesos del mapa y HUD dirigidos al documento. Se conservan las funciones del proyecto de Marte, mapas KSP, conector, HUD y AR.
 - Comprobación de enlaces y distribución; la suite vigente conserva 49 pruebas.
 

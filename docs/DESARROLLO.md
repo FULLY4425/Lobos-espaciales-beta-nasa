@@ -119,7 +119,7 @@ python3 scripts/build.py
 
 Los comandos de Node.js son opcionales y solo para pruebas de desarrollo. `dist/` no se versiona; inicia `python3 server.py` dentro de esa carpeta para probar el paquete. El servidor sigue usando Python al desplegar: GitHub Pages no ejecuta esta API.
 
-La [validación registrada](VALIDACION.md) separa pruebas unitarias, comprobaciones en navegador y ensayos pendientes con dispositivos reales. Las comprobaciones anteriores de Playwright se hicieron con herramientas temporales, no con una suite de navegador incluida en el repositorio.
+La [validación registrada](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes) separa pruebas unitarias, comprobaciones en navegador y ensayos pendientes con dispositivos reales. Las comprobaciones anteriores de Playwright se hicieron con herramientas temporales, no con una suite de navegador incluida en el repositorio.
 
 ## Contribuir o extender
 
@@ -127,7 +127,7 @@ La [validación registrada](VALIDACION.md) separa pruebas unitarias, comprobacio
 2. Conserva la procedencia y las unidades de los datos; no añadas capas científicas sin validar su cobertura.
 3. Si cambias el planificador, valida obstáculos, límites, entradas y métricas. Si cambias indicaciones o telemetría, ejecuta las pruebas JavaScript correspondientes.
 4. Comprueba que la distribución contiene los recursos web actuales. `sw.js` se conserva solo para retirar cachés heredadas; no añadas un flujo de instalación.
-5. Actualiza guías y [validación](VALIDACION.md) sin presentar telemetría simulada como prueba en KSP ni emulación de pantalla como dispositivo físico.
+5. Actualiza guías y [validación](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes) sin presentar telemetría simulada como prueba en KSP ni emulación de pantalla como dispositivo físico.
 
 El servidor HTTP incluido es de desarrollo. El despliegue público actual es un prototipo detrás de Render, no una infraestructura certificada de navegación o de casco.
 

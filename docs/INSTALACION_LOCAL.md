@@ -137,7 +137,7 @@ macOS / Linux:
 python3 -m unittest discover -s test -v
 ```
 
-La última validación registrada incluye 13 pruebas Python aprobadas. Para las 11 pruebas JavaScript opcionales y el alcance de los ensayos consulta [VALIDACION.md](VALIDACION.md).
+La última validación registrada incluye 31 pruebas Python aprobadas. Para las 18 pruebas JavaScript opcionales y el alcance de los ensayos consulta [VALIDACION.md](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
 
 ## Compartirlo con otras personas
 

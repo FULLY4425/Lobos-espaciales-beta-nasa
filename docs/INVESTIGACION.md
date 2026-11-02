@@ -45,5 +45,5 @@ La [lista de referencias y créditos](REFERENCIAS.md) incluye la ortofoto local,
 la textura global, dependencias y documentación de integración. Las nuevas
 vistas 3D, personajes, indicaciones, voz y HUD KSP/AR no añaden validación
 científica al modelo ni convierten los escenarios de KSP en datos de Marte.
-Consulta [USO.md](USO.md) para operación y [VALIDACION.md](VALIDACION.md) para
+Consulta [USO.md](USO.md) para operación y [VALIDACION.md](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes) para
 evidencia y pendientes.
