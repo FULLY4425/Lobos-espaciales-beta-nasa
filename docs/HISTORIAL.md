@@ -2,6 +2,17 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.5.0 «Evidencias KSP» — 1 de noviembre de 2026 (hora de México)
+
+- Cliente opcional de Supabase con autenticación individual de probadores, renovación de sesión y rechazo de claves de administrador en el conector.
+- Subida en segundo plano, ZIP pendiente durable, reintentos, índice por sesión y limpieza de instantáneas anteriores tras confirmación; se conserva la copia local.
+- Controles de pausa, reanudación y envío manual en el mapa local, con estado y sin credenciales en el navegador.
+- SQL para bucket privado, usuarios autorizados, índice de sesiones y políticas de acceso por usuario/administrador.
+- Inclusión explícita de KSP.log/Player.log mediante rutas elegidas, con límites y recortes declarados; exclusión de archivos privados de configuración/autenticación.
+- Registro persistente de metadatos y compresión fuera del bloqueo de telemetría. Se mantienen los modos anteriores y la bitácora como documento.
+- Validación: 45 pruebas Python y 28 JavaScript (73 en total), más navegador con Supabase simulado. Falta crear el proyecto del propietario, aplicar el SQL y verificar el primer envío y aislamiento reales. No se ha enviado información a una cuenta externa sin esa configuración.
+- Guía: [KSP_NUBE.md](KSP_NUBE.md). Esta entrada usa la fecha local de México; las anteriores conservan sus fechas registradas.
+
 ## v1.4.0 «Travesía KSP» — 2 de noviembre de 2026
 
 - Avisos anticipados de velocidad cerca de giros/destino y del borde de cobertura; umbrales ajustables, sin enviar controles al vehículo.

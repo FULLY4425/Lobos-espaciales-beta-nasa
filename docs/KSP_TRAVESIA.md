@@ -41,6 +41,8 @@ Al conectar un satélite o vehículo fuera de la región se muestra el motivo ex
 
 ## Evidencias automáticas del conector
 
+**Envío remoto opcional desde v1.5.0:** puedes configurar un proyecto privado de tu cuenta de Supabase para recibir ZIP, consultar sesiones y descargar evidencias. La cola local conserva los envíos pendientes y permite pausarlos. [Configuración, acceso y límites](KSP_NUBE.md). Sin proyecto/configuración no se envía información.
+
 Cada arranque crea una carpeta nueva en `ksp-sessions/FECHA-IDENTIFICADOR/`:
 
 - `telemetry.jsonl`: muestras del juego hasta una vez por segundo.
@@ -62,7 +64,7 @@ python3 integrations/ksp_server.py --no-session-log
 
 En Windows sustituye `python3` por el ejecutable de tu entorno. La carpeta predeterminada está excluida de Git. Copia únicamente evidencias revisadas a `docs/ksp-logs/AAAA-MM-DD-usuario/` para compartirlas en la bitácora.
 
-**KSP.log y Player.log no se capturan automáticamente**: el conector no conoce la ruta de instalación. Recógelos aparte antes de reiniciar el juego. Un fallo al guardar evidencias se comunica sin convertirlo en un fallo de telemetría.
+Desde v1.5.0 puedes incluir **KSP.log y Player.log** con `--ksp-log` y `--player-log`, indicando sus rutas. Sin esas opciones, el conector no los busca ni los recopila. Recoge los originales antes de reiniciar si necesitas todo su historial; las instantáneas automáticas tienen límites explícitos en [KSP_NUBE.md](KSP_NUBE.md). Un fallo al guardar evidencias se comunica sin convertirlo en un fallo de telemetría.
 
 ## Sesiones del navegador
 

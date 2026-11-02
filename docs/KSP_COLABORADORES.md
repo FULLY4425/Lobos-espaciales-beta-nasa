@@ -23,6 +23,10 @@ Desde GitHub puedes editar este documento con el botón del lápiz y subir los a
 
 Este repositorio es público: revisa los logs antes de añadirlos, especialmente claves, correos, nombres de usuario y rutas personales. Usa archivos de texto o ZIP revisados para logs extensos y respeta los límites de archivos de GitHub. No añadas el juego, ejecutables, credenciales ni tu instalación completa de KSP.
 
+## Envío privado opcional desde v1.5.0
+
+Las evidencias pueden enviarse a un proyecto Supabase propio con usuarios autorizados y copia local. La activación requiere configurar ese proyecto y comprobar el primer envío real. [Guía de acceso, permisos y reintentos](KSP_NUBE.md). La subida privada no publica ni modifica esta bitácora automáticamente.
+
 ## Captura automática desde v1.4.0
 
 El conector guarda sesiones únicas en `ksp-sessions/` y el mapa permite descargar evidencias, recuperar sesiones del navegador y distinguir datos reales/demo/offline. Consulta [KSP_TRAVESIA.md](KSP_TRAVESIA.md) para límites y archivos incluidos. Recoge `KSP.log` y `Player.log` por separado antes de reiniciar: no se copian automáticamente.
@@ -480,18 +484,22 @@ Comprobaciones automatizadas y de navegador, no una sesión de juego real: aviso
 
 Se mantiene pendiente: completar llegada con rover real, desconexión con guía activa, conducción sobre el mapa importado de SCANsat, voz audible y medidas de rendimiento de juego/hardware. La comparación real del rumbo de v1.2.0 y el flujo SCANsat real de v1.3.1 sí quedaron registrados en las sesiones anteriores. El CSV archivado se convierte de nuevo y reproduce sus alturas y ruta en las pruebas automatizadas de v1.4.0.
 
+### Validación de v1.5.0 «Evidencias KSP»
+
+Pruebas con servicio simulado: cola duradera tras reinicio, pérdida de red, fallo del índice, reintentos idempotentes, pausa persistente, aislamiento entre identidades locales, autenticación/renovación, límites de logs y exclusión de archivos privados. En navegador se comprobaron controles y estado sin exponer tokens. El proyecto Supabase real aún no está creado: quedan pendientes la aplicación y verificación de RLS y el primer envío contra esa cuenta.
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 35 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 45 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 | `node test/ksp-guidance.test.js` | 10 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
 
-Total registrado: **63 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **73 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 

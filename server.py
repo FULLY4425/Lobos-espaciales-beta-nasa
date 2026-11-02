@@ -35,7 +35,7 @@ class Handler(SimpleHTTPRequestHandler):
         pathname=unquote(urlsplit(self.path).path)
         if pathname=='/api/ksp/demo/terrain':
             return self.reply(200,dict(status='complete',terrain=KSP_DEMO))
-        if pathname in ('/api/ksp','/api/ksp/terrain','/api/ksp/info','/api/ksp/session','/api/ksp/session/export'):
+        if pathname in ('/api/ksp','/api/ksp/terrain','/api/ksp/info','/api/ksp/session','/api/ksp/session/export','/api/ksp/cloud'):
             return self.reply(503,dict(status='unavailable',error='KSP requiere el conector local integrations/ksp_server.py en el PC del juego.',readOnly=True))
         if pathname=='/api/health':
             return self.reply(200,dict(status='ok',engine='python',targets=len(TARGETS)))
@@ -50,7 +50,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         pathname=urlsplit(self.path).path
-        if pathname in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan'):
+        if pathname in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/cloud/control'):
             return self.reply(503,dict(error='Abre la aplicación del conector local KSP en el PC del juego.'))
         if pathname not in ('/api/plan','/api/export','/api/ksp/demo/plan','/api/ksp/maps/validate','/api/ksp/maps/plan'):
             return self.reply(404,dict(error='Ruta desconocida.'))

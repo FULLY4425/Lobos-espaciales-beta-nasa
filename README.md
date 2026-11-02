@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.4.0 «Travesía KSP» · 2 de noviembre de 2026.** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.5.0 «Evidencias KSP» · 1 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -37,6 +37,10 @@ Es un prototipo independiente inspirado en NASA Space Apps. No implica afiliaci�
 ## Mapas de KSP descargables
 
 La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alturas de SCANsat. Prepara rutas sin el juego o conecta una región guardada al vehículo del mismo cuerpo. Consulta [fuentes, exportación y conversión de CSV](docs/KSP_MAPAS_DATOS.md). Los mapas orbitales gruesos no sustituyen el muestreo local para conducir un rover.
+
+## Evidencias privadas en Supabase (v1.5.0)
+
+El conector incorpora envío opcional de ZIP a un proyecto privado propio, reintentos con cola local, pausa/reanudación y un índice de sesiones. La activación requiere crear el proyecto, aplicar las políticas e iniciar sesión como probador; sin configurar no se envía nada. [Configurar y consultar evidencias](docs/KSP_NUBE.md). No se utilizan claves de administrador en los equipos de prueba.
 
 ## Novedades v1.4.0 «Travesía KSP»
 
@@ -147,6 +151,6 @@ node test/ksp-geo.test.js
 node test/ksp-guidance.test.js
 ```
 
-**Estado de validación:** 35 pruebas Python y 28 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD y el mapa nativo cuentan con pruebas parciales de versiones anteriores en KSP 1.12.5. Falta repetir la conducción con v1.4.0, conducir un rover sobre el mapa SCANsat importado y probar un visor o casco físico. El CSV real archivado ya reproduce su región y ruta en pruebas automatizadas. La sesión real está en la [bitácora KSP](docs/KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125); las comprobaciones técnicas, en [VALIDACION.md](docs/KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
+**Estado de validación:** 45 pruebas Python y 28 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD y el mapa nativo cuentan con pruebas parciales de versiones anteriores en KSP 1.12.5. Falta repetir la conducción con la versión actual, conducir un rover sobre el mapa SCANsat importado y probar un visor o casco físico. El CSV real archivado ya reproduce su región y ruta en pruebas automatizadas. La sesión real está en la [bitácora KSP](docs/KSP_COLABORADORES.md#2026-11-01--prueba-real-del-hud-ksp-1125); las comprobaciones técnicas, en [la sección de validaciones](docs/KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

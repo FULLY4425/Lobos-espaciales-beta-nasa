@@ -7,3 +7,9 @@ __pycache__/
 
 # Local KSP session evidence; review and copy selected files into docs/ksp-logs to share.
 ksp-sessions/
+
+# Local Supabase login/refresh tokens and upload configuration. Never commit.
+.ksp-cloud/
+**/.cloud-upload.json
+**/.cloud-pending.zip
+**/.cloud-pending.tmp

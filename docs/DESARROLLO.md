@@ -170,3 +170,7 @@ Las experiencias de los colaboradores se registran en [KSP_COLABORADORES.md](KSP
 ## Conducción y sesiones KSP (v1.4.0)
 
 `src/ksp-guidance.js` implementa conectividad y estado físico de llegada; `src/speech-queue.js` ordena anuncios. `src/ksp-session.js` conserva sesiones del navegador y métricas de CPU/HTTP. `integrations/ksp_session.py` escribe evidencias locales acotadas en carpetas únicas; el conector expone diagnóstico, eventos y exportación ZIP en loopback. El servidor público no persiste evidencias de juego. [Formato, límites y pruebas pendientes](KSP_TRAVESIA.md).
+
+## Evidencias privadas (v1.5.0)
+
+`integrations/ksp_cloud.py` usa las APIs de Supabase Auth/Storage/PostgREST con una cuenta individual y clave pública. La cola se guarda con el ZIP exacto hasta confirmar Storage e índice; las credenciales se guardan solo en `.ksp-cloud/` local. `supabase/ksp_evidence.sql` define RLS y bucket privado. Las pruebas usan transportes simulados; configuración real y verificación de políticas siguen pendientes. [Guía](KSP_NUBE.md).

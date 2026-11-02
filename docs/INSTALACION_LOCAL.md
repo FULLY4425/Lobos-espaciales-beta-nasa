@@ -137,7 +137,7 @@ macOS / Linux:
 python3 -m unittest discover -s test -v
 ```
 
-La última validación registrada incluye 35 pruebas Python aprobadas. Para las 28 pruebas JavaScript opcionales y el alcance de los ensayos consulta [bitácora y validaciones](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
+La última validación registrada incluye 45 pruebas Python aprobadas. Para las 28 pruebas JavaScript opcionales y el alcance de los ensayos consulta [bitácora y validaciones](KSP_COLABORADORES.md#validaciones-registradas-y-pruebas-pendientes).
 
 ## Compartirlo con otras personas
 
@@ -152,3 +152,7 @@ local en el puerto 7173: [instalación de KSP 1 y kRPC](AR_KSP.md). Usa el botó
 **Prueba KSP** para el laboratorio sin cámara, y **Modo AR** para el prototipo
 separado. Ninguno de los dos requisitos adicionales es necesario para explorar
 el mapa. La [guía de uso](USO.md) explica controles, puntos propios y voz.
+
+## Envío opcional de evidencias KSP
+
+La navegación no requiere Supabase. Para guardar evidencias fuera del equipo consulta [KSP_NUBE.md](KSP_NUBE.md): proyecto propio privado, SQL de permisos y login individual. Nunca publiques `.ksp-cloud/` ni uses claves service_role en el conector.

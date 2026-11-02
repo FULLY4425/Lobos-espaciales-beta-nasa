@@ -17,6 +17,7 @@ from http.server import ThreadingHTTPServer
 from server import Handler
 from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_mission
 from integrations.ksp_session import SessionRecorder, VERSION
+from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG
 
 
 def validate_sample(sample):
@@ -50,6 +51,8 @@ class Telemetry:
     def __init__(self, rpc_port=50000, stream_port=50001, recorder=None):
         self.rpc_port, self.stream_port = rpc_port, stream_port
         self.recorder=recorder
+        self.cloud=None
+        self.cloud_error=None
         self.instance_id=uuid.uuid4().hex
         self.started_at=datetime.now(timezone.utc).isoformat()
         self.lock = threading.Lock()
@@ -61,7 +64,7 @@ class Telemetry:
         self.terrain = None
 
     def info(self):
-        return dict(version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None)
+        return dict(version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
 
     def record(self, kind, data):
         if self.recorder:self.recorder.event(kind,data)
@@ -224,6 +227,7 @@ def create_handler(telemetry):
         def do_GET(self):
             path=urlsplit(self.path).path
             if path=='/api/ksp/info':return self.reply(200,telemetry.info())
+            if path=='/api/ksp/cloud':return self.reply(200,telemetry.info()['cloud'])
             if path=='/api/ksp/session':return self.reply(200,telemetry.recorder.status() if telemetry.recorder else dict(enabled=False))
             if path=='/api/ksp/session/export':
                 if not telemetry.recorder:return self.reply(503,dict(error='Registro de disco desactivado. Usa la descarga del navegador.'))
@@ -246,7 +250,7 @@ def create_handler(telemetry):
             origin=self.headers.get('Origin')
             if path.startswith('/api/ksp/') and origin and urlsplit(origin).netloc!=self.headers.get('Host'):
                 return self.reply(403,dict(error='Origen no permitido.'))
-            if path not in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/session/events'):
+            if path not in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/session/events','/api/ksp/cloud/control'):
                 return super().do_POST()
             try:
                 length=int(self.headers.get('Content-Length','0'))
@@ -255,6 +259,12 @@ def create_handler(telemetry):
                 payload=json.loads(self.rfile.read(length))
                 if not isinstance(payload,dict):
                     raise ValueError('Se requiere un objeto JSON.')
+                if path=='/api/ksp/cloud/control':
+                    if not telemetry.cloud:return self.reply(503,dict(error='Configura Supabase y reinicia el conector para activar el envío.'))
+                    try:result=telemetry.cloud.control(payload.get('action'))
+                    except OSError:return self.reply(503,dict(error='No se pudo guardar el estado de subida local.'))
+                    telemetry.record('cloud-control',dict(action=payload.get('action')))
+                    return self.reply(200,result)
                 if path=='/api/ksp/session/events':
                     events=payload.get('events')
                     if not isinstance(events,list) or len(events)>20:raise ValueError('Lote de eventos no válido.')
@@ -284,18 +294,31 @@ def main():
     parser.add_argument('--stream-port', type=int, default=50001)
     parser.add_argument('--session-dir',default='ksp-sessions',help='Carpeta local de evidencias, una sesión única por arranque')
     parser.add_argument('--no-session-log',action='store_true',help='Desactiva el registro de disco')
+    parser.add_argument('--cloud-config',type=Path,default=DEFAULT_CONFIG,help='Configuración local de Supabase, sin claves de administrador')
+    parser.add_argument('--no-cloud-upload',action='store_true',help='No iniciar el envío de evidencias aunque esté configurado')
+    parser.add_argument('--cloud-include-history',action='store_true',help='Enviar también sesiones anteriores de la carpeta elegida')
+    parser.add_argument('--ksp-log',type=Path,help='KSP.log a incluir en las evidencias (opcional)')
+    parser.add_argument('--player-log',type=Path,help='Player.log a incluir en las evidencias (opcional)')
     args = parser.parse_args()
     telemetry = Telemetry(args.rpc_port, args.stream_port)
     try:httpd = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(telemetry))
     except OSError as error:
         parser.exit(1,f'No se pudo abrir el puerto {args.port}: {error}. Comprueba http://localhost:{args.port}/api/ksp/info y detén el conector anterior antes de reiniciar.\n')
-    recorder=None if args.no_session_log else SessionRecorder(args.session_dir)
+    recorder=None if args.no_session_log else SessionRecorder(args.session_dir,external_logs={k:v for k,v in (('KSP.log',args.ksp_log),('Player.log',args.player_log)) if v})
     telemetry.recorder=recorder
     handlers=[logging.StreamHandler()]
     if recorder and not recorder.error:
         try:handlers.append(RotatingFileHandler(recorder.path/'connector.log',maxBytes=1024*1024,backupCount=2,encoding='utf-8'))
         except OSError as error:recorder.error=str(error)
     logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(message)s',handlers=handlers)
+    if recorder and args.cloud_config.exists() and not args.no_cloud_upload:
+        try:
+            cloud=CloudUploader(recorder,args.cloud_config,include_history=args.cloud_include_history)
+            if cloud.client.config['enabled']:
+                telemetry.cloud=cloud;cloud.start()
+        except (CloudError,OSError,ValueError):
+            telemetry.cloud_error='Configuración de Supabase no válida. Revisa la guía; el registro local continúa.'
+            logging.warning(telemetry.cloud_error)
     worker = threading.Thread(target=telemetry.run, daemon=True)
     worker.start()
     logging.info('Ojo de Marte KSP v%s · instancia %s · http://localhost:%s/ksp-map.html · solo lectura',VERSION,telemetry.instance_id,args.port)
@@ -308,6 +331,7 @@ def main():
         telemetry.stopped.set()
         worker.join(timeout=3)
         if recorder:recorder.event('stop',dict(reason='server-stop'))
+        if telemetry.cloud:telemetry.cloud.close()
         httpd.server_close()
 
 
