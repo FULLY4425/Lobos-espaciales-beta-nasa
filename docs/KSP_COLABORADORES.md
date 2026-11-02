@@ -1,32 +1,28 @@
-# Bitácora de pruebas de integración KSP
+# Bitácora de colaboradores · Pruebas de integración KSP
 
-Disponible en **v1.3.0 «Bitácora KSP»**. [Abrir la sección](https://lobos-espaciales-python.onrender.com/ksp-tests.html) · [Ver reportes publicados](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/issues?q=is%3Aissue+%22%5BKSP%5D%5BPRUEBA%5D%22+in%3Atitle).
+Este documento reúne las experiencias de quienes prueban la integración con una partida real de **Kerbal Space Program 1**: mapa nativo, conector kRPC, HUD conectado al juego y mapas importados utilizados junto a KSP.
 
-## Quién debe usarla
+Cada colaborador añade aquí sus resultados, logs, errores, mejoras y sugerencias. También se pueden documentar intentos reales bloqueados por problemas de conexión, indicando qué se intentó. Las pruebas exclusivas de la demo, del explorador de Marte o de AR sin KSP quedan fuera del alcance de esta bitácora.
 
-Colaboradores que hayan probado la integración con una partida real de **KSP 1**: mapa nativo, conector kRPC, HUD conectado al juego o mapas SCANsat usados junto a KSP. Una conexión fallida también puede reportarse: describe el intento real, el entorno y el motivo del bloqueo.
+[Configuración del conector](AR_KSP.md) · [Mapa nativo KSP](KSP_MAPA.md) · [Mapas SCANsat](KSP_MAPAS_DATOS.md) · [Validación del proyecto](VALIDACION.md)
 
-Marca la confirmación de prueba real. La declaración del probador delimita el alcance; no se verifica automáticamente que haya ejecutado KSP. Las experiencias del explorador de Marte, de AR sin KSP o de la demo sintética se documentan en sus otros canales.
+## Cómo añadir tu experiencia
 
-La página se abre desde **Mapa KSP → Bitácora de pruebas KSP** y **HUD KSP → Reportar experiencia KSP**. Para capturar el estado de tu conector, utiliza **http://localhost:7173/ksp-tests.html**, con el conector actualizado y ejecutándose. La página pública de Render no puede leer el juego de tu computadora.
+1. Copia la plantilla de este documento y añádela al final, después del registro de sesiones.
+2. Identifica la versión o commit realmente probado, aunque sea anterior al actual.
+3. Completa los datos del entorno, pasos, resultados y sugerencias. Marca como **No probado** lo que no hayas comprobado.
+4. Añade los logs y evidencias con nombres que permitan relacionarlos con la sesión. Puedes usar `docs/ksp-logs/AAAA-MM-DD-usuario/` para archivos de texto revisados, misiones JSON y capturas. Crea la carpeta cuando tengas archivos que aportar.
+5. Enlaza los archivos desde tu entrada y relaciona los errores con la hora o línea del log. Si falta algún log, explica por qué y qué evidencia sí obtuviste.
+6. Guarda los cambios con un commit o abre un pull request para que el equipo revise e incorpore la experiencia.
 
-## Preparar un informe detallado
+Desde GitHub puedes editar este documento con el botón del lápiz y subir los archivos con **Add file → Upload files** en la carpeta correspondiente. Para un cambio que incluya varios archivos, conviene trabajar en una rama y agruparlo en un pull request. Si no tienes permiso de escritura, utiliza un fork y propone el pull request.
 
-1. Indica título, usuario, fecha de la sesión y versión de la aplicación o commit probado.
-2. Anota versión y distribución de KSP, versiones del mod/cliente kRPC, sistema, navegador, equipo y mods relevantes. Usa la versión que probaste, aunque sea anterior a la actual.
-3. Identifica cuerpo, rover/astronauta, área de integración y resultado: funcionó, funcionó parcialmente o prueba bloqueada.
-4. Describe la configuración, pasos reproducibles, resultado esperado y lo observado. Relaciona cada error con la hora y el paso correspondiente.
-5. Completa las comprobaciones: conexión, posición, rumbo/navball, alturas, destinos, recálculo, desconexión, voz, importación y rendimiento. El estado inicial es **No probado**; no se marca una función como correcta automáticamente.
-6. Adjunta logs o pega extractos. Si no fue posible obtenerlos, explica qué faltó y qué otras evidencias tienes.
-7. Escribe mejoras y sugerencias con su utilidad y prioridad. Si no tienes propuestas, indícalo.
-8. Pulsa **Preparar informe para revisión**. Verás el texto completo, podrás copiarlo y descargar un paquete JSON con el informe, diagnóstico y archivos revisados.
+Este repositorio es público: revisa los logs antes de añadirlos, especialmente claves, correos, nombres de usuario y rutas personales. Usa archivos de texto o ZIP revisados para logs extensos y respeta los límites de archivos de GitHub. No añadas el juego, ejecutables, credenciales ni tu instalación completa de KSP.
 
-Los datos del formulario no se guardan automáticamente al cerrar o recargar la página. Descarga el paquete antes de salir si necesitas conservar el trabajo. Modificar un campo invalida la vista previa anterior para evitar publicar un informe desactualizado.
+## Qué evidencias recopilar
 
-## Qué logs y evidencias aportar
-
-- **`KSP.log`**, en la carpeta de instalación del juego, correspondiente a la sesión del problema. Si usas `Player.log`, añade de qué instalación y sesión procede.
-- **Salida del conector Python**, con mensajes de inicio, conexión y errores. Puedes guardarla al ejecutar:
+- **`KSP.log`** de la carpeta de instalación, correspondiente a la sesión del problema. Si aportas `Player.log`, identifica instalación y sesión.
+- **Salida del conector Python**, con mensajes de inicio, conexión y errores. Por ejemplo:
 
   ```bash
   # macOS/Linux, desde la raíz del repositorio:
@@ -38,41 +34,103 @@ Los datos del formulario no se guardan automáticamente al cerrar o recargar la 
   .venv\Scripts\python.exe -u integrations/ksp_server.py *> ksp-connector.log
   ```
 
-  Mantén el proceso abierto durante la prueba; detén con Ctrl+C al terminar. En estos ejemplos la salida se escribe en el archivo en vez de mostrarse en la terminal.
-- **Errores de consola del navegador**: copia el mensaje completo y su momento; una captura puede complementar el texto.
-- **Misión y mapa exportados**, si el fallo depende de destinos, alturas, pendiente o cobertura.
-- **Capturas o video** que comparen lo que indica la guía con el juego/navball, especialmente para problemas de rumbo o posición.
-- **Diagnóstico puntual**: el botón consulta `/api/ksp` y `/api/ksp/terrain` una vez. Incluye estado, protocolo, telemetría disponible y resumen de muestreo. No graba una sesión completa ni sustituye `KSP.log` o la salida del conector. Un estado sin conexión se registra como tal y no demuestra una prueba real.
+  Mantén el proceso abierto durante la prueba y detén con Ctrl+C al terminar. La salida se escribe en el archivo en estos ejemplos.
+- **Errores de la consola del navegador**, con mensaje completo y hora.
+- **Misión y mapa exportados**, cuando el fallo dependa de destinos, alturas, pendiente o cobertura.
+- **Capturas o video** del juego y la guía; para errores de rumbo, compara con la navball.
+- **Estado del conector**, si es relevante: guarda la respuesta de `http://localhost:7173/api/ksp` y de `http://localhost:7173/api/ksp/terrain`. Son instantáneas, no logs de toda la sesión.
 
-### Revisión local de archivos
+## Plantilla para copiar
 
-Se admiten hasta 3 archivos `.log`, `.txt`, `.json` o `.csv`, cada uno de hasta 2 MB y con un total de hasta 5 MB. Se leen como texto UTF-8. Para logs grandes, capturas y ZIP utiliza los adjuntos del formulario de GitHub.
+Copia el bloque siguiente, rellénalo y añade la sesión al registro. No marques la plantilla vacía como una prueba realizada.
 
-La página oculta algunos patrones habituales de tokens, contraseñas y nombres de carpeta personal. Esta revisión no garantiza anonimización completa. **Descargar revisado** obtiene el texto procesado completo de cada archivo. El paquete JSON también conserva los textos revisados completos; el informe Markdown incluye extractos de hasta 2000 caracteres por archivo y señala los recortes. Los extractos pegados admiten hasta 6000 caracteres.
+```markdown
+## AAAA-MM-DD · Usuario · Título de la prueba
 
-Revisa especialmente rutas personales, correos, nombres de usuario y claves antes de adjuntar archivos. Los archivos originales de tu computadora no se modifican.
+### Sesión y entorno
 
-## Publicar y colaborar
+- Colaborador / usuario de GitHub:
+- Fecha, hora y zona horaria:
+- Aplicación: versión y commit probado:
+- KSP: versión y distribución:
+- kRPC: versión del mod y del cliente Python:
+- Python / sistema operativo / navegador:
+- Equipo: CPU, RAM y GPU:
+- Mods relevantes y versiones (o stock):
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector:
+- Cuerpo, ubicación y vehículo o astronauta:
+- Duración aproximada de la sesión:
+- Resultado general: funcionó / parcial / bloqueado:
+- Confirmación: esta experiencia corresponde a una prueba con KSP real:
 
-GitHub conserva los informes, adjuntos y comentarios de los probadores. No se guardan en el disco temporal de Render ni se necesita configurar una base de datos o dar un token de GitHub a la página.
+### Configuración y preparación
 
-1. Revisa el informe y descarga los logs procesados que quieras compartir.
-2. Pulsa **Abrir formulario de GitHub** e inicia sesión con tu cuenta. El formulario es **Prueba de integración KSP**, con prefijo `[KSP][PRUEBA]`.
-3. Si el informe es largo, pulsa **Copiar informe** y pégalo en **Informe detallado**. La página avisa cuándo es necesario: no recorta el informe para encajarlo en una URL.
-4. Completa los campos pendientes. **Arrastra los archivos completos revisados al campo «Logs y evidencias adjuntas»**. Puedes adjuntar el paquete JSON. Espera a que termine la subida.
-5. Confirma el alcance y publica en GitHub. Comprueba el número de issue: abrir el formulario o descargar un paquete no publica un reporte.
-6. Añade actualizaciones como comentarios en ese mismo issue: nueva versión probada, logs posteriores y si se resolvió. Los mantenedores pueden responder y cerrar el reporte al terminar.
+Indica cómo ejecutaste el conector, puertos, mapa/misión utilizada,
+resolución, pendiente, destinos y cualquier ajuste necesario para repetirla.
 
-El repositorio y los reportes son **públicos**. La publicación y los permisos los gestiona GitHub; la sección no crea un espacio privado ni una verificación de pertenencia al equipo. Mantiene un canal temático para pruebas KSP. No se publica nada de forma automática desde el navegador ni se utilizan credenciales compartidas del propietario.
+### Pasos de la prueba
 
-**Cargar reportes de GitHub** consulta la API pública bajo demanda, muestra hasta 20 reportes con el prefijo KSP entre las últimas 100 entradas y excluye pull requests. **Ver todos** abre el historial completo, incluyendo abiertos y cerrados. Si GitHub limita la API o falla la red, puedes seguir usando ese enlace. La lista muestra títulos, autor, estado y número; los adjuntos y comentarios se consultan en GitHub.
+1.
+2.
+3.
 
-## Formato y mantenimiento
+### Resultado esperado
 
-- Página: `ksp-tests.html`, accesible también desde el servidor local del conector.
-- Lógica de informe y filtrado: `src/ksp-reports.js`; interfaz: `src/ksp-tests.js` y `src/ksp-tests.css`.
-- Formulario nativo de GitHub: `.github/ISSUE_TEMPLATE/ksp-integration.yml`, con confirmación de KSP real y campos requeridos para versión, área, resultado, informe, logs/evidencias y mejoras.
-- Paquete descargado: `ksp-integration-report-v1`. `publication: not-submitted-by-this-download` identifica que la descarga no equivale a publicación.
-- La interfaz no ejecuta HTML de los reportes ni de los logs. El listado acepta únicamente enlaces de issues del repositorio esperado.
+### Resultado observado y experiencia de uso
 
-Se probaron preparación, validaciones, límites, revisión de archivos, copia/descarga, cambios posteriores, diagnóstico con respuestas simuladas y listado público con respuestas de prueba. No se publicaron reportes ficticios para validar la función. La confirmación y la subida final se hacen en GitHub por cada probador.
+Incluye respuesta de la guía, fluidez, indicaciones y diferencias con el juego.
+
+### Comprobaciones
+
+Usa Correcto / Falló / No probado / No aplica, con observaciones.
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | No probado | |
+| Posición y cuerpo correctos | No probado | |
+| Rumbo frente a la navball | No probado | |
+| Muestreo de alturas | No probado | |
+| Destinos y cálculo de ruta | No probado | |
+| Recálculo al desviarse | No probado | |
+| Pausa por desconexión / salida de región | No probado | |
+| Indicaciones y voz | No probado | |
+| Importación / exportación de mapas | No probado | |
+| Fluidez y consumo de recursos | No probado | |
+
+### Logs y evidencias
+
+Enlaza cada archivo y explica qué demuestra. Indica sesión, hora o líneas
+relevantes. Añade extractos si ayudan, conservando también los logs completos.
+
+- Log KSP:
+- Log del conector:
+- Errores de navegador:
+- Misión / mapa:
+- Capturas / video:
+- Evidencias que faltan y motivo:
+
+### Errores encontrados
+
+Para cada error: pasos, hora, mensaje exacto, frecuencia e impacto.
+
+### Mejoras y sugerencias
+
+Para cada propuesta: problema, cambio sugerido, utilidad y prioridad.
+Si no tienes propuestas, indícalo.
+
+### Seguimiento
+
+- Pendientes:
+- Respuesta o revisión de otro colaborador:
+- Nueva versión probada y resultado:
+- Estado: pendiente / en revisión / resuelto:
+```
+
+## Registro de sesiones
+
+Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conserva las observaciones originales cuando añadas una repetición o corrección.
+
+| Fecha | Colaborador | Versión / commit | Prueba | Resultado | Enlace a la sesión |
+| --- | --- | --- | --- | --- | --- |
+
+La prueba parcial del HUD con KSP 1.12.5 ya registrada se conserva en [VALIDACION.md](VALIDACION.md#conexión-con-una-partida-real-de-ksp-1-parcial). Ese registro corresponde al HUD anterior y no valida por sí solo el mapa nativo ni versiones posteriores.

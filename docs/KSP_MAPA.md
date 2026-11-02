@@ -140,7 +140,7 @@ operaciones solo leen datos de KSP; cancelar solo detiene trabajo del conector.
 
 ## Compartir una prueba con el equipo
 
-Usa [Bitácora de pruebas KSP](KSP_COLABORADORES.md) para documentar una sesión con el juego real, adjuntar logs y proponer mejoras. El acceso está en el menú del mapa y del HUD; los informes se publican y conservan en GitHub.
+Usa [Bitácora de pruebas KSP](KSP_COLABORADORES.md) para documentar una sesión con el juego real, adjuntar logs y proponer mejoras. Los menús del mapa y del HUD enlazan al documento; añade tu sesión y sus evidencias mediante un commit o pull request.
 
 ## Límites y validación
 

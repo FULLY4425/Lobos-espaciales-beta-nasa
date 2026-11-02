@@ -114,7 +114,6 @@ node test/directions.test.js
 node test/ar-tracking.test.js
 node test/replanning.test.js
 node test/ksp-geo.test.js
-node test/ksp-reports.test.js
 python3 scripts/build.py
 ```
 
@@ -165,4 +164,4 @@ servidor y están disponibles en el despliegue web. Los detalles están en
 
 ## Bitácora de pruebas KSP
 
-`ksp-tests.html` prepara informes en el navegador usando `src/ksp-reports.js`. La publicación se confirma en GitHub mediante `.github/ISSUE_TEMPLATE/ksp-integration.yml`; no hay token ni almacenamiento de adjuntos en el servidor Python. El listado consulta la API pública bajo demanda y filtra issues KSP. Flujo y límites: [KSP_COLABORADORES.md](KSP_COLABORADORES.md).
+Las experiencias de los colaboradores se registran en [KSP_COLABORADORES.md](KSP_COLABORADORES.md), mediante commits o pull requests. El documento incluye una plantilla y una tabla para enlazar sesiones y logs.

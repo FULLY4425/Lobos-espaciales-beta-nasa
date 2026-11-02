@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.3.0 «Bitácora KSP» · 1 de noviembre de 2026.** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.3.1 «Bitácora KSP» · 2 de noviembre de 2026.** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -40,7 +40,7 @@ La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alt
 
 ## Colaborar probando KSP
 
-En [Bitácora de pruebas KSP](https://lobos-espaciales-python.onrender.com/ksp-tests.html), los probadores de la integración real pueden preparar experiencias detalladas, revisar logs, registrar errores y proponer mejoras. Los informes y archivos completos se publican con la cuenta del probador en GitHub, donde el equipo puede comentarlos y darles seguimiento. [Cómo recopilar evidencias y publicar](docs/KSP_COLABORADORES.md).
+En el documento [Bitácora de pruebas KSP](docs/KSP_COLABORADORES.md), los colaboradores pueden registrar sus experiencias con la integración real, enlazar logs y evidencias, describir errores y proponer mejoras. Incluye una plantilla para añadir cada sesión al mismo documento mediante un commit o pull request.
 
 ## Primera prueba en cinco pasos
 
@@ -140,9 +140,8 @@ node test/directions.test.js
 node test/ar-tracking.test.js
 node test/replanning.test.js
 node test/ksp-geo.test.js
-node test/ksp-reports.test.js
 ```
 
-**Estado de validación:** 31 pruebas Python y 26 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD anterior tiene una prueba parcial en KSP 1.12.5; faltan la validación real del mapa nativo, la importación de una exportación de SCANsat y las pruebas en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
+**Estado de validación:** 31 pruebas Python y 18 JavaScript aprobadas; también se realizaron pruebas de navegador con cámara/telemetría simuladas. El HUD anterior tiene una prueba parcial en KSP 1.12.5; faltan la validación real del mapa nativo, la importación de una exportación de SCANsat y las pruebas en un visor o casco físico. Los detalles están en [VALIDACION.md](docs/VALIDACION.md).
 
 Conservar los créditos de NASA/JPL/University of Arizona, Gasda et al. y Solar System Scope al reutilizar sus recursos. Cada fuente conserva sus condiciones; no se atribuye una licencia única a los datos de terceros.

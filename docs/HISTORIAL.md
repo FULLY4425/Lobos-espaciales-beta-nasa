@@ -2,6 +2,14 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.3.1 «Bitácora KSP» — 2 de noviembre de 2026
+
+- La bitácora pasa a ser únicamente un documento en `docs/KSP_COLABORADORES.md`, por preferencia del equipo.
+- Retirada de la página de reportes, sus scripts, estilos, formulario de issues y pruebas específicas.
+- Plantilla detallada para experiencias, logs, resultados, errores, mejoras y sugerencias; registro compartido mediante commits o pull requests.
+- Accesos del mapa y HUD dirigidos al documento. Se conservan las funciones del proyecto de Marte, mapas KSP, conector, HUD y AR.
+- Comprobación de enlaces y distribución; la suite vigente conserva 49 pruebas.
+
 ## v1.3.0 «Bitácora KSP» — 1 de noviembre de 2026
 
 - Apartado exclusivo para experiencias de pruebas reales de la integración KSP, accesible desde mapa y HUD.
