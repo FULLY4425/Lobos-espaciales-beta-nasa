@@ -1,0 +1,48 @@
+Registro del mapa nativo (ksp-map.html) durante la conducción en Duna
+Sesión 2026-11-01, FULLY4425, asistida por Claude (IA). Hora local UTC-6 (UTC entre paréntesis).
+
+Origen: textos del DOM registrados desde el navegador integrado cada 0,5 s
+(#navigationBanner, valores <dd> de coordenadas y rumbo/velocidad, mensajes de
+estado) y llamadas a speechSynthesis.speak/cancel interceptadas. No se escuchó
+el audio. Transcripción de la salida de esas consultas; solo se recortaron
+entradas repetidas sin cambios.
+
+== Preparación (17:05-17:07, 23:05-23:07 UTC)
+Conector de main en el commit cbdc7ce (v1.1.0 «Horizonte KSP») en 127.0.0.1:7173, protocolo ksp-surface-v1.
+Conectar KSP local -> "KSP 1 conectado · solo lectura · coordenadas reales del juego."
+Cuerpo Duna · Vehículo Crater Crawler · -0.04890°, -74.72511° · 82° / 0.0 m/s · 1.7 m
+Muestreo 33 × 33, 25 m/celda -> "33 × 33 · 25 m/celda · 800 m de ancho" (1089 alturas, ~12 s)
+Alturas de la región: 5216-5486 m (GET /api/ksp/terrain, sourceType KSP1-kRPC-bedrock)
+Destino "Base Duna Este" -0.0489, -74.6714 con pendiente 15° ->
+  "Guía suspendida: Sin paso entre Vehículo actual y Base Duna Este: revisa pendiente, agua y cobertura.. No sigas una ruta anterior."
+Destino "Llanura Sureste" -0.07576, -74.6893 con pendiente 20° ->
+  "Ruta KSP lista. Conduce desde el juego; la guía no acciona los mandos."
+  métricas: "262 m · +2.7 m · ~3 min a 2 m/s"
+  voz: SPEAK "En 265 metros, llegarás a llanura sureste. fin del recorrido"
+
+== Conducción (hora local · coordenadas ; rumbo / velocidad | aviso | estado)
+17:08:28 -0.05057°, -74.72265° ; 130° / 6.1 m/s | En 250 metros | Llegarás a Llanura Sureste
+17:08:30 -0.05120°, -74.72004° ; 130° / 6.3 m/s | En 230 metros
+17:08:33 -0.05201°, -74.71674° ; 130° / 6.4 m/s | En 210 metros
+17:08:36 -0.05318°, -74.71346° ; 154° / 6.5 m/s | En 195 metros
+17:08:46 -0.06630°, -74.70563° ; 162° / 11.9 m/s | En 110 metros
+17:08:51 -0.07463°, -74.69971° ; 160° / 13.4 m/s | En 45 metros
+17:08:55 -0.08260°, -74.69323° ; 160° / 14.8 m/s | En 60 metros | Ruta KSP recalculada desde el vehículo; destinos pendientes conservados.
+17:09:01 -0.09515°, -74.68303° ; 158° / 13.6 m/s | En 75 metros | Desvío detectado. Recalculando en el terreno KSP…
+17:09:01 -0.09629°, -74.68200° ; 157° / 13.0 m/s | En 110 metros | Ruta KSP recalculada desde el vehículo; destinos pendientes conservados.
+17:09:04 -0.10015°, -74.67833° ; 157° / 10.6 m/s | En 70 metros · Gira ligeramente a la derecha · 150 metros hasta el destino
+  voz: CANCEL, SPEAK "Ruta KSP calculada.", CANCEL, SPEAK "En 70 metros, gira ligeramente a la derecha"
+17:09:07 -0.10312°, -74.67525° ; 153° / 8.2 m/s | En 105 metros · 185 metros hasta el destino
+17:09:14 -0.10706°, -74.67060° ; 147° / 0.8 m/s | En 140 metros · 220 metros hasta el destino
+17:09:50 -0.11077°, -74.67072° ; 97° / 3.6 m/s | Telemetría perdida. Guía en pausa; no se simula la posición del juego.
+  (panel del navegador oculto; al volver a consultar la página, la telemetría
+  seguía llegando y la guía se había recalculado: "En 140 metros")
+17:13:00 voz: SPEAK "Recalculando ruta KSP.", SPEAK "Ruta KSP calculada.",
+  SPEAK "En 130 metros, llegarás a llanura sureste. fin del recorrido"
+~17:14 -0.16185°, -74.79092° ; 300° / 0.0 m/s ->
+  "Vehículo fuera de la región muestreada. Carga una región que incluya el vehículo y sus destinos."
+
+Nota sobre el rumbo mostrado: con el conector de v1.1.0 el campo "rumbo" salía
+de vessel.flight(body.reference_frame) y no coincidía con la navball (p. ej. el
+mapa mostraba 130° mientras la trayectoria medida iba a ~105°). Ver
+api-ksp-v1.2.0.json y navball-rumbo-284.jpg para la versión corregida.
