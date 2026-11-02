@@ -143,6 +143,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | Fecha | Colaborador | Versión / commit | Prueba | Resultado | Enlace a la sesión |
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-01 | No identificado en el registro original | Copia anterior a `92c7046` | HUD con KSP 1.12.5 · Crater Crawler en Kerbin | Parcial; incidencias y pendientes documentados | [Leer sesión](#2026-11-01--prueba-real-del-hud-ksp-1125) |
+| 2026-11-01 | FULLY4425 (asistida por IA) | `cbdc7ce` (v1.1.0) y `154cbff` (v1.2.0) | Mapa nativo en Duna · rumbo v1.2.0 · SCANsat 21.1 | Parcial; guía y recálculo correctos, destino no alcanzado | [Leer sesión](#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -215,6 +216,155 @@ Fallos y observaciones:
 
 **Aún sin comprobar con el juego:** completar la ruta hasta la llegada, “fuera de
 cobertura” con mensaje de suspensión, Duna y sesiones largas.
+
+## 2026-11-01 · FULLY4425 · Mapa nativo en Duna y conector v1.2.0
+
+> Registro preparado por una IA (Claude) que manejó el juego con teclado y ratón
+> en el equipo de FULLY4425, con su autorización. La aplicación y el conector
+> solo leyeron datos; no se enviaron mandos por kRPC. Es la continuación de la
+> sesión anterior de esta tabla (HUD en Kerbin), que se deja sin cambios.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425; pruebas ejecutadas por Claude (IA).
+- Fecha, hora y zona horaria: 2026-11-01, 17:05–18:13, hora central de México (UTC−6).
+- Aplicación: versión y commit probado: mapa nativo con `cbdc7ce` (v1.1.0 «Horizonte KSP»); comprobación de rumbo con `154cbff` (v1.2.0 «Atlas KSP»).
+- KSP: versión y distribución: KSP 1.12.5, Steam.
+- kRPC: versión del mod y del cliente Python: mod kRPC 0.7.0; cliente `krpc==0.7.0`.
+- Python / sistema operativo / navegador: Python 3.13.17 / Windows 10 Pro 19045 / navegador integrado de la app de escritorio de Claude.
+- Equipo: CPU, RAM y GPU: Intel Core i5-11400H, 23,7 GB de RAM, NVIDIA GeForce RTX 3050 Laptop GPU (más Intel UHD).
+- Mods relevantes y versiones (o stock): kRPC 0.7.0; SCANsat 21.1 (instalado en esta sesión); ModuleManager 4.2.3; además BDArmory, DarkMultiPlayer, EnvironmentalVisualEnhancements, Scatterer, Near Future (Electrical/Propulsion), TweakScale, SystemHeat, CryoTanks, B9PartSwitch, KSP-Recall y otros.
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector: mapa nativo y conector.
+- Cuerpo, ubicación y vehículo o astronauta: Duna, rover Crater Crawler (lat −0,049°, lon −74,725°, 5345 m).
+- Duración aproximada de la sesión: unos 70 min de pruebas con el mapa y el conector.
+- Resultado general: funcionó / parcial / bloqueado: parcial.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- Conector: `.venv\Scripts\python.exe -u integrations/ksp_server.py` en el clon del
+  repositorio, en `127.0.0.1:7173`. kRPC en 127.0.0.1, RPC 50000, stream 50001.
+  Primero hubo que detener un conector antiguo de otra carpeta que ocupaba el
+  puerto 7173 y no tenía las rutas del mapa nativo.
+- Mapa: `http://localhost:7173/ksp-map.html` → **Conectar KSP local** → muestreo
+  33 × 33 a 25 m (800 m de ancho).
+- Destinos: "Base Duna Este" (−0,0489°, −74,6714°) con pendiente 15°, y después
+  "Llanura Sureste" (−0,07576°, −74,6893°) con pendiente 20°. La velocidad de
+  estimación era de 2 m/s y "Evitar agua" estaba activado.
+- Voz activada (Microsoft Helena, es-ES).
+- Conducción con el teclado de KSP: `W`/`S`, `A`/`D`, trim `Alt+A`/`Alt+D` y el
+  icono del grupo de frenos.
+
+### Pasos de la prueba
+
+1. Conectar el mapa nativo con el rover en Duna y muestrear la región.
+2. Calcular una ruta con pendiente máxima de 15° y, después, con 20°.
+3. Conducir hacia el destino observando el aviso, la distancia y la voz.
+4. Desviarse y salir de la región muestreada.
+5. Actualizar a v1.2.0, reiniciar el conector y comparar el rumbo con la navball.
+6. Instalar SCANsat 21.1, reiniciar KSP y comprobar en `KSP.log` que carga.
+
+### Resultado esperado
+
+Ruta sobre las alturas reales de Duna, distancia decreciente al conducir,
+recálculo al desviarse conservando el destino, aviso al salir de la región, y
+rumbo del conector igual al de la navball en v1.2.0.
+
+### Resultado observado y experiencia de uso
+
+- **Muestreo:** 1089 alturas reales (5216–5486 m) en unos 12 s.
+- **Planificación:**
+  - Con 15° el mapa respondió "Sin paso entre Vehículo actual y Base Duna Este…",
+    lo que es coherente porque todo el entorno tenía 15–20° de pendiente.
+  - Con 20° calculó 262 m, +2,7 m de subida y ~3 min a 2 m/s.
+- **Guía:** la distancia bajó de 265 a 45 m durante la conducción, y la voz
+  anunció la indicación.
+- **Destino no alcanzado (fallo de conducción, no del mapa):** el rover aceleró
+  cuesta abajo hasta ~15 m/s y pasó de largo. El mapa mostró "Desvío
+  detectado. Recalculando en el terreno KSP…" y "Ruta KSP recalculada desde el
+  vehículo; destinos pendientes conservados", y la voz dijo "Recalculando ruta
+  KSP." / "Ruta KSP calculada.". Al soltar `W` en pendiente, el rover rodaba
+  hacia atrás.
+- **Salida de la región:** a ~740 m del destino, el mapa mostró "Vehículo fuera de
+  la región muestreada. Carga una región que incluya el vehículo y sus destinos.".
+- **Panel del navegador oculto:** con el panel oculto, la página mostró durante un
+  momento "Telemetría perdida. Guía en pausa…" y se recuperó sola al volver a
+  consultarla.
+- **Rumbo con v1.1.0:** el campo de rumbo no coincidía con la navball (p. ej., 130°
+  mostrados frente a ~105° de trayectoria real).
+- **Rumbo con v1.2.0:** el conector dio 284,3° y la navball 284°. El método anterior
+  (`body.reference_frame`) habría dado 301°.
+- **SCANsat 21.1:** cargó sin excepciones propias y con 20 piezas. Con él se
+  construyó y guardó en el VAB un satélite de altimetría para Duna, sin lanzarlo
+  aún.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | Conexión con v1.1.0 y de nuevo tras reiniciar el conector con v1.2.0 ([api-ksp-v1.2.0.json](ksp-logs/2026-11-01-FULLY4425/api-ksp-v1.2.0.json)). |
+| Posición y cuerpo correctos | Correcto | Duna, Crater Crawler; las coordenadas cambiaban de forma coherente con la conducción. |
+| Rumbo frente a la navball | Correcto (v1.2.0) | 284,3° frente a 284° ([navball-rumbo-284.jpg](ksp-logs/2026-11-01-FULLY4425/navball-rumbo-284.jpg)). Con v1.1.0 falló, como ya se sabía. |
+| Muestreo de alturas | Correcto | 33 × 33 a 25 m, 1089 alturas en ~12 s. |
+| Destinos y cálculo de ruta | Correcto | "Sin paso" con 15°; ruta de 262 m con 20°. |
+| Recálculo al desviarse | Correcto | Varios recálculos desde el vehículo conservando el destino ([registro](ksp-logs/2026-11-01-FULLY4425/registro-mapa-nativo-duna.txt)). |
+| Pausa por desconexión / salida de región | Correcto | "Vehículo fuera de la región muestreada…". No se probó la desconexión del juego con la guía activa. |
+| Indicaciones y voz | Correcto | Aviso y distancia coherentes; llamadas de voz registradas. No se escuchó el audio. |
+| Importación / exportación de mapas | No probado | SCANsat instalado, pero sin escaneo ni exportación todavía. |
+| Fluidez y consumo de recursos | No probado | No se midieron FPS ni consumo. |
+
+### Logs y evidencias
+
+- Log KSP: [ksp-log-scansat-vab.zip](ksp-logs/2026-11-01-FULLY4425/ksp-log-scansat-vab.zip)
+  contiene el `KSP.log` de la ejecución que empezó a las 17:32 con SCANsat.
+  - Líneas 141–142 `[LOG 17:33:01]`: carga de `SCANsat.dll` V21.1.0.
+  - Línea 18910 `[LOG 17:35:10]`: fin de la carga.
+  - Línea 20526 `[EXC 18:36:43]`: excepción de DynamicBatteryStorage, ajena al proyecto.
+  - Las líneas de DarkMultiPlayer sobre `godarklight.privatedns.org` son de ese mod.
+- Log de la ejecución con la conducción: [ksp-player-prev-duna.zip](ksp-logs/2026-11-01-FULLY4425/ksp-player-prev-duna.zip)
+  contiene el `Player-prev.log` de Unity (ejecución de 16:59 a 17:32). Es parcial:
+  Unity lo dejó relleno de bytes nulos y solo conserva parte del texto.
+- Log del conector: [conector-v1.2.0.log](ksp-logs/2026-11-01-FULLY4425/conector-v1.2.0.log)
+  contiene la salida del conector v1.2.0 (17:24–17:30).
+- Errores de navegador: no se registraron errores de consola.
+- Misión / mapa: [registro-mapa-nativo-duna.txt](ksp-logs/2026-11-01-FULLY4425/registro-mapa-nativo-duna.txt)
+  recoge los textos del mapa y la voz con hora, coordenadas y destinos. Es una
+  transcripción de lo leído en la página, no un log generado por la aplicación.
+  No se exportó la misión.
+- Capturas / video: [navball-rumbo-284.jpg](ksp-logs/2026-11-01-FULLY4425/navball-rumbo-284.jpg).
+- Evidencias que faltan y motivo:
+  - El `KSP.log` y el log del conector de la conducción (v1.1.0) se sobrescribieron
+    al reiniciar KSP y el conector.
+  - No se guardó `/api/ksp/terrain` ni la misión exportada antes de reiniciar.
+  - Las capturas completas incluían el escritorio del usuario y no se publican.
+
+### Errores encontrados
+
+1. **Doble punto en el mensaje de "Sin paso".** Dice "…agua y cobertura.. No
+   sigas…". Sale siempre que no hay ruta; es solo un detalle de texto.
+2. **Rumbo del mapa en v1.1.0.** No coincidía con la navball. Ya está corregido en
+   v1.2.0 y verificado en esta sesión.
+
+### Mejoras y sugerencias
+
+- **Elegir destinos según la pendiente** (prioridad media). Hoy hay que adivinar un
+  destino accesible. Se podría colorear la pendiente máxima por celda en el mapa
+  2D, o indicar qué zonas cumplen el límite elegido.
+- **Aviso de velocidad cuesta abajo** (prioridad baja). En Duna el rover se pasa
+  del destino con facilidad. Se podría avisar "reduce velocidad" cuando la
+  velocidad supere la de estimación cerca del destino.
+
+### Seguimiento
+
+- Pendientes:
+  - Llegar y detenerse en el destino.
+  - Probar la desconexión del juego con la guía activa.
+  - Escanear Duna con SCANsat, exportar el CSV, convertirlo con
+    `scripts/import-scansat.py` y planificar sobre él.
+  - Medir la fluidez.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.2.0; rumbo correcto frente a la navball.
+- Estado: en revisión.
 
 
 ## Validaciones registradas y pruebas pendientes
