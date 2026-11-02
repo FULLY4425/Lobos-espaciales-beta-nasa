@@ -615,23 +615,28 @@ En Chromium: página principal con capas de Marte, mapa KSP integrado, carga de 
 
 Estado de Supabase actualizado: el propietario indicó que creó el proyecto. La aplicación/verificación de SQL/RLS y el primer envío real no se han comprobado desde este entorno.
 
+### Validación de v1.7.0 «Duna Explorador»
+
+Comprobaciones de datos: PNG completo idéntico al original por SHA-256, 529220 alturas preservadas y huecos desconocidos, proyección global/local y coordenadas esféricas. Pruebas de restricciones meteorológicas hipotéticas, desvío de rutas y rechazo de destino dentro de la tormenta sin alterar el terreno. Chromium: atlas/globo completos, selección y apertura de región, objetivos documentados, textura/alturas/mezcla, cámaras, ensayo virtual, HUD y alternativa WebXR no disponible. Se mantienen pruebas de conexión, evidencias, pérdida/recuperación y funciones de Marte. No constituye una prueba de esta versión en KSP real ni en un dispositivo AR físico. [Guía](DUNA_EXPLORADOR.md).
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 47 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 52 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
 | `node test/ksp-geo.test.js` | 3 pruebas aprobadas. | Proyección nativa, altas latitudes, cruce de longitud y destinos con coordenadas de malla. |
 | `node test/ksp-guidance.test.js` | 10 pruebas aprobadas. | Conectividad, agua/esquinas, avisos anticipados, llegada/parada, paso de largo, cola y caducidad de voz, sesiones y errores. |
 | `node test/terrain-style.test.js` | 8 pruebas aprobadas. | Paleta/curvas, huecos, proyecciones, cuerpo/radio, límites geográficos y cobertura del CSV real. |
+| `node test/ksp-global.test.js` | 4 pruebas aprobadas. | Escaneo completo, huecos, coordenadas esféricas, regiones seleccionadas y restricciones de tormenta. |
 
-Total registrado: **83 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **92 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 
-Se utilizó Chromium con Playwright como herramienta temporal. Estos scripts de navegador no forman parte de una suite versionada del repositorio.
+Se utilizó Chromium con Playwright como herramienta temporal. Los scripts históricos fueron temporales. Desde v1.7.0, `python3 scripts/check_duna_browser.py` reproduce la comprobación del explorador de Duna con Playwright y Chromium como herramientas opcionales.
 
 - Carga de los 718 objetivos y de la ortofoto HiRISE; mapa 2D, terreno 3D, globo y cámaras.
 - Recorrido Stornoway → Whaligoe a 20°: unos 1310 m, +59.6 m de ascenso y 50 minutos educativos. La distancia de la animación puede ser ligeramente mayor al considerar desplazamiento 3D; las métricas de misión usan distancia horizontal.

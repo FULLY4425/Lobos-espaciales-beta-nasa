@@ -1,5 +1,7 @@
 # Mapas descargables y fuentes de datos KSP
 
+**v1.7.0:** [Duna completo, globo, objetivos, recorridos, clima de entrenamiento y AR](DUNA_EXPLORADOR.md).
+
 **Nuevo en v1.6.0:** [mapas 2D/3D, texturas, curvas de nivel y orientación](KSP_MAPAS_3D.md).
 
 Disponible desde **v1.2.0 «Atlas KSP»**. Se mantienen el explorador de Marte, el mapa nativo, el HUD y AR.

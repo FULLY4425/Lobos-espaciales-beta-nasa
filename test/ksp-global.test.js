@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {globalPixel,globalHeight,regionFromGlobal,globePoint,globeGeo} from '../src/ksp-global.js';
+import {trainingWeather} from '../src/ksp-environment.js';
+import {reachableTerrain} from '../src/ksp-guidance.js';
+const data=JSON.parse(fs.readFileSync(new URL('../public/data/duna-global.json',import.meta.url)));
+test('global export preserves every scanned pixel and leaves the remainder unknown',()=>{assert.equal(data.heights.length,1126*563);assert.equal(data.heights.filter(Number.isFinite).length,529220);assert.equal(globalHeight(data,-74.973,-180),4105.1);assert.equal(globalHeight(data,90,0),null);assert.equal(globalPixel(data,91,0),null);});
+test('longitude wrapping and spherical coordinates roundtrip across the seam and near poles',()=>{assert.deepEqual(globalPixel(data,0,190),globalPixel(data,0,-170));for(const [lat,lon] of [[0,0],[89.9,179.9],[-89.9,-179.9],[2.03246,-73.82612]]){const p=globeGeo(globePoint(lat,lon,1.02));assert(Math.abs(p.lat-lat)<1e-8);assert(Math.abs(p.lon-lon)<1e-8);}});
+test('selected regions use physical Duna heights and preserve missing scans',()=>{const {terrain:t}=regionFromGlobal(data,2.03246,-73.82612);assert.equal(t.body,'Duna');assert.equal(t.bodyRadius,320000);assert.equal(t.elevations[8*17+8],globalHeight(data,2.03246,-73.82612));assert(t.elevations.every(z=>z===null||Number.isFinite(z)));assert.throws(()=>regionFromGlobal({...data,heights:data.heights.map(()=>null)},0,0));assert.throws(()=>regionFromGlobal(data,91,0));});
+test('storm restricts reachability while clear and dust preserve passability',()=>{const t={width:17,height:17,cellMeters:25,elevations:Array(289).fill(10),water:Array(289).fill(false)};assert.equal(trainingWeather(t,'clear').blocked.size,0);assert.equal(trainingWeather(t,'dust').blocked.size,0);const storm=trainingWeather(t,'storm');assert(storm.blocked.size>0);assert(!storm.blocked.has(8*17+8));const reach=reachableTerrain(t,{x:8,y:8},15,true,storm.blocked);for(const index of storm.blocked)assert.equal(reach.pass[index],0);assert.throws(()=>trainingWeather(t,'real-weather'));});

@@ -1,9 +1,9 @@
 import {slopeAt} from './route.js';
 
 // Same cell, edge-grade and diagonal-corner rules as Python A*. No inferred obstacles.
-export function reachableTerrain(t,origin,maxSlope,avoidWater=true){
+export function reachableTerrain(t,origin,maxSlope,avoidWater=true,blocked=new Set()){
  const count=t.width*t.height,pass=new Uint8Array(count),reachable=new Uint8Array(count),slopes=new Float64Array(count);
- for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){const i=y*t.width+x;slopes[i]=slopeAt(t,x,y);pass[i]=Number.isFinite(t.elevations[i])&&slopes[i]<=maxSlope&&!(avoidWater&&t.water[i])?1:0;}
+ for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){const i=y*t.width+x;slopes[i]=slopeAt(t,x,y);pass[i]=Number.isFinite(t.elevations[i])&&slopes[i]<=maxSlope&&!(avoidWater&&t.water[i])&&!blocked.has(i)?1:0;}
  const x=Math.round(origin.x),y=Math.round(origin.y),queue=[];if(x>=0&&y>=0&&x<t.width&&y<t.height&&pass[y*t.width+x]){queue.push(y*t.width+x);reachable[queue[0]]=1;}
  for(let at=0;at<queue.length;at++){const i=queue[at],x=i%t.width,y=Math.floor(i/t.width);for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const a=x+dx,b=y+dy,j=b*t.width+a;if(a<0||b<0||a>=t.width||b>=t.height||!pass[j]||reachable[j])continue;if(dx&&dy&&(!pass[y*t.width+a]||!pass[b*t.width+x]))continue;const grade=Math.atan(Math.abs(t.elevations[j]-t.elevations[i])/(t.cellMeters*Math.hypot(dx,dy)))*180/Math.PI;if(grade>maxSlope)continue;reachable[j]=1;queue.push(j);}}
  return {pass,reachable,slopes,count:queue.length};

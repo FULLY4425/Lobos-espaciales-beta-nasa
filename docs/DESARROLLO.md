@@ -180,3 +180,7 @@ Las experiencias de los colaboradores se registran en [KSP_COLABORADORES.md](KSP
 `src/terrain-style.js` comparte paleta y curvas entre Marte y KSP. `src/ksp-imagery.js` valida y reproyecta la textura en la malla local; la imagen no modifica elevaciones ni planificación. `public/data/ksp-map-catalog.json` referencia regiones y metadatos, sin duplicar los archivos de evidencias. Las máscaras se regeneran con `scripts/ksp_texture_coverage.py` a partir de los CSV ZIP de las sesiones. El mapa 3D KSP reutiliza marcadores y repinta a demanda; el espacio integrado pausa consultas y guía cuando queda oculto.
 
 Comprobaciones adicionales: `node test/terrain-style.test.js`; las dos pruebas del generador de cobertura están incluidas en `python3 -m unittest discover -s test -v`. [Uso y contrato de textura](KSP_MAPAS_3D.md).
+
+## Duna Explorador (v1.7.0)
+
+`python3 scripts/build_duna_atlas.py` publica el PNG completo sin cambios y genera la cuadrícula global con alturas en decímetros enteros y huecos `null`. El globo reduce solo su geometría de visualización (paso de cuatro píxeles), sin modificar el archivo. Las regiones locales consultan el píxel más próximo y siguen pasando por la validación nativa y A*. `ksp_environment.py` y `ksp-environment.js` comparten parámetros explícitos de entrenamiento; el servidor aplica las restricciones y conserva su procedencia sintética en la misión. La maqueta WebXR acepta una textura explícita para que Duna nunca use el fondo de Marte. Pruebas adicionales: `test/test_duna_atlas.py` y `node test/ksp-global.test.js`.

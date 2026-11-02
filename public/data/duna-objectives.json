@@ -1,0 +1,10 @@
+{
+ "body":"Duna",
+ "notice":"Puntos de las pruebas reales del equipo; no son objetivos ChemCam ni afloramientos NASA.",
+ "points":[
+  {"name":"Travesía · región inicial del rover","lat":-0.1622,"lon":-74.79068,"kind":"rover","description":"Centro de la región SCANsat de la prueba real v1.4.0. Malla de 17×17 a 2000 m.","source":"/docs/ksp-logs/2026-11-01-FULLY4425-travesia/registro-travesia.txt"},
+  {"name":"Travesía · última región del rover","lat":2.03246,"lon":-73.82612,"kind":"rover","description":"Centro de la segunda región real de conducción en Duna. 289/289 muestras.","source":"/docs/ksp-logs/2026-11-01-FULLY4425-travesia/duna-rover-scansat-2.json"},
+  {"name":"Travesía · llegada registrada","lat":2.06843,"lon":-73.94656,"kind":"validation","description":"Posición observada del rover al confirmar llegada en la prueba v1.4.0: a 7.9 m del destino, detenido. No es la coordenada exacta del destino.","source":"/docs/ksp-logs/2026-11-01-FULLY4425-travesia/registro-travesia.txt"},
+  {"name":"SCANsat · primera región archivada","lat":-13.268,"lon":-133.961,"kind":"scan","description":"Región anterior: 280/289 muestras válidas de altimetría del juego.","source":"/docs/ksp-logs/2026-11-01-FULLY4425-scansat/duna-region-scansat.json"}
+ ]
+}

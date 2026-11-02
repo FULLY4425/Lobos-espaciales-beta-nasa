@@ -10,10 +10,10 @@ export async function startTabletopAR(canvas,overlay,terrain,path,options={}) {
     const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),root=new THREE.Group();root.visible=false;scene.add(root);
     const {width:w,height:h,cellMeters:m,elevations:z}=terrain,minimum=Math.min(...z.filter(v=>v!==null));
     const positions=[],uvs=[],indices=[];
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){positions.push((x-w/2)*m,(z[y*w+x]??minimum)-minimum,(y-h/2)*m);uvs.push(x/w,1-y/h);}
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){positions.push((x-w/2)*m,(z[y*w+x]??minimum)-minimum,(y-h/2)*m);uvs.push(options.textureCanvas?x/(w-1):x/w,options.textureCanvas?1-y/(h-1):1-y/h);}
     for(let y=0;y<h-1;y++)for(let x=0;x<w-1;x++){const a=y*w+x,b=a+1,c=a+w,d=c+1;if([a,c,b].every(i=>z[i]!==null))indices.push(a,c,b);if([b,c,d].every(i=>z[i]!==null))indices.push(b,c,d);}
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);disposables.push(geometry);
-    const texture=new THREE.TextureLoader().load('/public/imagery/glen-torridon-hirise.webp');texture.colorSpace=THREE.SRGBColorSpace;disposables.push(texture);
+    const texture=options.textureCanvas?new THREE.CanvasTexture(options.textureCanvas):new THREE.TextureLoader().load('/public/imagery/glen-torridon-hirise.webp');texture.colorSpace=THREE.SRGBColorSpace;disposables.push(texture);
     const material=new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide});disposables.push(material);root.add(new THREE.Mesh(geometry,material));
     let routeLine=null;
     if(path.length){const routeGeometry=new THREE.BufferGeometry().setFromPoints(path.map(([x,y])=>new THREE.Vector3((x-w/2)*m,(z[y*w+x]??minimum)-minimum+3,(y-h/2)*m)));const routeMaterial=new THREE.LineBasicMaterial({color:'#aaffcc'});disposables.push(routeGeometry,routeMaterial);routeLine=new THREE.Line(routeGeometry,routeMaterial);root.add(routeLine);}

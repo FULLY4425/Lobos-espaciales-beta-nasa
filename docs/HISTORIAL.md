@@ -2,6 +2,17 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.0 «Duna Explorador» — 1 de noviembre de 2026 (hora de México)
+
+- Publicación del PNG completo original de SCANsat, metadatos y las 529220 alturas del CSV, conservando huecos y cobertura del 83.5%. Página principal con atlas completo 2D, globo de Duna 3D y apertura de regiones a partir de coordenadas seleccionadas.
+- Capas de textura, elevación y mezcla; objetivos documentados de las pruebas reales con filtro, evidencias y posibilidad de añadirlos al recorrido, además de destinos propios persistentes. No se transfieren objetivos ChemCam a Duna.
+- Cámaras panorámica, sobrevuelo, seguimiento y superficie; vuelo orbital, explorador virtual visible y movimiento WASD sin conexión al juego. Ensayo de rutas con avance y velocidad de reproducción, reutilizando la guía de voz.
+- Escenarios de polvo y tormenta hipotéticos, visibilidad y zona restringida para A*, conectividad y recálculo conservando destinos pendientes. Se mantienen separados de la telemetría y no modifican el clima de KSP.
+- HUD compacto y acceso a maqueta WebXR de la región con sus propias alturas/textura, sin usar la ortofoto de Marte. Alternativa explícita si el dispositivo no ofrece AR.
+- Conservación de conexión kRPC de solo lectura, evidencias, modos anteriores y bitácora como documento. Archivos completos descargables y generador reproducible del atlas desde el CSV archivado.
+- Validación: 52 pruebas Python y 40 JavaScript (92), navegador con atlas/globo, selección de región, capas, objetivos, cámaras, restricciones/recálculo, recorrido virtual, HUD, alternativa AR y pantalla compacta. Pendientes la prueba de esta versión en KSP real y la maqueta en hardware WebXR.
+- Guía: [DUNA_EXPLORADOR.md](DUNA_EXPLORADOR.md).
+
 ## v1.6.1 «Duna al inicio» — 1 de noviembre de 2026 (hora de México)
 
 - La página principal abre directamente el mapa real de Duna exportado en la sesión Travesía, con alturas y textura, en 3D. No requiere seleccionar el catálogo ni cargar archivos manualmente.

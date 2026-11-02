@@ -4,7 +4,7 @@
 
 ## Abrir el mapa
 
-Desde v1.6.1, la página principal abre directamente **Duna · mi mapa de KSP**, con tu última región del rover y su textura en 3D. No tienes que pulsar cargar ni elegir archivos. Marte queda en el botón secundario. También puedes abrir `/ksp-map.html` directamente. Ambos utilizan el mismo mapa, controles y motor de rutas. El explorador original de Marte conserva sus objetivos, caminatas, globo, clima simulado, voz y acceso a AR/HUD.
+Desde v1.7.0, la página principal abre el **mapa completo de Duna** exportado del juego. Cambia al globo 3D o pulsa una zona escaneada y **Abrir región seleccionada** para planear rutas sobre su relieve. La última región del rover sigue precargada al volver a región. Marte queda en el botón secundario. [Explorador completo y funciones](DUNA_EXPLORADOR.md). También puedes abrir `/ksp-map.html` directamente. Ambos utilizan el mismo mapa, controles y motor de rutas. El explorador original de Marte conserva sus objetivos, caminatas, globo, clima simulado, voz y acceso a AR/HUD.
 
 Selecciona **Duna · Travesía · última región del rover** en el catálogo y pulsa cargar. Obtienes la región y la imagen archivadas en las pruebas del equipo; no necesitas estar conectado al juego para preparar rutas. En este modo la salida es manual: no es la posición actual de un vehículo.
 

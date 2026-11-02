@@ -2,6 +2,7 @@
 import math
 from datetime import datetime, timezone
 from mars.planner import find_path, route_metrics
+from integrations.ksp_environment import training_environment
 
 
 def finite(value, name):
@@ -83,7 +84,7 @@ def plan_ksp_mission(terrain, payload):
     if not isinstance(payload, dict) or payload.get('terrainId') != terrain['id'] or payload.get('body') != terrain['body']:
         raise ValueError('La región o el cuerpo no coincide. Vuelve a cargar el mapa KSP.')
     reason=payload.get('replanReason','initial')
-    if reason not in ('initial','deviation','manual'):
+    if reason not in ('initial','deviation','manual','weather'):
         raise ValueError('Motivo de planificación KSP no válido.')
     entries = payload.get('stops')
     if not isinstance(entries, list) or not 2 <= len(entries) <= 20:
@@ -95,6 +96,8 @@ def plan_ksp_mission(terrain, payload):
     if not isinstance(avoid_water, bool):
         raise ValueError('La opción de agua debe ser booleana.')
     blocked = {(i % terrain['width'], i // terrain['width']) for i, water in enumerate(terrain['water']) if water and avoid_water}
+    environment, weather_blocks = training_environment(terrain, payload.get('weather','clear'))
+    blocked.update(weather_blocks)
     stops, names = [], set()
     for entry in entries:
         lat, lon = coordinate(entry)
@@ -108,17 +111,17 @@ def plan_ksp_mission(terrain, payload):
     for a, b in zip(stops, stops[1:]):
         segment = find_path(terrain, a['grid'], b['grid'], limit, blocked)
         if segment is None:
-            raise ValueError(f"Sin paso entre {a['name']} y {b['name']}: revisa pendiente, agua y cobertura.")
+            raise ValueError(f"Sin paso entre {a['name']} y {b['name']}: revisa pendiente, agua, cobertura y restricciones simuladas.")
         path.extend(segment if not path else segment[1:]); indices.append(len(path)-1)
     metrics = route_metrics(terrain, path)
-    metrics['durationMinutes'] = math.ceil(metrics['distance']/speed/60)
+    metrics['durationMinutes'] = math.ceil(metrics['distance']/(speed*environment['speedFactor'])/60)
     return dict(name=f"Ruta de superficie · {terrain['body']}", schema='ksp-surface-mission-v1',
                 context=dict(kind='ksp-surface', body=terrain['body'], bodyRadius=terrain['bodyRadius'], terrainId=terrain['id']),
-                sourceType=terrain['sourceType'], planningContext=dict(reason=reason), createdAt=datetime.now(timezone.utc).isoformat(),
+                sourceType=terrain['sourceType'], planningContext=dict(reason=reason,weather=environment['scenario']), environment=environment, createdAt=datetime.now(timezone.utc).isoformat(),
                 stops=stops, stopPathIndices=indices, gridPath=path,
                 route=[grid_to_geo(terrain, x, y) for x, y in path], metrics=metrics,
                 maxSlopeDegrees=limit, speedMS=speed, avoidWater=avoid_water,
-                assumptions=dict(speedMS=speed,terrainCellMeters=terrain['cellMeters'],obstaclesBelowResolution=False),
+                assumptions=dict(speedMS=speed,effectiveSpeedMS=speed*environment['speedFactor'],terrainCellMeters=terrain['cellMeters'],obstaclesBelowResolution=False),
                 readOnly=True, notice='Guía sobre alturas muestreadas. No detecta rocas pequeñas ni controla el vehículo.')
 
 

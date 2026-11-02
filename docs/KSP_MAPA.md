@@ -1,5 +1,7 @@
 # Mapa y guía nativos para KSP 1
 
+**v1.7.0:** [Duna completo, globo, objetivos, recorridos, clima de entrenamiento y AR](DUNA_EXPLORADOR.md).
+
 **Nuevo en v1.6.0:** [mapas 2D/3D, texturas, curvas de nivel y orientación](KSP_MAPAS_3D.md).
 
 El proyecto conserva **dos espacios de navegación**:
