@@ -2,6 +2,12 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.6.1 «Duna al inicio» — 1 de noviembre de 2026 (hora de México)
+
+- La página principal abre directamente el mapa real de Duna exportado en la sesión Travesía, con alturas y textura, en 3D. No requiere seleccionar el catálogo ni cargar archivos manualmente.
+- Marte queda como una opción secundaria, con sus funciones conservadas. El enlace al mapa independiente abre la misma región.
+- Corrección de la vista inicial de v1.6.0, que todavía mostraba Marte por defecto.
+
 ## v1.6.0 «Atlas de relieve» — 1 de noviembre de 2026 (hora de México)
 
 - Espacio KSP dentro de la página principal, con el mismo mapa nativo independiente y pausa de consultas/guía al ocultarlo. Se conserva el explorador original de Marte, globo, caminatas, clima simulado, voz, HUD y AR.

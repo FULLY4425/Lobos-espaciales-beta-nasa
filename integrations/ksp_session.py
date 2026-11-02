@@ -10,7 +10,7 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION='1.6.0'
+VERSION='1.6.1'
 MAX_EXTERNAL_LOG=16*1024*1024
 GENERATED=re.compile(r'^(session\.json|KSP\.log|Player\.log|events\.jsonl|telemetry\.jsonl|connector\.log(?:\.[12])?|(?:terrain|mission)-[a-f0-9]{32}\.json)$')
 
