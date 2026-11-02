@@ -1,12 +1,14 @@
-# Evidencias privadas en Supabase · v1.5.0
+# Evidencias privadas en Supabase · versión 1.7
 
 El conector puede enviar sus evidencias a un proyecto **de tu cuenta de Supabase**, conservando siempre la copia local. La navegación, la demo y Marte siguen funcionando sin configurar este servicio.
 
-**Estado de entrega:** el cliente, la cola, los controles y el SQL están implementados y probados con respuestas simuladas. Todavía debes crear y configurar el proyecto de tu cuenta antes del primer envío real. No se ha creado un proyecto, aplicado el SQL ni enviado evidencias a una cuenta externa durante esas pruebas.
+**Estado de entrega (2 de noviembre de 2026):** el propietario ya creó el proyecto `crwzshdtvsqukheckxai`, URL `https://crwzshdtvsqukheckxai.supabase.co`. La integración forma parte de la versión 1.7; desde la revisión v1.7.1 incluye diagnóstico por etapas y SQL de verificación. Cliente, cola y controles están probados con respuestas simuladas. Quedan por comprobar en la cuenta real la aplicación del SQL, los usuarios autorizados, el aislamiento y el primer envío. La conexión administrativa a Supabase todavía no está disponible en esta sesión; no se afirma haber configurado el proyecto remotamente.
+
+[Proyecto en Dashboard](https://supabase.com/dashboard/project/crwzshdtvsqukheckxai) · [Ejemplo de configuración sin secretos](../supabase/ksp-cloud.example.json). Las credenciales de Supabase se configuran en el PC de KSP, no en la página pública de Render.
 
 ## 1. Crear el lugar donde recibirás los archivos
 
-1. Entra en [Supabase Dashboard](https://supabase.com/dashboard), crea tu cuenta y un proyecto. Puedes llamarlo `lobos-espaciales-ksp` y empezar con el plan Free si sus límites te sirven. Revisa los límites/costos actuales; la aplicación no contrata un plan ni crea recursos pagados.
+1. Abre [el proyecto existente](https://supabase.com/dashboard/project/crwzshdtvsqukheckxai). No necesitas crear otro ni cambiar de plan para continuar la configuración actual.
 2. Ejecuta en **SQL Editor** el archivo [supabase/ksp_evidence.sql](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/blob/main/supabase/ksp_evidence.sql) del repositorio. Usa preferentemente un proyecto nuevo dedicado a estas evidencias. El SQL crea:
    - bucket **privado** `ksp-evidence`, con ZIP de hasta 50 MB;
    - tabla `ksp_sessions`, índice de sesiones con versión, usuario, fecha, muestras y ubicación del archivo;
@@ -33,7 +35,7 @@ Actualiza el repositorio. Detén el conector antes de configurar o cambiar de us
 
 ```powershell
 # Windows: reemplaza URL y clave pública por las de tu proyecto.
-.venv\Scripts\python.exe integrations/ksp_cloud.py configure --url https://TU-PROYECTO.supabase.co --key sb_publishable_TU_CLAVE --interval 300
+.venv\Scripts\python.exe integrations/ksp_cloud.py configure --url https://crwzshdtvsqukheckxai.supabase.co --key sb_publishable_TU_CLAVE --interval 300
 .venv\Scripts\python.exe integrations/ksp_cloud.py login --email TU-CORREO
 ```
 
@@ -41,7 +43,19 @@ En macOS/Linux usa `.venv/bin/python`. La contraseña se pide de manera oculta e
 
 La URL, clave pública e intervalo se guardan en `.ksp-cloud/config.json`. Toda la carpeta `.ksp-cloud/` está excluida de Git. Los archivos de autenticación se crean con permisos de propietario en sistemas POSIX; en Windows protégelos con los permisos de tu usuario y no compartas esa carpeta.
 
-Reinicia el conector:
+### Diagnóstico antes de enviar
+
+Después del login, ejecuta:
+
+```powershell
+.venv\Scripts\python.exe integrations/ksp_cloud.py doctor
+```
+
+Comprueba autenticación, autorización del usuario mediante `ksp_is_tester`, lectura del índice y listado de su carpeta de Storage. No sube archivos ni descarga el contenido de evidencias. Devuelve JSON y código de salida 0 si pasan esas lecturas o 1 si falta algún paso, con indicaciones concretas. Puede renovar la sesión local cuando haya caducado.
+
+En el SQL Editor del Dashboard, ejecuta [ksp_evidence_verify.sql](../supabase/ksp_evidence_verify.sql), que solo consulta la existencia del bucket privado, RLS, funciones y políticas esperadas. Que esas comprobaciones den `true` no sustituye la revisión de otras políticas permisivas ni la prueba real con dos usuarios. `doctor` tampoco prueba permisos de escritura ni certifica el aislamiento.
+
+Cuando esté listo, reinicia el conector:
 
 ```powershell
 .venv\Scripts\python.exe integrations/ksp_server.py

@@ -109,6 +109,33 @@ class SupabaseClient:
             except (ValueError,TypeError,KeyError):raise CloudError('No se pudo renovar la sesión. Vuelve a iniciar sesión.') from None
         return auth
 
+    def doctor(self):
+        """Check current user's setup without uploading or reading evidence bodies."""
+        report=dict(project=self.config['url'],ready=False,checks=[])
+        try:
+            auth=self.auth()
+            report['checks'].append(dict(name='authentication',ok=True))
+        except CloudError as error:
+            report['checks'].append(dict(name='authentication',ok=False,message=str(error)))
+            return report
+        checks=[
+            ('tester', 'POST', '/rest/v1/rpc/ksp_is_tester', {}, 'Autoriza este usuario en public.ksp_testers antes de enviar evidencias.'),
+            ('sessions', 'GET', '/rest/v1/ksp_sessions?select=id,user_id,app_version,archive_path,sha256,archive_bytes,captured_at,started_at,telemetry_samples&limit=0&user_id=eq.'+auth['user_id'], None, 'Aplica supabase/ksp_evidence.sql y revisa los permisos de ksp_sessions.'),
+            ('storage', 'POST', '/storage/v1/object/list/ksp-evidence', dict(prefix=auth['user_id']+'/',limit=1,offset=0), 'Crea el bucket privado ksp-evidence y aplica sus políticas de acceso.'),
+        ]
+        for name,method,path,payload,hint in checks:
+            try:
+                value=json.loads(self._call(method,path,payload,auth['access_token']))
+                if (name=='tester' and value is not True) or (name!='tester' and not isinstance(value,list)):
+                    raise CloudError(hint)
+                report['checks'].append(dict(name=name,ok=True))
+            except (CloudError,ValueError,TypeError) as error:
+                message=str(error) if isinstance(error,CloudError) else 'Respuesta de diagnóstico no válida.'
+                report['checks'].append(dict(name=name,ok=False,message=message,hint=hint))
+        report['ready']=all(check['ok'] for check in report['checks'])
+        report['notice']='Lectura verificada; no se subieron archivos. Las políticas de escritura, privacidad y aislamiento requieren una prueba real independiente.'
+        return report
+
     def upload(self,path,content,auth):
         self._call('POST','/storage/v1/object/ksp-evidence/'+path,content,auth['access_token'],'application/zip',{'x-upsert':'true'})
 
@@ -264,7 +291,7 @@ def main():
     sub=parser.add_subparsers(dest='command',required=True)
     configure=sub.add_parser('configure');configure.add_argument('--url',required=True);configure.add_argument('--key',required=True);configure.add_argument('--interval',type=int,default=300)
     login=sub.add_parser('login');login.add_argument('--email')
-    sub.add_parser('logout');sub.add_parser('status')
+    sub.add_parser('logout');sub.add_parser('status');sub.add_parser('doctor')
     args=parser.parse_args()
     try:
         if args.command=='configure':
@@ -274,9 +301,12 @@ def main():
             (args.config.parent/'auth.json').unlink(missing_ok=True);print('Sesión de Supabase eliminada de este equipo. Se conservan las evidencias locales.')
         elif args.command=='login':
             client=SupabaseClient(args.config);auth=client.login(args.email or input('Correo del probador: '),getpass.getpass('Contraseña de Supabase Auth (no la de tu cuenta de administración): '));print('Inicio de sesión correcto. Usuario:',auth['user_id'])
+        elif args.command=='doctor':
+            result=SupabaseClient(args.config).doctor();print(json.dumps(result,ensure_ascii=False,indent=2))
+            if not result['ready']:return 1
         else:
             client=SupabaseClient(args.config);print(json.dumps(dict(project=client.config['url'],intervalSeconds=client.config['interval_seconds'],signedIn=client.auth_path.exists()),ensure_ascii=False))
     except (CloudError,OSError,ValueError):parser.exit(1,'No se pudo completar. Revisa configuración, credenciales de Supabase Auth y permisos. No se modificaron tus evidencias.\n')
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':raise SystemExit(main())

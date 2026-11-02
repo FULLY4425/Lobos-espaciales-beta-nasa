@@ -619,11 +619,15 @@ Estado de Supabase actualizado: el propietario indicó que creó el proyecto. La
 
 Comprobaciones de datos: PNG completo idéntico al original por SHA-256, 529220 alturas preservadas y huecos desconocidos, proyección global/local y coordenadas esféricas. Pruebas de restricciones meteorológicas hipotéticas, desvío de rutas y rechazo de destino dentro de la tormenta sin alterar el terreno. Chromium: atlas/globo completos, selección y apertura de región, objetivos documentados, textura/alturas/mezcla, cámaras, ensayo virtual, HUD y alternativa WebXR no disponible. Se mantienen pruebas de conexión, evidencias, pérdida/recuperación y funciones de Marte. No constituye una prueba de esta versión en KSP real ni en un dispositivo AR físico. [Guía](DUNA_EXPLORADOR.md).
 
+### Validación de v1.7.1 «Evidencias de Duna»
+
+Diagnóstico Supabase probado con respuestas simuladas: comprobaciones independientes de autenticación, autorización, esquema y Storage; sin subida ni lectura de cuerpos de evidencias y sin tokens en el informe. Se incorpora el proyecto existente a la guía y se añade SQL de verificación. La configuración remota y el primer envío real siguen pendientes de acceso al proyecto; no son resultados verificados por estas pruebas.
+
 ### Pruebas automatizadas incluidas
 
 | Suite | Último resultado registrado | Cobertura |
 | --- | --- | --- |
-| `python3 -m unittest discover -s test -v` | 52 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
+| `python3 -m unittest discover -s test -v` | 56 pruebas aprobadas. | Planificación, obstáculos, esquinas, pendientes, datos reales, entradas y objetivos propios; contrato/frescura de telemetría y lecturas con cliente kRPC simulado; archivos de mapa, conversión SCANsat, huecos, procedencia, marco de rumbo y registro de sesiones/límites/fallos de disco. |
 | `node test/directions.test.js` | 6 pruebas aprobadas. | Derecha/izquierda, ruta recta, agrupación de zigzags, objetivos intermedios, distancia 3D, rutas vacías y media vuelta. |
 | `node test/ar-tracking.test.js` | 5 pruebas aprobadas. | Proyección relativa, radio del cuerpo, cruce de longitud, cambio de vehículo/cuerpo, rotación de calibración y distancia a la ruta. |
 | `node test/replanning.test.js` | 4 pruebas aprobadas. | Paradas pendientes, nueva salida, rechazo fuera del mapa, progreso físico y origen KSP conservado. |
@@ -632,7 +636,7 @@ Comprobaciones de datos: PNG completo idéntico al original por SHA-256, 529220 
 | `node test/terrain-style.test.js` | 8 pruebas aprobadas. | Paleta/curvas, huecos, proyecciones, cuerpo/radio, límites geográficos y cobertura del CSV real. |
 | `node test/ksp-global.test.js` | 4 pruebas aprobadas. | Escaneo completo, huecos, coordenadas esféricas, regiones seleccionadas y restricciones de tormenta. |
 
-Total registrado: **92 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
+Total registrado: **96 pruebas**. No se necesita Node.js para ejecutar el servidor; es una herramienta opcional de desarrollo. Los comandos y la arquitectura están en [DESARROLLO.md](DESARROLLO.md).
 
 ### Comprobaciones de navegador realizadas
 

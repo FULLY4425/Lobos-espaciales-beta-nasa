@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.7.0 «Duna Explorador» · 1 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.7.1 «Duna Explorador» · 1 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -42,7 +42,9 @@ La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alt
 
 La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y regiones de relieve. Incluye objetivos documentados y propios, cámaras de superficie/seguimiento, explorador y recorridos virtuales, polvo/tormenta de entrenamiento con recálculo, voz, HUD y maqueta WebXR con la textura de Duna. [Guía y límites](docs/DUNA_EXPLORADOR.md). [PNG completo original](public/imagery/duna-global.png) · [Alturas completas](public/data/duna-global.json) · [Metadatos](public/imagery/duna-global-metadata.json). Marte queda disponible en el botón secundario. Incluye el espacio KSP, con el mapa real de Duna del catálogo SCANsat, texturas georreferenciadas, curvas de nivel, escala vertical visual, malla, norte y seguimiento del vehículo. Marte conserva sus funciones y añade capas de altura/fotografía. [Uso, fuentes y formato de texturas](docs/KSP_MAPAS_3D.md). El escaneo de Duna tiene 2 km por muestra; para conducir usa kRPC local con una región más fina.
 
-## Evidencias privadas en Supabase (v1.5.0)
+## Evidencias privadas en Supabase (parte de v1.7)
+
+El proyecto ya existe en la cuenta del propietario. La revisión v1.7.1 añade `python integrations/ksp_cloud.py doctor` y un SQL de verificación de la configuración. La instalación y el primer envío en la cuenta real siguen pendientes de acceso y comprobación.
 
 El conector incorpora envío opcional de ZIP a un proyecto privado propio, reintentos con cola local, pausa/reanudación y un índice de sesiones. La activación requiere crear el proyecto, aplicar las políticas e iniciar sesión como probador; sin configurar no se envía nada. [Configurar y consultar evidencias](docs/KSP_NUBE.md). No se utilizan claves de administrador en los equipos de prueba.
 

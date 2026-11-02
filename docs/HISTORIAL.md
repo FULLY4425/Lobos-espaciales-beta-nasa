@@ -2,6 +2,14 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.1 «Evidencias de Duna» — 2 de noviembre de 2026 (hora de México)
+
+- Integración del servidor de evidencias Supabase en la serie 1.7, conservando todas las funciones de Duna y Render. Actualización del estado del proyecto existente, sin crear otra cuenta ni exponer credenciales.
+- Comando `ksp_cloud.py doctor` con comprobaciones independientes de autenticación, usuario autorizado, índice de sesiones y listado de su carpeta. Diagnóstico sin subir archivos, con código de salida y recomendaciones por etapa.
+- SQL de verificación de bucket privado, RLS, funciones y políticas; ejemplo de configuración deshabilitado y sin claves reales para el proyecto del propietario.
+- Validación: 56 pruebas Python y 40 JavaScript (96). Pruebas nuevas de diagnóstico correcto, falta de Auth, permisos/esquema y fallo de Storage, sin revelar tokens ni leer evidencias.
+- Pendiente externo: conexión administrativa al proyecto, aplicación/verificación del SQL, usuarios y primer envío real con prueba de aislamiento. No se afirma que esas acciones se hayan ejecutado.
+
 ## v1.7.0 «Duna Explorador» — 1 de noviembre de 2026 (hora de México)
 
 - Publicación del PNG completo original de SCANsat, metadatos y las 529220 alturas del CSV, conservando huecos y cobertura del 83.5%. Página principal con atlas completo 2D, globo de Duna 3D y apertura de regiones a partir de coordenadas seleccionadas.
