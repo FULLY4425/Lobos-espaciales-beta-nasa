@@ -2,6 +2,15 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.3 «Permiso para compartir» — 2 de noviembre de 2026 (hora de México)
+
+- Ventana de consentimiento del conector con destino y categorías de datos, Permitir esta sesión y No permitir. Cierre, error o ausencia de interfaz no autorizan compartir; alternativa de terminal interactiva con aceptación explícita.
+- Permiso limitado al arranque y proyecto; no se recuerda una aceptación permanente ni sustituye Auth/RLS. El mapa y los registros locales funcionan al denegar.
+- Bloqueo de autenticación de subida, cola automática, reintentos, acciones de reanudación y sincronización final sin consentimiento. Control de retirada en KSP Map y marcas persistentes para no reenviar sesiones revocadas.
+- Colas heredadas sin registro de consentimiento omitidas por defecto; alcance de histórico explícito en el aviso. No se borran datos ya enviados ni se promete cancelar una petición en curso.
+- Validación: 74 pruebas Python + 40 JavaScript (114), navegador con permiso/retirada y conector real sin escritorio. Falta verificación visual en Windows real. Se mantienen las funciones anteriores.
+- Guía: [KSP_CONSENTIMIENTO.md](KSP_CONSENTIMIENTO.md).
+
 ## v1.7.2 «Telemetría de misión» — 2 de noviembre de 2026 (hora de México)
 
 - Diagnóstico de equipo cada 5 s en un hilo independiente: CPU, RAM, disco de evidencias, memoria del conector y procesos de KSP de una lista permitida. Sin nombres de usuario/equipo, direcciones IP, comandos, capturas ni listado de otras aplicaciones.

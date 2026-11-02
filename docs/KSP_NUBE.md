@@ -56,13 +56,13 @@ Comprueba autenticación, autorización del usuario mediante `ksp_is_tester`, le
 
 En el SQL Editor del Dashboard, ejecuta [ksp_evidence_verify.sql](../supabase/ksp_evidence_verify.sql), que solo consulta la existencia del bucket privado, RLS, funciones y políticas esperadas. Que esas comprobaciones den `true` no sustituye la revisión de otras políticas permisivas ni la prueba real con dos usuarios. `doctor` tampoco prueba permisos de escritura ni certifica el aislamiento.
 
-Cuando esté listo, reinicia el conector:
+Cuando esté listo, reinicia el conector y responde al aviso de consentimiento. **Desde v1.7.3 no se inicia ningún envío sin pulsar Permitir esta sesión**, aunque la configuración y el login ya existan. [Permiso y retirada](KSP_CONSENTIMIENTO.md).
 
 ```powershell
 .venv\Scripts\python.exe integrations/ksp_server.py
 ```
 
-Si la configuración está habilitada, el envío comienza automáticamente: primera comprobación al arrancar y después cada 300 s (5 min). El intervalo permitido es 30–3600 s. No hay una promesa de subida en tiempo real.
+Si la configuración está habilitada **y se concedió permiso para esta sesión**, el envío comienza automáticamente: primera comprobación al arrancar y después cada 300 s (5 min). El intervalo permitido es 30–3600 s. No hay una promesa de subida en tiempo real.
 
 ### Incluir KSP.log y Player.log
 
@@ -148,3 +148,5 @@ El asesor de seguridad de Supabase no señaló problemas en las tablas/política
 Los ZIP incorporan `computer.jsonl`, `flight.jsonl` y `analysis.json`. El índice `ksp_sessions` incluye `diagnostic_summary` (JSONB) y `stopped_at`, bajo las mismas políticas de privacidad. La migración `ksp_v17_computer_flight_summary` ya se aplicó al proyecto del propietario. El resumen permite comparar versiones y decidir mejoras sin descargar todos los logs; no identifica por sí solo causas ni modifica el software.
 
 Al ocultar/cerrar el mapa o perder kRPC se solicita una sincronización. En un cierre ordenado del conector se intenta enviar el resumen final, esperando hasta 15 s. Si falla o no se confirma dentro de ese plazo, se conserva la copia y la cola para el siguiente arranque. La pausa manual sigue impidiendo subir. Cerrar a la fuerza o apagar el PC no garantiza un último envío. [Datos, instalación y desactivación](KSP_DIAGNOSTICO.md).
+
+Desde v1.7.3, denegar o retirar el permiso impide también las subidas al ocultar/cerrar y el envío final. Reiniciar no recuerda una aceptación anterior. El usuario conserva su acceso al mapa y al registro local. [Detalles](KSP_CONSENTIMIENTO.md).

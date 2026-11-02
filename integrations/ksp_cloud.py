@@ -14,6 +14,9 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from integrations.ksp_consent import CONSENT_VERSION
 
 DEFAULT_CONFIG=Path('.ksp-cloud/config.json')
 PROJECT_PROFILE=Path(__file__).resolve().parents[1]/'public/data/ksp-evidence-project.json'
@@ -167,29 +170,58 @@ def utc_now():return datetime.now(timezone.utc).isoformat()
 
 
 class CloudUploader:
-    def __init__(self,recorder,config_path=DEFAULT_CONFIG,client=None,include_history=False):
-        self.recorder=recorder;self.client=client or SupabaseClient(config_path);self.root=recorder.path.parent;self.include_history=include_history
+    def __init__(self,recorder,config_path=DEFAULT_CONFIG,client=None,include_history=False,consent=None):
+        self.consent=consent;self.owner=None
+        self.recorder=recorder;self.client=client or SupabaseClient(config_path);self.root=recorder.path.parent;self.include_history=include_history and bool(consent and consent.include_history)
         self.control_path=self.client.path.parent/'upload-control.json'
         self.paused=read_json(self.control_path).get('paused',False) if self.control_path.exists() else False
-        self.state=dict(configured=True,paused=self.paused,status='queued',lastSuccess=None,error=None,nextRetry=None)
+        self.state=dict(configured=True,paused=self.paused,status='queued' if self._permitted() else 'consent-required',lastSuccess=None,error=None,nextRetry=None)
         self.lock=threading.Lock();self.stop_event=threading.Event();self.wake=threading.Event();self.thread=None;self.failures=0;self.worker_lock=None;self.final_flush=False
         marker=self.recorder.path/'.cloud-upload.json'
-        if self.client.config['enabled'] and not marker.exists():
+        if self.client.config['enabled'] and self._permitted() and not marker.exists():
             owner=None
             try:
                 auth=read_json(self.client.path.parent/'auth.json')
                 if auth.get('url')==self.client.config['url']:owner=auth.get('user_id')
             except CloudError:pass
-            atomic_json(marker,dict(user_id=owner,project=self.client.config['url']))
+            self.owner=owner
+            atomic_json(marker,dict(user_id=owner,project=self.client.config['url'],consentVersion=CONSENT_VERSION))
+
+    def _permitted(self):
+        return self.client.config['enabled'] and self.consent is not None and self.consent.permits(self.client.config['url'])
+
+    def _require_consent(self):
+        if not self._permitted():raise CloudError('No hay permiso para compartir. Reinicia el conector para mostrar el aviso; el mapa sigue disponible.')
+
+    def revoke(self):
+        if self.consent:self.consent.decide(False,'revoked')
+        self.set_status(status='consent-required',error=None)
+        self.wake.set()
+        (self.recorder.path/'.cloud-revoked').touch()
+        for path in self.root.iterdir():
+            if not path.is_dir() or path.is_symlink() or not SESSION_ID.fullmatch(path.name):continue
+            marker=path/'.cloud-upload.json'
+            if path==self.recorder.path:
+                (path/'.cloud-revoked').touch()
+            elif marker.exists():
+                try:state=read_json(marker)
+                except CloudError:continue
+                if self.owner and state.get('user_id')==self.owner and state.get('project')==self.client.config['url']:(path/'.cloud-revoked').touch()
+        return self.status()
 
     def status(self):
-        with self.lock:return dict(self.state,paused=self.paused,intervalSeconds=self.client.config['interval_seconds'])
+        with self.lock:return dict(self.state,consent=self.consent.status() if self.consent else dict(allowed=False),paused=self.paused,intervalSeconds=self.client.config['interval_seconds'])
 
     def set_status(self,**kwargs):
         with self.lock:self.state.update(kwargs)
 
+    def request_sync(self):
+        return self.control('retry') if self._permitted() else self.status()
+
     def control(self,action):
+        if action=='revoke':return self.revoke()
         if action not in ('pause','resume','retry'):raise ValueError('Acción de subida no válida.')
+        if action in ('resume','retry'):self._require_consent()
         if action in ('pause','resume'):
             self.paused=action=='pause';atomic_json(self.control_path,dict(paused=self.paused))
         if action=='retry':self.failures=0
@@ -206,11 +238,15 @@ class CloudUploader:
         return hashlib.sha256(json.dumps(data).encode()).hexdigest()
 
     def sync_folder(self,path,auth):
+        self._require_consent()
+        if (path/'.cloud-revoked').exists():return False
         from integrations.ksp_session import archive_folder
         if not SESSION_ID.fullmatch(path.name) or path.is_symlink():raise CloudError('Carpeta de sesión no válida.')
         state_path=path/'.cloud-upload.json';pending_path=path/'.cloud-pending.zip'
         state=read_json(state_path) if state_path.exists() else dict(user_id=auth['user_id'],project=self.client.config['url'])
         if state.get('project')!=self.client.config['url']:return False
+        if path!=self.recorder.path and state.get('consentVersion')!=CONSENT_VERSION and not self.include_history:return False
+        state['consentVersion']=CONSENT_VERSION
         if state.get('user_id') is None:
             state['user_id']=auth['user_id'];atomic_json(state_path,state)
         if state.get('user_id')!=auth['user_id']:return False
@@ -247,7 +283,10 @@ class CloudUploader:
                 if not isinstance(summary,dict) or summary.get('schema')!='ksp-session-analysis-v1':raise ValueError('Invalid summary')
                 json.dumps(summary,allow_nan=False);row['diagnostic_summary']=summary
             except (KeyError,ValueError,TypeError,zipfile.BadZipFile):row['diagnostic_summary']=None
+            self._require_consent()
+            if (path/'.cloud-revoked').exists():return False
             self.client.upload(expected,content,auth)
+            self._require_consent()
             self.client.index(row,auth)
             previous=state.get('archive_path');cleanup=state.get('cleanup',[])
             if previous and previous!=expected:cleanup.append(previous)
@@ -257,14 +296,16 @@ class CloudUploader:
         if state.get('cleanup'):
             allowed=[p for p in state['cleanup'] if re.fullmatch(re.escape(auth['user_id']+'/'+path.name+'/')+r'[a-f0-9]{64}\.zip',p)]
             try:
-                self.client.delete(allowed,auth);self.set_status(cleanupPending=False);state['cleanup']=[];atomic_json(state_path,state)
+                self._require_consent();self.client.delete(allowed,auth);self.set_status(cleanupPending=False);state['cleanup']=[];atomic_json(state_path,state)
             except CloudError:self.set_status(cleanupPending=True)
         return bool(pending)
 
     def sync_once(self,final=False):
+        if not self._permitted():self.set_status(status='consent-required');return
         self.recorder.capture_external()
         if self.paused:self.set_status(status='paused');return
-        auth=self.client.auth()
+        auth=self.client.auth();self.owner=auth['user_id']
+        self._require_consent()
         # Only the current session and previously queued sessions are sent automatically.
         queued=[p for p in sorted(self.root.iterdir()) if p.is_dir() and not p.is_symlink() and SESSION_ID.fullmatch(p.name) and ((p/'.cloud-upload.json').exists() or self.include_history) and p!=self.recorder.path]
         for path in [self.recorder.path,*([] if final else queued)]:
@@ -286,7 +327,7 @@ class CloudUploader:
                     self.set_status(status='retrying',error=str(error) if isinstance(error,CloudError) else 'Envío pendiente: revisa el estado local. La evidencia se conserva.',nextRetry=time.time()+delay)
                 self.wake.wait(delay);self.wake.clear()
         finally:
-            if self.final_flush and not self.paused:
+            if self.final_flush and not self.paused and self._permitted():
                 try:self.sync_once(final=True)
                 except (CloudError,OSError,ValueError,TypeError,KeyError):self.set_status(status='retrying',finalUploadPending=True,error='Cierre sin envío confirmado. Se conserva la sesión para el siguiente arranque.')
             self.worker_lock.close()

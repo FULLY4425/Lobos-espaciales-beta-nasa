@@ -19,7 +19,8 @@ from server import Handler
 from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_mission
 from integrations.ksp_session import SessionRecorder, VERSION
 from integrations.ksp_diagnostics import ComputerMonitor,read_flight
-from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG
+from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG, PROJECT_PROFILE,read_json,validate_config
+from integrations.ksp_consent import UploadConsent
 
 
 def validate_sample(sample):
@@ -56,6 +57,7 @@ class Telemetry:
     def __init__(self, rpc_port=50000, stream_port=50001, recorder=None):
         self.rpc_port, self.stream_port = rpc_port, stream_port
         self.recorder=recorder
+        self.upload_consent=None
         self.computer=None
         self.last_flight_read=0
         self.cloud=None
@@ -72,7 +74,7 @@ class Telemetry:
 
     def info(self):
         current=self.sample
-        return dict(computer=self.computer.status() if self.computer else dict(enabled=False),flight=current.get('flight') if current else None,analysis=self.recorder.analysis() if self.recorder else None,version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
+        return dict(uploadConsent=self.upload_consent.status() if self.upload_consent else dict(allowed=False,reason='not-requested'),computer=self.computer.status() if self.computer else dict(enabled=False),flight=current.get('flight') if current else None,analysis=self.recorder.analysis() if self.recorder else None,version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
 
     def record(self, kind, data):
         if self.recorder:self.recorder.event(kind,data)
@@ -228,7 +230,7 @@ class Telemetry:
                     self.message = 'Sin telemetría. Abre KSP 1, activa kRPC y selecciona un vehículo.'
                 if had_sample:
                     if self.recorder:self.recorder.write_analysis()
-                    if self.cloud:self.cloud.control('retry')
+                    if self.cloud:self.cloud.request_sync()
                 self.stopped.wait(2)
             finally:
                 if connection:
@@ -282,10 +284,14 @@ def create_handler(telemetry):
                 if not isinstance(payload,dict):
                     raise ValueError('Se requiere un objeto JSON.')
                 if path=='/api/ksp/cloud/control':
-                    if not telemetry.cloud:return self.reply(503,dict(error='Configura Supabase y reinicia el conector para activar el envío.'))
+                    if not telemetry.cloud:
+                        if payload.get('action')=='revoke' and telemetry.upload_consent:
+                            telemetry.upload_consent.decide(False,'revoked');telemetry.record('upload-consent',telemetry.upload_consent.status());return self.reply(200,dict(consent=telemetry.upload_consent.status()))
+                        return self.reply(503,dict(error='Configura Supabase y reinicia el conector para activar el envío.'))
                     try:result=telemetry.cloud.control(payload.get('action'))
                     except OSError:return self.reply(503,dict(error='No se pudo guardar el estado de subida local.'))
                     telemetry.record('cloud-control',dict(action=payload.get('action')))
+                    if payload.get('action')=='revoke':telemetry.record('upload-consent',telemetry.upload_consent.status() if telemetry.upload_consent else dict(allowed=False,reason='revoked'))
                     return self.reply(200,result)
                 if path=='/api/ksp/session/events':
                     events=payload.get('events')
@@ -295,7 +301,7 @@ def create_handler(telemetry):
                     for event in events:telemetry.record('browser-'+event['type'],dict(text=event['text']))
                     if any(e['type']=='pagehide' or (e['type']=='visibility' and e['text'].startswith('hidden')) for e in events):
                         if telemetry.recorder:telemetry.recorder.write_analysis()
-                        if telemetry.cloud:telemetry.cloud.control('retry')
+                        if telemetry.cloud:telemetry.cloud.request_sync()
                     return self.reply(200,dict(recorded=bool(telemetry.recorder)))
                 if path=='/api/ksp/terrain':
                     return self.reply(202,telemetry.request_terrain(payload))
@@ -306,6 +312,8 @@ def create_handler(telemetry):
                 return self.reply(200,telemetry.plan_surface(payload))
             except (ValueError,TypeError) as error:
                 return self.reply(400,dict(error=str(error)))
+            except CloudError as error:
+                return self.reply(403,dict(error=str(error)))
             except RuntimeError as error:
                 return self.reply(503,dict(error=str(error)))
 
@@ -336,6 +344,14 @@ def main():
         parser.exit(1,f'No se pudo abrir el puerto {args.port}: {error}. Comprueba http://localhost:{args.port}/api/ksp/info y detén el conector anterior antes de reiniciar.\n')
     recorder=None if args.no_session_log else SessionRecorder(args.session_dir,external_logs={k:v for k,v in (('KSP.log',args.ksp_log),('Player.log',args.player_log)) if v})
     telemetry.recorder=recorder
+    try:
+        project=validate_config(read_json(args.cloud_config if args.cloud_config.exists() else PROJECT_PROFILE))['url']
+    except CloudError:project='Proyecto Supabase pendiente de configurar'
+    telemetry.upload_consent=UploadConsent(project,include_history=args.cloud_include_history)
+    if recorder and not args.no_cloud_upload:
+        telemetry.upload_consent.request()
+        recorder.event('upload-consent',telemetry.upload_consent.status())
+    else:telemetry.upload_consent.decide(False,'disabled-by-options')
     telemetry.computer=ComputerMonitor(recorder,recorder.path if recorder else Path.cwd(),enabled=not args.no_computer_stats)
     telemetry.computer.start()
     if args.no_flight_diagnostics:telemetry.last_flight_read=float('inf')
@@ -346,12 +362,14 @@ def main():
     logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(message)s',handlers=handlers)
     if recorder and args.cloud_config.exists() and not args.no_cloud_upload:
         try:
-            cloud=CloudUploader(recorder,args.cloud_config,include_history=args.cloud_include_history)
+            cloud=CloudUploader(recorder,args.cloud_config,include_history=args.cloud_include_history,consent=telemetry.upload_consent)
             if cloud.client.config['enabled']:
                 telemetry.cloud=cloud;cloud.start()
         except (CloudError,OSError,ValueError):
             telemetry.cloud_error='Configuración de Supabase no válida. Revisa la guía; el registro local continúa.'
             logging.warning(telemetry.cloud_error)
+    if telemetry.upload_consent.allowed and not args.cloud_config.exists():
+        logging.warning('Permiso aceptado, pero falta configurar el envío: ejecuta ksp_cloud.py configure-project, login y doctor. No se ha enviado información.')
     worker = threading.Thread(target=telemetry.run, daemon=True)
     worker.start()
     try:

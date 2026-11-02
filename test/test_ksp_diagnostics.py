@@ -1,3 +1,4 @@
+from integrations.ksp_consent import UploadConsent
 import io
 import json
 import tempfile
@@ -10,6 +11,10 @@ from integrations.ksp_diagnostics import ComputerMonitor,read_flight
 from integrations.ksp_session import SessionRecorder
 from test_ksp_cloud import FakeClient
 from integrations.ksp_cloud import CloudUploader
+
+def approved_consent(client):
+    consent=UploadConsent(client.config['url']);consent.decide(True,'test-fixture');return consent
+
 
 class DiagnosticsTests(unittest.TestCase):
     def test_flight_is_optional_finite_and_read_only(self):
@@ -49,14 +54,14 @@ class DiagnosticsTests(unittest.TestCase):
 
     def test_final_sync_includes_stop_event_and_diagnostics_when_worker_stopped(self):
         with tempfile.TemporaryDirectory() as root:
-            config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);u=CloudUploader(r,client=client)
+            config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);u=CloudUploader(r,client=client,consent=approved_consent(client))
             r.diagnostic('computer',dict(cpuPercent=20));r.event('stop',dict(reason='test'));u.stop_event.set();u.sync_once(final=True)
             content=next(iter(client.objects.values()));z=zipfile.ZipFile(io.BytesIO(content));self.assertIn('computer.jsonl',z.namelist());self.assertIsNotNone(json.loads(z.read('session.json'))['stoppedAt'])
             self.assertEqual(len(client.rows),1);row=next(iter(client.rows.values()));self.assertIsNotNone(row['stopped_at']);self.assertEqual(row['diagnostic_summary']['diagnosticSamples']['computer'],1)
 
     def test_pause_prevents_final_upload_and_retains_local_diagnostics(self):
         with tempfile.TemporaryDirectory() as root:
-            config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);u=CloudUploader(r,client=client);u.paused=True;r.diagnostic('flight',dict(meanAltitude=10));u.sync_once(final=True)
+            config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);u=CloudUploader(r,client=client,consent=approved_consent(client));u.paused=True;r.diagnostic('flight',dict(meanAltitude=10));u.sync_once(final=True)
             self.assertFalse(client.uploads);self.assertTrue((r.path/'flight.jsonl').exists())
 
     def test_close_running_worker_sends_final_stopped_snapshot(self):
@@ -64,7 +69,7 @@ class DiagnosticsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);sent=threading.Event();original=client.index
             def index(data,auth):original(data,auth);sent.set()
-            client.index=index;u=CloudUploader(r,client=client);u.start();self.assertTrue(sent.wait(2));r.diagnostic('flight',dict(meanAltitude=12));r.event('stop',dict(reason='test'));u.close()
+            client.index=index;u=CloudUploader(r,client=client,consent=approved_consent(client));u.start();self.assertTrue(sent.wait(2));r.diagnostic('flight',dict(meanAltitude=12));r.event('stop',dict(reason='test'));u.close()
             self.assertFalse(u.thread.is_alive());z=zipfile.ZipFile(io.BytesIO(next(iter(client.objects.values()))));self.assertIn('flight.jsonl',z.namelist());self.assertIsNotNone(json.loads(z.read('session.json'))['stoppedAt'])
 
     def test_network_failure_keeps_final_zip_for_next_start(self):
@@ -72,5 +77,5 @@ class DiagnosticsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             config=Path(root)/'.config/config.json';config.parent.mkdir();r=SessionRecorder(Path(root)/'sessions');client=FakeClient(config);failed=threading.Event()
             def upload(*args):failed.set();raise __import__('integrations.ksp_cloud',fromlist=['CloudError']).CloudError('offline')
-            client.upload=upload;u=CloudUploader(r,client=client);u.start();self.assertTrue(failed.wait(2));r.event('stop',dict(reason='test'));u.close()
+            client.upload=upload;u=CloudUploader(r,client=client,consent=approved_consent(client));u.start();self.assertTrue(failed.wait(2));r.event('stop',dict(reason='test'));u.close()
             self.assertFalse(u.thread.is_alive());self.assertTrue((r.path/'.cloud-pending.zip').exists());self.assertTrue(u.status()['finalUploadPending']);self.assertTrue((r.path/'events.jsonl').exists())

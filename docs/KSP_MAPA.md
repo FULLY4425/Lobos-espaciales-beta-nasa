@@ -1,5 +1,7 @@
 # Mapa y guía nativos para KSP 1
 
+**v1.7.3:** [aviso en Windows para permitir o rechazar el envío de datos](KSP_CONSENTIMIENTO.md).
+
 **v1.7.2:** [estado del PC, información de vuelo y evidencias al terminar](KSP_DIAGNOSTICO.md).
 
 **v1.7.0:** [Duna completo, globo, objetivos, recorridos, clima de entrenamiento y AR](DUNA_EXPLORADOR.md).

@@ -1,3 +1,4 @@
+from integrations.ksp_consent import UploadConsent
 import io
 import json
 import tempfile
@@ -8,6 +9,10 @@ from integrations.ksp_cloud import SupabaseClient, CloudUploader, CloudError, va
 from integrations.ksp_session import SessionRecorder, MAX_EXTERNAL_LOG
 
 UID='12345678-1234-1234-1234-123456789abc'
+
+
+def approved_consent(client):
+    consent=UploadConsent(client.config['url']);consent.decide(True,'test-fixture');return consent
 
 
 class FakeClient:
@@ -30,7 +35,7 @@ class CloudEvidenceTests(unittest.TestCase):
     def make(self,root):
         config=Path(root)/'.config/config.json';config.parent.mkdir()
         recorder=SessionRecorder(Path(root)/'sessions')
-        client=FakeClient(config);uploader=CloudUploader(recorder,client=client)
+        client=FakeClient(config);uploader=CloudUploader(recorder,client=client,consent=approved_consent(client))
         return recorder,client,uploader
 
     def test_configuration_rejects_insecure_urls_and_privileged_keys(self):
@@ -48,7 +53,7 @@ class CloudEvidenceTests(unittest.TestCase):
             self.assertTrue((recorder.path/'.cloud-pending.zip').exists())
             recorder.event('new-data',dict(text='After failed upload'))
             client.fail_upload=False
-            restarted=CloudUploader(recorder,client=client);restarted.sync_once()
+            restarted=CloudUploader(recorder,client=client,consent=approved_consent(client));restarted.sync_once()
             self.assertEqual(client.uploads[0],client.uploads[1])
             self.assertEqual(client.rows[recorder.id]['archive_path'],pending['object_path'])
             restarted.sync_once()
@@ -68,7 +73,7 @@ class CloudEvidenceTests(unittest.TestCase):
     def test_pause_persists_and_same_snapshot_does_not_upload_twice(self):
         with tempfile.TemporaryDirectory() as root:
             recorder,client,uploader=self.make(root);uploader.control('pause');uploader.sync_once();self.assertFalse(client.uploads)
-            restarted=CloudUploader(recorder,client=client);self.assertTrue(restarted.paused)
+            restarted=CloudUploader(recorder,client=client,consent=approved_consent(client));self.assertTrue(restarted.paused)
             restarted.control('resume');restarted.sync_once();count=len(client.uploads)
             restarted.sync_once();self.assertEqual(len(client.uploads),count)
 
@@ -78,7 +83,7 @@ class CloudEvidenceTests(unittest.TestCase):
             with self.assertRaises(CloudError):uploader.sync_once()
             other=SessionRecorder(recorder.path.parent);self.assertNotEqual(other.id,recorder.id)
             unrelated=SessionRecorder(recorder.path.parent)
-            client.fail_upload=False;CloudUploader(other,client=client).sync_once()
+            client.fail_upload=False;CloudUploader(other,client=client,consent=approved_consent(client)).sync_once()
             self.assertIn(recorder.id,client.rows);self.assertIn(other.id,client.rows);self.assertNotIn(unrelated.id,client.rows)
 
     def test_private_files_and_symlinks_are_not_added_to_evidence_zip(self):

@@ -16,7 +16,7 @@ Desde el repositorio actualizado, en el PC del juego:
 .venv\Scripts\python.exe integrations/ksp_server.py
 ```
 
-Si ya configuraste el proyecto y tienes sesión válida, basta con instalar las dependencias nuevas y reiniciar el conector. En macOS/Linux usa `.venv/bin/python`. Activa kRPC en KSP 1 y abre `http://localhost:7173/ksp-map.html`; conecta el juego para ver **Estado del equipo y vuelo**. El conector solo escucha en loopback y no envía controles al juego.
+Si ya configuraste el proyecto y tienes sesión válida, basta con instalar las dependencias nuevas y reiniciar el conector. En macOS/Linux usa `.venv/bin/python`. Al iniciar el servidor, elige Permitir esta sesión o No permitir en el aviso de escritorio. La denegación conserva el diagnóstico local y bloquea envíos; [detalles](KSP_CONSENTIMIENTO.md). Activa kRPC en KSP 1 y abre `http://localhost:7173/ksp-map.html`; conecta el juego para ver **Estado del equipo y vuelo**. El conector solo escucha en loopback y no envía controles al juego.
 
 ## Datos y frecuencia
 
@@ -53,7 +53,7 @@ La subida periódica conserva el intervalo configurado, por defecto 300 s. Al oc
 
 Al detener el conector con Ctrl+C o SIGTERM se cierra el muestreo, se guarda el resumen y se intenta una última sincronización. Se espera hasta 15 s al trabajador. Si no puede confirmarla, quedan las evidencias y el ZIP pendiente para reintentar al próximo arranque, con la misma cuenta/proyecto. Si había una instantánea anterior pendiente, se intenta completarla y después la final. Esto no garantiza envío si se corta la luz o se mata el proceso.
 
-**Pausar subida se respeta también al salir.** La copia local permanece incluso después de un envío correcto. El cierre de la pestaña no apaga el conector: la recogida continúa mientras el servidor local esté ejecutándose. Ciérralo cuando termines la sesión de KSP.
+**Pausar subida y retirar/denegar el permiso se respetan también al salir.** La copia local permanece incluso después de un envío correcto. El cierre de la pestaña no apaga el conector: la recogida continúa mientras el servidor local esté ejecutándose. Ciérralo cuando termines la sesión de KSP.
 
 ## Privacidad y desactivación
 
