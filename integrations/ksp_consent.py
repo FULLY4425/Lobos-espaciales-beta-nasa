@@ -6,8 +6,8 @@ from datetime import datetime,timezone
 CONSENT_VERSION='ksp-upload-consent-v1'
 
 class UploadConsent:
-    def __init__(self,project,include_history=False):
-        self.project=project;self.include_history=include_history;self.allowed=False;self.decided_at=None;self.reason='not-requested';self.lock=threading.Lock()
+    def __init__(self,project,include_history=False,automatic_registration=False):
+        self.automatic_registration=automatic_registration;self.project=project;self.include_history=include_history;self.allowed=False;self.decided_at=None;self.reason='not-requested';self.lock=threading.Lock()
 
     def decide(self,allowed,reason='user-choice'):
         with self.lock:
@@ -18,16 +18,17 @@ class UploadConsent:
         with self.lock:return self.allowed and self.project==project
 
     def status(self):
-        with self.lock:return dict(version=CONSENT_VERSION,allowed=self.allowed,project=self.project,includeHistory=self.include_history,decidedAt=self.decided_at,reason=self.reason)
+        with self.lock:return dict(version=CONSENT_VERSION,allowed=self.allowed,project=self.project,includeHistory=self.include_history,automaticRegistration=self.automatic_registration,decidedAt=self.decided_at,reason=self.reason)
 
     def request(self,ask=None):
         history='También se incluirán sesiones anteriores de este usuario porque se activó --cloud-include-history.' if self.include_history else 'Solo esta sesión y reintentos de sesiones anteriores autorizadas del mismo usuario/proyecto.'
+        access=('No necesitas correo, contraseña ni cuenta personal: al permitir se registra una identidad técnica de esta instalación con acceso limitado.' if self.automatic_registration else 'También necesitas iniciar sesión con un usuario autorizado; este aviso no concede acceso al servidor.')
         text=(f'¿Permites enviar los datos de esta prueba a Lobos Espaciales?\n\nDestino: {self.project}\n\n'
               'Se compartirán datos de vuelo/órbita, CPU, RAM, disco, rendimiento de KSP, rutas, errores y registros del conector. '
               'KSP.log y Player.log solo si elegiste sus rutas; pueden contener texto personal. No se recopilan capturas, teclas, contraseñas ni archivos personales.\n\n'
               f'{history}\n\nSi no permites, el mapa sigue funcionando y los registros quedan únicamente en tu PC. '
               'Puedes retirar el permiso desde el mapa. Lo ya enviado no se borra y una transferencia iniciada podría terminar.\n\n'
-              'También necesitas iniciar sesión con un usuario autorizado; este aviso no concede acceso al servidor.')
+              +access)
         try:
             answer=(ask or ask_desktop)(text)
             return self.decide(answer is True,'dialog-unavailable' if answer is None else 'user-choice')

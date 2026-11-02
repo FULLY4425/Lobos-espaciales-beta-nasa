@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import threading
 import time
 import uuid
@@ -61,26 +62,30 @@ def validate_config(data):
         except (ValueError,IndexError,TypeError):raise CloudError('Usa una clave publishable o la clave anon pública; nunca service_role.') from None
     interval=data.get('interval_seconds',300)
     if isinstance(interval,bool) or not isinstance(interval,(int,float)) or not 30<=interval<=3600:raise CloudError('El intervalo debe ser de 30 a 3600 segundos.')
-    return dict(url=url,publishable_key=key,interval_seconds=interval,enabled=data.get('enabled',True) is True)
+    return dict(url=url,publishable_key=key,interval_seconds=interval,enabled=data.get('enabled',True) is True,device_registration=data.get('device_registration',False) is True)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs):return None
 
 
+def content_type_is_zip(headers):return headers.get('Content-Type')=='application/zip'
+
 def transport(method,url,headers,body):
     request=urllib.request.Request(url,data=body,headers=headers,method=method)
     try:
-        with urllib.request.build_opener(NoRedirect()).open(request,timeout=10) as response:return response.read()
+        with urllib.request.build_opener(NoRedirect()).open(request,timeout=60 if content_type_is_zip(headers) else 25) as response:return response.read()
     except urllib.error.HTTPError as error:
         # Response bodies may contain account information. Never log them or tokens.
+        if '/functions/v1/ksp-device/' in url:
+            raise CloudError('Registro o envío automático temporalmente limitado; se reintentará y la copia local se conserva.' if error.code==429 else f'El servicio automático respondió HTTP {error.code}; la copia local se conserva.') from None
         raise CloudError(f'Supabase respondió HTTP {error.code}. Revisa conexión, sesión y permisos del proyecto.') from None
     except (urllib.error.URLError,TimeoutError,OSError):raise CloudError('No se pudo contactar con Supabase. Se conserva la copia local para reintentar.') from None
 
 
 class SupabaseClient:
     def __init__(self, config_path=DEFAULT_CONFIG, send=transport):
-        self.path=Path(config_path);self.config=validate_config(read_json(self.path));self.auth_path=self.path.parent/'auth.json';self.send=send
+        self.path=Path(config_path);self.config=validate_config(read_json(self.path));self.auth_path=self.path.parent/'auth.json';self.automatic_pause_path=self.path.parent/'automatic-paused.json';self.send=send
 
     def _call(self,method,path,data=None,token=None,content_type='application/json',extra=None):
         headers={'apikey':self.config['publishable_key'],'Content-Type':content_type}
@@ -93,17 +98,19 @@ class SupabaseClient:
         if not isinstance(response,dict) or not isinstance(response.get('user'),dict):raise CloudError('Respuesta de autenticación no válida.')
         user_id=response.get('user',{}).get('id','')
         if not re.fullmatch(r'[0-9a-fA-F-]{36}',user_id) or not response.get('access_token') or not response.get('refresh_token'):raise CloudError('Respuesta de autenticación no válida.')
-        auth=dict(url=self.config['url'],user_id=user_id,access_token=response['access_token'],refresh_token=response['refresh_token'],expires_at=time.time()+response.get('expires_in',3600))
+        auth=dict(url=self.config['url'],user_id=user_id,access_token=response['access_token'],refresh_token=response['refresh_token'],expires_at=time.time()+response.get('expires_in',3600),mode='device' if response['user'].get('app_metadata',{}).get('ksp_device') is True else 'user')
         atomic_json(self.auth_path,auth)
         return auth
 
     def login(self,email,password):
         raw=self._call('POST','/auth/v1/token?grant_type=password',dict(email=email,password=password))
-        try:return self.save_auth(json.loads(raw))
+        try:
+            auth=self.save_auth(json.loads(raw));self.automatic_pause_path.unlink(missing_ok=True);return auth
         except (ValueError,TypeError,KeyError):raise CloudError('No se pudo interpretar la respuesta de autenticación.') from None
 
     def auth(self):
-        if not self.auth_path.exists():raise CloudError('Inicia sesión con: python integrations/ksp_cloud.py login')
+        if self.config.get('device_registration') and self.automatic_pause_path.exists():raise CloudError('Registro automático pausado al cerrar sesión. Reinicia el conector y permite compartir para continuar.')
+        if not self.auth_path.exists():raise CloudError('Inicia el conector y pulsa Permitir para registrar este dispositivo.' if self.config.get('device_registration') else 'Inicia sesión con: python integrations/ksp_cloud.py login')
         auth=read_json(self.auth_path)
         if auth.get('url')!=self.config['url']:raise CloudError('La sesión pertenece a otro proyecto. Vuelve a iniciar sesión.')
         if not re.fullmatch(r'[0-9a-fA-F-]{36}',str(auth.get('user_id',''))):raise CloudError('Identidad local no válida. Vuelve a iniciar sesión.')
@@ -113,6 +120,28 @@ class SupabaseClient:
             except (ValueError,TypeError,KeyError):raise CloudError('No se pudo renovar la sesión. Vuelve a iniciar sesión.') from None
         return auth
 
+    def ensure_device_auth(self,consent):
+        if not self.config.get('device_registration'):return
+        if self.automatic_pause_path.exists():raise CloudError('Registro automático pausado. Reinicia el conector y responde al aviso.')
+        if self.auth_path.exists() or not self.config.get('device_registration'):return
+        if consent is None or not consent.permits(self.config['url']):raise CloudError('Falta el permiso de envío.')
+        path=self.path.parent/'device.json'
+        if path.exists():
+            device=read_json(path)
+            if device.get('url')!=self.config['url'] or not re.fullmatch(r'[a-f0-9]{64}',str(device.get('secret',''))):raise CloudError('Identidad local de dispositivo no válida. No borres la carpeta antes de revisar las evidencias pendientes.')
+            try:identity=uuid.UUID(device.get('id',''))
+            except (ValueError,TypeError):raise CloudError('Identidad local de dispositivo no válida.') from None
+            if identity.version!=4:raise CloudError('Identidad local de dispositivo no válida.')
+        else:
+            device=dict(url=self.config['url'],id=str(uuid.uuid4()),secret=secrets.token_hex(32));atomic_json(path,device)
+        if not consent.permits(self.config['url']):raise CloudError('Permiso retirado antes del registro.')
+        try:
+            result=json.loads(self._call('POST','/functions/v1/ksp-device/register',dict(device_id=device['id'],device_secret=device['secret'],consent_version=CONSENT_VERSION)))
+            if result.get('user',{}).get('app_metadata',{}).get('ksp_device') is not True:raise ValueError()
+            if not consent.permits(self.config['url']):raise CloudError('Permiso retirado durante el registro. No se enviarán evidencias.')
+            self.save_auth(result)
+        except (ValueError,TypeError,KeyError):raise CloudError('El servidor no pudo registrar el dispositivo; la evidencia local se conserva.') from None
+
     def doctor(self):
         """Check current user's setup without uploading or reading evidence bodies."""
         report=dict(project=self.config['url'],ready=False,checks=[])
@@ -121,6 +150,13 @@ class SupabaseClient:
             report['checks'].append(dict(name='authentication',ok=True))
         except CloudError as error:
             report['checks'].append(dict(name='authentication',ok=False,message=str(error)))
+            return report
+        if auth.get('mode')=='device':
+            try:
+                ready=json.loads(self._call('GET','/functions/v1/ksp-device/status',token=auth['access_token'])).get('ok') is True
+                report['checks'].append(dict(name='device_gateway',ok=ready));report['ready']=ready
+                report['notice']='Identidad automática, sin cuenta personal. No se enviaron archivos en este diagnóstico.'
+            except (CloudError,ValueError,TypeError) as error:report['checks'].append(dict(name='device_gateway',ok=False,message=str(error) if isinstance(error,CloudError) else 'Respuesta no válida.'))
             return report
         checks=[
             ('tester', 'POST', '/rest/v1/rpc/ksp_is_tester', {}, 'Autoriza este usuario en public.ksp_testers antes de enviar evidencias.'),
@@ -141,12 +177,19 @@ class SupabaseClient:
         return report
 
     def upload(self,path,content,auth):
+        if auth.get('mode')=='device':
+            self._call('POST','/functions/v1/ksp-device/upload?path='+urllib.parse.quote(path,safe=''),content,auth['access_token'],'application/zip');return
         self._call('POST','/storage/v1/object/ksp-evidence/'+path,content,auth['access_token'],'application/zip',{'x-upsert':'true'})
 
     def index(self,data,auth):
+        if auth.get('mode')=='device':
+            self._call('POST','/functions/v1/ksp-device/index',data,auth['access_token']);return
         self._call('POST','/rest/v1/ksp_sessions?on_conflict=id',data,auth['access_token'],extra={'Prefer':'resolution=merge-duplicates,return=minimal'})
 
     def delete(self,paths,auth):
+        if paths and auth.get('mode')=='device':
+            for at in range(0,len(paths),10):self._call('POST','/functions/v1/ksp-device/delete',dict(paths=paths[at:at+10]),auth['access_token'])
+            return
         if paths:self._call('DELETE','/storage/v1/object/ksp-evidence',dict(prefixes=paths),auth['access_token'])
 
 
@@ -304,7 +347,9 @@ class CloudUploader:
         if not self._permitted():self.set_status(status='consent-required');return
         self.recorder.capture_external()
         if self.paused:self.set_status(status='paused');return
-        auth=self.client.auth();self.owner=auth['user_id']
+        if hasattr(self.client,'ensure_device_auth'):self.client.ensure_device_auth(self.consent)
+        self._require_consent()
+        auth=self.client.auth();self.owner=auth['user_id'];self.set_status(identity='device' if auth.get('mode')=='device' else 'user')
         self._require_consent()
         # Only the current session and previously queued sessions are sent automatically.
         queued=[p for p in sorted(self.root.iterdir()) if p.is_dir() and not p.is_symlink() and SESSION_ID.fullmatch(p.name) and ((p/'.cloud-upload.json').exists() or self.include_history) and p!=self.recorder.path]
@@ -357,9 +402,9 @@ def main():
             profile=read_json(PROJECT_PROFILE)
             if profile.get('schema')!='ksp-cloud-project-v1':raise CloudError('Perfil del proyecto no válido.')
             data=validate_config(dict(profile,interval_seconds=args.interval,enabled=True));atomic_json(args.config,data)
-            print('Proyecto Lobos espaciales configurado. Ejecuta login y doctor antes de iniciar el conector.')
+            print('Proyecto Lobos espaciales configurado. Inicia el conector y pulsa Permitir; no necesitas cuenta ni login.' if data.get('device_registration') else 'Proyecto configurado. Ejecuta login y doctor antes de iniciar el conector.')
         elif args.command=='logout':
-            (args.config.parent/'auth.json').unlink(missing_ok=True);print('Sesión de Supabase eliminada de este equipo. Se conservan las evidencias locales.')
+            atomic_json(args.config.parent/'automatic-paused.json',dict(paused=True,at=utc_now()));(args.config.parent/'auth.json').unlink(missing_ok=True);print('Sesión local cerrada y registro automático pausado. Reinicia el conector y permite compartir para continuar. Se conservan las evidencias locales.')
         elif args.command=='login':
             client=SupabaseClient(args.config);auth=client.login(args.email or input('Correo del probador: '),getpass.getpass('Contraseña de Supabase Auth (no la de tu cuenta de administración): '));print('Inicio de sesión correcto. Usuario:',auth['user_id'])
         elif args.command=='doctor':

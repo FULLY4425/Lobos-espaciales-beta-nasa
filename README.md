@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.7.3 «Permiso para compartir» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.7.4 «Compartir sin cuenta» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -44,7 +44,7 @@ La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y 
 
 ## Permiso antes de enviar (v1.7.3)
 
-Al iniciar el conector aparece un aviso de escritorio con **Permitir esta sesión / No permitir**. Sin aceptación no se suben evidencias; el mapa y el registro local continúan. Puedes retirar el permiso desde el mapa y se vuelve a preguntar al reiniciar. También se necesita un usuario autorizado de Supabase. [Aviso, privacidad y límites](docs/KSP_CONSENTIMIENTO.md).
+Al iniciar el conector aparece un aviso de escritorio con **Permitir esta sesión / No permitir**. Sin aceptación no se suben evidencias; el mapa y el registro local continúan. Puedes retirar el permiso desde el mapa y se vuelve a preguntar al reiniciar. Desde v1.7.4 no necesitas cuenta, correo ni contraseña: después de permitir, el conector registra una identidad técnica privada. [Compartir sin cuenta](docs/KSP_SIN_CUENTA.md). [Aviso, privacidad y límites](docs/KSP_CONSENTIMIENTO.md).
 
 ## Estado del PC y datos de vuelo (v1.7.2)
 
@@ -52,9 +52,9 @@ El conector registra CPU/RAM/disco cada 5 s, consumo de KSP y datos de vuelo/orb
 
 ## Evidencias privadas en Supabase (parte de v1.7)
 
-El proyecto de Supabase ya tiene tablas, bucket privado y políticas aplicadas; el propietario está autorizado y el aislamiento se comprobó en la base real. La revisión v1.7.1 incluye `configure-project`, `login` y `doctor` para conectar el PC de KSP. Falta el primer envío real del conector. [Configuración y estado](docs/KSP_NUBE.md).
+El proyecto de Supabase ya tiene tablas, bucket privado y políticas aplicadas; el propietario está autorizado y el aislamiento se comprobó en la base real. La revisión v1.7.4 conecta automáticamente cada instalación después de aceptar el aviso. Se verificó registro, subida e aislamiento con archivos sintéticos; todavía falta recibir una sesión real del PC de KSP. [Configuración y estado](docs/KSP_NUBE.md).
 
-El conector incorpora envío opcional de ZIP a un proyecto privado propio, reintentos con cola local, pausa/reanudación y un índice de sesiones. La activación requiere crear el proyecto, aplicar las políticas e iniciar sesión como probador; sin configurar no se envía nada. [Configurar y consultar evidencias](docs/KSP_NUBE.md). No se utilizan claves de administrador en los equipos de prueba.
+El conector incorpora envío opcional de ZIP a un proyecto privado propio, reintentos con cola local, pausa/reanudación y un índice de sesiones. El proyecto oficial ya está configurado: basta actualizar, iniciar el conector y pulsar Permitir. Los proyectos propios y las cuentas manuales siguen disponibles como opción avanzada. [Configurar y consultar evidencias](docs/KSP_NUBE.md). No se utilizan claves de administrador en los equipos de prueba.
 
 ## Novedades v1.4.0 «Travesía KSP»
 

@@ -2,6 +2,15 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.4 «Compartir sin cuenta» — 2 de noviembre de 2026 (hora de México)
+
+- Registro automático de una identidad técnica por instalación después del consentimiento. Los probadores no necesitan correo, contraseña ni alta manual en `ksp_testers`.
+- Pasarela privada de evidencias con verificación de identidad, aislamiento entre instalaciones, validación de ZIP y cuotas. Las claves de administración permanecen en el servidor.
+- Se conserva Permitir / No permitir y la retirada. Cerrar sesión pausa el registro automático hasta una nueva aceptación explícita.
+- Se mantienen cuentas manuales, mapas, navegación, diagnóstico y archivos locales. No se añade una APK.
+- Validación: 81 pruebas Python, scripts JavaScript y compilación; registro y subida sintéticos contra Supabase, rechazo del acceso entre instalaciones. Esto no certifica una sesión real de KSP ni la ventana en Windows.
+- Guía: [Compartir sin cuenta](KSP_SIN_CUENTA.md).
+
 ## v1.7.3 «Permiso para compartir» — 2 de noviembre de 2026 (hora de México)
 
 - Ventana de consentimiento del conector con destino y categorías de datos, Permitir esta sesión y No permitir. Cierre, error o ausencia de interfaz no autorizan compartir; alternativa de terminal interactiva con aceptación explícita.

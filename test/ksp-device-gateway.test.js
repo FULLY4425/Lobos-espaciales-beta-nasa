@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {registration,archivePath,digest,validateZip,VERSION} from '../supabase/functions/ksp-device/core.mjs';
+const id='12345678-1234-4234-8234-123456789abc',uid='12345678-1234-1234-1234-123456789abc';
+const fixture=()=>{const b=Buffer.from('UEsDBBQAAAAAAImuYl1Dv6ajAgAAAAIAAAAMAAAAc2Vzc2lvbi5qc29ue31QSwECFAMUAAAAAACJrmJdQ7+mowIAAAACAAAADAAAAAAAAAAAAAAAgAEAAAAAc2Vzc2lvbi5qc29uUEsFBgAAAAABAAEAOgAAACwAAAAAAA==','base64');return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);};
+test('registration requires exact consent version and random installation credentials',()=>{const body={device_id:id,device_secret:'a'.repeat(64),consent_version:VERSION};assert.equal(registration(body),body);for(const patch of [{device_secret:''},{device_id:'hostname'},{consent_version:'yes'}])assert.throws(()=>registration({...body,...patch}));});
+test('archive paths are restricted to the authenticated installation and format',()=>{const path=uid+'/2026-11-02T00-00-00Z-123456789abc/'+'a'.repeat(64)+'.zip';assert.equal(archivePath(path,uid),path);assert.throws(()=>archivePath(path,'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'));assert.throws(()=>archivePath(uid+'/../secret.zip',uid));});
+test('original ZIP structure is accepted but missing manifest is rejected',()=>{assert(validateZip(fixture()));assert.throws(()=>validateZip(new ArrayBuffer(30)));const b=new Uint8Array(fixture());b[30]=120;assert.throws(()=>validateZip(b.buffer));});
+test('encrypted, symlink and oversized expanded archives are rejected',()=>{for(const mutate of [v=>v.setUint16(44+8,1,true),v=>v.setUint32(44+38,0xa0000000,true),v=>v.setUint32(44+24,129*1024*1024,true)]){const b=fixture();mutate(new DataView(b));assert.throws(()=>validateZip(b));}});
+test('archive SHA-256 is computed from bytes',async()=>{assert.equal(await digest(new TextEncoder().encode('abc')),'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');});

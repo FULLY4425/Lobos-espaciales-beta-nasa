@@ -1,5 +1,8 @@
 # v1.7.3 · Permiso para compartir pruebas de KSP
 
+> **Actualización v1.7.4:** el proyecto oficial permite compartir **sin cuenta personal ni login**. Actualiza el código, reinicia el conector y pulsa Permitir. Se crea una identidad técnica limitada automáticamente; las instrucciones de alta de probadores y login de este documento corresponden al modo manual avanzado. Consulta [la guía vigente](KSP_SIN_CUENTA.md).
+
+
 [Proyecto](../README.md) · [Configurar Supabase](KSP_NUBE.md) · [Datos del equipo y vuelo](KSP_DIAGNOSTICO.md)
 
 Al iniciar el conector en Windows aparece una ventana normal de escritorio titulada **Lobos Espaciales · Permiso para compartir**, con dos botones:
@@ -24,7 +27,7 @@ Cerrar la ventana, pulsar Escape o no disponer de interfaz nunca significa permi
 3. Ejecuta `python integrations/ksp_server.py` y elige en el aviso.
 4. En `http://localhost:7173/ksp-map.html`, **Sesiones y diagnóstico** muestra si el permiso está concedido y el estado de la subida.
 
-**Permitir no sustituye el acceso técnico al servidor.** Cada probador sigue necesitando su usuario Supabase Auth autorizado en `ksp_testers`. El aviso no crea usuarios ni otorga privilegios de administrador. Si se permite pero falta configuración o login, se informa de ello y no se afirma haber enviado datos.
+**Modo manual avanzado:** requiere un usuario Supabase Auth autorizado en `ksp_testers`. En el proyecto oficial v1.7.4, Permitir habilita el registro técnico automático, sin privilegios de administrador. Si se permite pero falta configuración o login, se informa de ello y no se afirma haber enviado datos.
 
 `--no-cloud-upload` y `--no-session-log` desactivan el envío y no muestran el aviso. Las opciones para desactivar estadísticas de equipo o vuelo adicional siguen disponibles.
 

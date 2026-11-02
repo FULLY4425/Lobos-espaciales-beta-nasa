@@ -1,5 +1,8 @@
 # Evidencias privadas en Supabase · versión 1.7
 
+> **Actualización v1.7.4:** el proyecto oficial permite compartir **sin cuenta personal ni login**. Actualiza el código, reinicia el conector y pulsa Permitir. Se crea una identidad técnica limitada automáticamente; las instrucciones de alta de probadores y login de este documento corresponden al modo manual avanzado. Consulta [la guía vigente](KSP_SIN_CUENTA.md).
+
+
 El conector puede enviar sus evidencias a un proyecto **de tu cuenta de Supabase**, conservando siempre la copia local. La navegación, la demo y Marte siguen funcionando sin configurar este servicio.
 
 **Estado verificado (2 de noviembre de 2026):** el proyecto `crwzshdtvsqukheckxai` está activo. Se aplicó la migración `ksp_evidence_initial_v17`: bucket privado `ksp-evidence`, tablas, políticas RLS e índice de sesiones. Hay un usuario autorizado como administrador de evidencias, con aprobación explícita del propietario. Pasaron las comprobaciones estructurales y una prueba transaccional de aislamiento con roles reales, revertida sin dejar usuarios ni sesiones de prueba. La API deniega acceso anónimo (HTTP 401). **Falta el primer envío real desde el conector en el PC de KSP**; no se afirma que ya se hayan recibido logs reales.

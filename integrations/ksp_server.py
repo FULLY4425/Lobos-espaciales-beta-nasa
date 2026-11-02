@@ -19,7 +19,7 @@ from server import Handler
 from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_mission
 from integrations.ksp_session import SessionRecorder, VERSION
 from integrations.ksp_diagnostics import ComputerMonitor,read_flight
-from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG, PROJECT_PROFILE,read_json,validate_config
+from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG, PROJECT_PROFILE,read_json,validate_config,atomic_json
 from integrations.ksp_consent import UploadConsent
 
 
@@ -347,10 +347,19 @@ def main():
     try:
         project=validate_config(read_json(args.cloud_config if args.cloud_config.exists() else PROJECT_PROFILE))['url']
     except CloudError:project='Proyecto Supabase pendiente de configurar'
-    telemetry.upload_consent=UploadConsent(project,include_history=args.cloud_include_history)
+    try:
+        public_profile=read_json(PROJECT_PROFILE);automatic=public_profile.get('device_registration') is True and project==public_profile.get('url')
+    except CloudError:public_profile={};automatic=False
+    telemetry.upload_consent=UploadConsent(project,include_history=args.cloud_include_history,automatic_registration=automatic)
     if recorder and not args.no_cloud_upload:
         telemetry.upload_consent.request()
         recorder.event('upload-consent',telemetry.upload_consent.status())
+        if telemetry.upload_consent.allowed and automatic:
+            try:
+                config=read_json(args.cloud_config) if args.cloud_config.exists() else public_profile
+                config=validate_config(dict(config,device_registration=True));atomic_json(args.cloud_config,config)
+                (args.cloud_config.parent/'automatic-paused.json').unlink(missing_ok=True)
+            except (CloudError,OSError):telemetry.cloud_error='No se pudo guardar la configuración local; las evidencias se conservan.'
     else:telemetry.upload_consent.decide(False,'disabled-by-options')
     telemetry.computer=ComputerMonitor(recorder,recorder.path if recorder else Path.cwd(),enabled=not args.no_computer_stats)
     telemetry.computer.start()
