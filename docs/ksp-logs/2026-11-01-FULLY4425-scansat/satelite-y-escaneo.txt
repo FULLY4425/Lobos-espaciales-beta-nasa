@@ -1,0 +1,51 @@
+Satélite SCANsat en Duna · lecturas de solo lectura por kRPC
+Sesión 2026-11-01, FULLY4425, asistida por Claude (IA). Hora local UTC-6.
+Origen: salida de scripts kRPC de lectura (tools/ksp/estado.py, tools/ksp/monitor.py
+de la rama docs/guia-agentes-ksp y consultas a PartModule.fields). Transcrita sin
+cambios salvo recortes de líneas repetidas.
+
+== 18:54 · estado inicial
+Nave Espacial Sin Nombre · Duna · sub_orbital · etapa 0 · warp 1x
+alt 352715 m · vel orbital 563.3 m/s · inclinación 72.32° · periodo 4302 s · e 0.3245
+Ap 369.8 km · Pe 31.8 km (en 1743 s) · atmósfera de Duna 50000 m
+masa 789 kg · ElectricCharge 62.5/62.5 · sin motores ni propergol utilizable
+Piezas: Probodobodyne QBE, SAR-X Antenna, R-3B Radar Altimeter, Communotron 88-88,
+  PB-ACK y PB-NUK-II Radioisotope Generator, Z-200, rueda de reacción pequeña,
+  KO-1 RCS de plasma pulsado.
+SAR-X  · SCANsat: sensorType 2 (Alt Hi) · scanning True · scanStatus "Ideal" ·
+         70 - 500km: > 250km Ideal · FOV 2.8° · 2.0 EC/s
+R-3B   · SCANsat: sensorType 1 (Alt Lo) · scanning True · scanStatus "Muy Alto" ·
+         5 - 250km: > 70km Ideal · 1.0 EC/s
+Mapa SCANsat pequeño: cobertura 0.1 %
+
+== 18:58-19:03 · aceleración 50x y paso por el periapsis (lectura cada 20 s)
+warp 50x hasta 57.6 km, donde KSP lo bajó solo
+alt 49.6 km  Ap 369.8  Pe 31.8  calor 0.18
+alt 41.5 km  Ap 336.8  Pe 31.0  calor 0.21
+alt 31.1 km  Ap 336.7  Pe 31.0  calor 0.39  (periapsis)
+alt 34.5 km  Ap 336.7  Pe 31.0  calor 0.46  (máximo)
+alt 52.8 km  Ap 336.7  Pe 31.0  calor 0.38
+Después el periapsis subió por una maniobra del usuario: 37.3 -> 48.1 -> 66.0 -> 94.7 km.
+Mapa SCANsat pequeño: cobertura 2.9 %-3.0 %
+
+== 19:06 · exportación desde el mapa grande de SCANsat (Altimetry, Duna)
+Ajustes > Gestión de datos: "Export .csv Data File" activado; ancho 1280 px
+(el mapa de 4096 px no cabía en la ventana). El archivo salió a 1126 px (tamaño
+actual del mapa grande): Duna_elevation-Ore_1126x563.png y _data.csv.
+CSV: 32492 filas, cabecera Row,Column,Lat,Long,Height; 31794 con altura distinta
+de 0 (0-8214 m); latitudes -74.65 a 74.97; ~1.8 km por píxel en el ecuador.
+
+== 19:07 · conversión con scripts/import-scansat.py (repo en 8b63480)
+--body Duna --radius 320000 --lat -13.268 --lon -133.961 --size 17 --cell 2000
+"Mapa guardado: … 280/289 celdas con datos. Los huecos no son transitables."
+Alturas de la región: 2209.9-3237.6 m. sourceType SCANsat-CSV.
+POST /api/ksp/maps/validate -> 200, ksp-terrain-v1 normalizado.
+
+== 19:08 · ksp-map.html (v1.3.1)
+Cargar mapa KSP (.json) -> "Instantánea importada: 280/289 alturas. Los huecos están
+bloqueados. Fuente declarada: SCANsat-CSV." Modo "MAPA IMPORTADO · PREPARACIÓN SIN JUEGO".
+Destino "Cresta SCANsat NE" (-11.84, -132.49), pendiente 20° ->
+"11314 m · +153.1 m · ~95 min a 2 m/s" (ver mision-ruta-scansat.json).
+Conectar KSP usando este mapa -> conectado; vehículo "Nave Espacial Sin Nombre",
+11.42938°, -128.57951°, 325115.8 m. El aviso de ruta se ocultó y no apareció un
+mensaje explicando la suspensión (vehículo en órbita y fuera de la región).

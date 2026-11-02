@@ -144,6 +144,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-01 | No identificado en el registro original | Copia anterior a `92c7046` | HUD con KSP 1.12.5 · Crater Crawler en Kerbin | Parcial; incidencias y pendientes documentados | [Leer sesión](#2026-11-01--prueba-real-del-hud-ksp-1125) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `cbdc7ce` (v1.1.0) y `154cbff` (v1.2.0) | Mapa nativo en Duna · rumbo v1.2.0 · SCANsat 21.1 | Parcial; guía y recálculo correctos, destino no alcanzado | [Leer sesión](#2026-11-01--fully4425--mapa-nativo-en-duna-y-conector-v120) |
+| 2026-11-01 | FULLY4425 (asistida por IA) | `8b63480` (v1.3.1) | Satélite SCANsat en Duna · CSV real importado al mapa | Funcionó; importación y ruta sobre alturas SCANsat reales | [Leer sesión](#2026-11-01--fully4425--mapa-scansat-real-de-duna) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -366,6 +367,103 @@ rumbo del conector igual al de la navball en v1.2.0.
 - Nueva versión probada y resultado: v1.2.0; rumbo correcto frente a la navball.
 - Estado: en revisión.
 
+
+## 2026-11-01 · FULLY4425 · Mapa SCANsat real de Duna
+
+> Registro preparado por una IA (Claude) en el equipo de FULLY4425. La IA no envió mandos al satélite: solo leyó datos por kRPC y usó las ventanas de SCANsat. La maniobra que subió el periapsis la hizo el usuario.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425; pruebas ejecutadas por Claude (IA).
+- Fecha, hora y zona horaria: 2026-11-01, 18:54–19:10, UTC−6.
+- Aplicación: versión y commit probado: `8b63480` (v1.3.1).
+- KSP: versión y distribución: KSP 1.12.5, Steam.
+- kRPC: versión del mod y del cliente Python: 0.7.0 / `krpc==0.7.0`.
+- Python / sistema operativo / navegador: Python 3.13.17 / Windows 10 Pro / navegador integrado de la app de Claude.
+- Equipo: CPU, RAM y GPU: i5-11400H, 23,7 GB de RAM, RTX 3050 Laptop.
+- Mods relevantes y versiones (o stock): SCANsat 21.1, kRPC 0.7.0 y los mismos mods de la sesión anterior.
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector: mapas importados (SCANsat) y conector.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; satélite "Nave Espacial Sin Nombre" (SAR-X + R-3B) en órbita 337 × 31 km, i = 72°.
+- Duración aproximada de la sesión: unos 16 min.
+- Resultado general: funcionó / parcial / bloqueado: funcionó.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- **SCANsat:** "Export .csv Data File" activado y ancho de 1280 px. Con 4096 px el mapa grande no cabía en la ventana y no se podía exportar.
+- **Exportación:** Big Map con el cuerpo Duna y el tipo Altimetry. El archivo salió a 1126 × 563.
+- **Conversión:**
+
+  ```bash
+  python scripts/import-scansat.py duna.csv --output duna-region.json --body Duna --radius 320000 --lat -13.268 --lon -133.961 --size 17 --cell 2000
+  ```
+
+  Se eligió un centro con cobertura completa.
+
+### Pasos de la prueba
+
+1. Comprobar el escáner y la órbita por kRPC. Escanear con aceleración de tiempo de 50× hasta el periapsis.
+2. Exportar el CSV de altimetría de Duna.
+3. Convertir una región, validarla con `/api/ksp/maps/validate` y cargarla en `ksp-map.html`.
+4. Planificar una ruta sobre esas alturas y probar "Conectar KSP usando este mapa".
+
+### Resultado esperado
+
+Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
+
+### Resultado observado y experiencia de uso
+
+- **Escaneo:** el SAR-X estaba en estado "Ideal" y el R-3B en "Muy Alto". La cobertura pasó del 0,1 % al 3,0 %.
+- **Paso por la atmósfera:** el satélite cruzó el periapsis de 31 km con un 46 % de calor como máximo. La apoapsis bajó de 370 a 337 km.
+- **CSV exportado:** 32 492 filas con la cabecera esperada (`Row,Column,Lat,Long,Height`) y 31 794 alturas reales (0–8214 m).
+- **Conversión:** 280 de 289 celdas con datos (2210–3238 m), fuente `SCANsat-CSV`.
+- **Importación en el mapa:** mostró "Instantánea importada: 280/289 alturas…".
+- **Ruta:** de 11 314 m, +153 m y ~95 min a 2 m/s.
+- **Conexión con el juego:** reconoció Duna y el satélite. El aviso de ruta se ocultó sin ningún mensaje que explicara que el vehículo estaba en órbita y fuera de la región.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | Lecturas del satélite y "Conectar KSP usando este mapa". |
+| Posición y cuerpo correctos | Correcto | Duna; 11,43°, −128,58°, 325 km. |
+| Rumbo frente a la navball | No probado | |
+| Muestreo de alturas | No aplica | Alturas de SCANsat, no de kRPC. |
+| Destinos y cálculo de ruta | Correcto | [mision-ruta-scansat.json](ksp-logs/2026-11-01-FULLY4425-scansat/mision-ruta-scansat.json) |
+| Recálculo al desviarse | No probado | No había un rover en la región. |
+| Pausa por desconexión / salida de región | Parcial | La guía se ocultó, pero sin mensaje explicativo. |
+| Indicaciones y voz | No probado | |
+| Importación / exportación de mapas | Correcto | CSV real → JSON → mapa ([región](ksp-logs/2026-11-01-FULLY4425-scansat/duna-region-scansat.json)). |
+| Fluidez y consumo de recursos | No probado | |
+
+### Logs y evidencias
+
+- **Exportación de SCANsat:** [player-log-exportacion.zip](ksp-logs/2026-11-01-FULLY4425-scansat/player-log-exportacion.zip). Las líneas 373–374 confirman la exportación del CSV.
+- **KSP.log:** [ksp-log-satelite.zip](ksp-logs/2026-11-01-FULLY4425-scansat/ksp-log-satelite.zip). KSP solo lo había escrito hasta las 19:05, así que no recoge la exportación.
+- **Datos de SCANsat:** [scansat-duna-csv.zip](ksp-logs/2026-11-01-FULLY4425-scansat/scansat-duna-csv.zip) y [scansat-duna-altimetria-1126x563.png](ksp-logs/2026-11-01-FULLY4425-scansat/scansat-duna-altimetria-1126x563.png).
+- **Lecturas del satélite, el paso y la conversión:** [satelite-y-escaneo.txt](ksp-logs/2026-11-01-FULLY4425-scansat/satelite-y-escaneo.txt).
+- **Errores de navegador:** no se registraron.
+- **Capturas:** no se publican porque incluían el escritorio del usuario.
+
+### Errores encontrados
+
+1. **"Map Width" redimensiona el mapa grande.** Con 4096 px el mapa grande de SCANsat se hace más grande que la ventana y no se puede exportar. Ocurre siempre con anchos mayores que la ventana, y obliga a exportar a menor resolución.
+2. **Falta un mensaje al conectar un vehículo en órbita.** Al conectar un vehículo en órbita y fuera de la región, la guía se oculta sin explicar por qué. Ocurrió una vez; el impacto es bajo.
+3. **Texto de kRPC con un mapa de SCANsat.** Con un mapa SCANsat cargado sigue apareciendo "Relieve leído de kRPC…". Es solo un problema de texto.
+
+### Mejoras y sugerencias
+
+- **Aviso de ancho en la guía** (prioridad media). Indicar en la guía de SCANsat que el ancho de exportación también cambia el tamaño del mapa grande.
+- **Mensaje explícito al conectar** (prioridad baja). Mostrar "Vehículo en órbita / fuera de la región" al conectar con un mapa importado.
+
+### Seguimiento
+
+- Pendientes:
+  - Exportar a más resolución, con una ventana más grande.
+  - Conducir un rover dentro de una región importada de SCANsat.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: —
+- Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes
 
