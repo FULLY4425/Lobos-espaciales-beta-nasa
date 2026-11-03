@@ -59,7 +59,14 @@ class Handler(SimpleHTTPRequestHandler):
         super().setup()
         self.connection.settimeout(15)
 
+    def send_header(self,keyword,value):
+        if keyword.lower()=='cache-control':self._cache_header=True
+        super().send_header(keyword,value)
+
     def end_headers(self):
+        # Revalidate static files so an update never mixes new and cached ES modules.
+        if not getattr(self,'_cache_header',False):self.send_header('Cache-Control','no-cache')
+        self._cache_header=False
         self.send_header('X-Content-Type-Options','nosniff')
         self.send_header('Referrer-Policy','no-referrer')
         self.send_header('X-Frame-Options','SAMEORIGIN')
