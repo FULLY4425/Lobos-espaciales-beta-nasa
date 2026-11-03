@@ -158,6 +158,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `fa3ff97` (v1.7.5) | Guía de precisión: misma celda, avisos como eventos, paso de largo, cambio de escena, salida de región | Parcial; correcciones de v1.7.5 confirmadas salvo la salida de región; llegada no alcanzada por dos vuelcos | [Leer sesión](#2026-11-02--fully4425--guía-de-precisión-v175-en-ksp-real) |
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `403c127` (v1.7.7) | Llegada confirmada, paso de largo, avisos y seguridad del conector | Funcionó; `browser-arrival-confirmed` a 4,7 m; salida de región sin repetir | [Leer sesión](#2026-11-02--fully4425--llegada-confirmada-con-v177) |
 | 2026-11-02 | FULLY4425 (conducción de IA) | `fb6ebb1` (v1.7.9) | Misma prueba desde el último punto: paso de largo y llegada; comprobación de versiones | Funcionó; llegada a 6,4 m; fallo de caché de módulos al actualizar | [Leer sesión](#2026-11-02--fully4425--repetición-con-v179-desde-el-último-punto) |
+| 2026-11-02 | FULLY4425 (conducción de IA) | `fb6ebb1` (v1.7.9) + PR #4 | Tormenta local simulada y 1,2 km cuesta abajo; corrección de caché | Funcionó; paso de largo y llegada a 7,2 m; sin recálculo por desvío | [Leer sesión](#2026-11-02--fully4425--tormenta-local-y-12-km-con-v179) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -943,6 +944,73 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 - Pendientes: salida de región con evento, voz, escenarios de viento y tormenta, mod de clima dentro de KSP.
 - Respuesta o revisión de otro colaborador: pendiente.
 - Nueva versión probada y resultado: v1.7.9 (este registro).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Tormenta local y 1,2 km con v1.7.9
+
+> Conducción completa de Claude (IA) con teclado y ratón. kRPC solo se usó para leer datos. Los textos del mapa se leyeron del DOM del navegador integrado. El clima es el escenario simulado del mapa: no cambia KSP.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425 (subido con ucchaconamir-hub).
+- Fecha, hora y zona horaria: 2026-11-02, 19:01–19:09, UTC−6.
+- Aplicación: versión y commit probado: v1.7.9 `fb6ebb1` más la corrección de caché de la [PR #4](https://github.com/FULLY4425/Lobos-espaciales-beta-nasa/pull/4) (rama `fix/cache-modulos-ksp`, sin fusionar).
+- KSP, kRPC, equipo y mods: igual que en las sesiones anteriores. El mod de clima no se instaló.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; Crater Crawler, de −0,264° −74,761° a −0,466° −74,835°.
+- Duración aproximada de la sesión: 5 min de conducción, 1309 m recorridos.
+- Resultado general: funcionó / parcial / bloqueado: funcionó.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Resultado observado y experiencia de uso
+
+- **Corrección de caché (correcto):** los archivos estáticos llegan con `Cache-Control: no-cache` y el mapa cargó sin el error "speedMS".
+- **La tormenta bloquea rutas (correcto, por diseño):**
+  - Al noreste: "Guía suspendida: Sin paso entre Vehículo actual y Destino 1… restricciones simuladas.". La zona naranja cortaba el paso.
+  - El mismo destino con cielo despejado daba una ruta de 3391 m.
+- **Ruta con tormenta:**
+  - Destino 1,2 km al suroeste, 114 m más abajo.
+  - "2984 m · ~50 min a 1 m/s · escenario simulado"; viento simulado de 25 m/s, ráfagas de 40 m/s y visibilidad de 200 m.
+  - La velocidad estimada baja a la mitad (factor 0,5).
+- **Bajada controlada:**
+  - Se usaron pulsos de frenos (4–5 s sueltos y 1,5–2 s puestos).
+  - Un tramo empinado llegó a 18,2 m/s; el rover frenó sin volcar (roll máximo 13°).
+- **Paso de largo (correcto):** "Reduce velocidad: 7.4 m/s; destino próximo." y después `browser-destination-passed` al pasar a 23,8 m a 7,0 m/s.
+- **Llegada (correcto):**
+  - Marcha atrás cuesta arriba con ajuste de dirección.
+  - "Dentro del radio…" con el rover a 8,1 m; a las 19:08:51 apareció **"Destino alcanzado y vehículo detenido."** con el rover a 7,2 m (`browser-arrival-confirmed`).
+- **Sin recálculo por desvío:** el rover fue en línea recta (1,3 km) aunque la ruta planificada medía 2984 m siguiendo celdas de 2 km. No se avisó del desvío.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Corrección de caché (PR #4) | Correcto | `no-cache` en estáticos y 304 al revalidar (prueba automática); el mapa cargó bien. |
+| Escenario de tormenta (v1.7.8) | Correcto | Bloquea la zona restringida, reduce la velocidad estimada y se registra `browser-training-weather`. |
+| Ruta larga | Correcto | 1,2 km en línea recta; 2984 m planificados. |
+| Paso de largo y llegada | Correcto | 23,8 m; llegada a 7,2 m. |
+| Recálculo al desviarse | No observado | Ningún recálculo por desvío pese a no seguir la ruta de celdas. |
+| Salida de región / voz / mod de clima | No probado | |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-tormenta.txt](ksp-logs/2026-11-02-FULLY4425-tormenta/registro-tormenta.txt).
+- **ZIP del conector:** [conector-sesion-tormenta.zip](ksp-logs/2026-11-02-FULLY4425-tormenta/conector-sesion-tormenta.zip).
+
+### Errores y observaciones
+
+1. **No se detecta el desvío respecto de una ruta larga en celdas de 2 km.** La línea recta del rover se separó del trazado sin que hubiera recálculo. Puede ser intencionado por la tolerancia de las celdas grandes. Conviene confirmarlo.
+2. **La tormenta puede dejar sin ruta destinos cercanos a su zona.** El mensaje lo explica bien. Sería útil indicar dónde está la zona o proponer un destino alcanzable.
+
+### Lecciones para conducir con IA
+
+- En bajadas largas, los pulsos de frenos (4–5 s sueltos y 1,5–2 s puestos) mantienen el rover entre 5 y 9 m/s. En los tramos más empinados hay que dejar los frenos puestos.
+- Comprobar la pendiente con kRPC antes de elegir el destino (máximo de ~12° en todo el recorrido) evitó los vuelcos.
+
+### Seguimiento
+
+- Pendientes: fusionar la PR #4, salida de región, voz, mod de clima en KSP, recálculo por desvío en rutas largas.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.9 con la PR #4 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes
