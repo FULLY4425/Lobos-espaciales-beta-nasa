@@ -1,0 +1,43 @@
+Prueba v1.7.7 «Datos en acción» con KSP real · rover Crater Crawler en Duna · llegada confirmada
+Sesión 2026-11-02 (UTC 2026-11-03 00:32-00:42), FULLY4425 con Claude (IA). Hora local UTC-6.
+Conductores: Claude con teclado y ratón (18:33-18:39) y FULLY4425 en la aproximación final
+(18:39-18:40). kRPC solo para leer. Textos del mapa leídos del DOM del navegador integrado cada 0,5 s;
+eventos y telemetría del conector.
+
+== Preparación
+18:32:07 Conector v1.7.7 (403c127). Consentimiento: Permitir (usuario). Sesión anterior subida.
+         Pruebas: 91/92 Python; falla test_get_and_head_deny_private_paths_and_symlinks porque Windows
+         no permite crear enlaces simbólicos sin privilegios (WinError 1314), no por la aplicación.
+         Seguridad v1.7.6: GET /api/ksp con "Host: evil.example" -> 403; localhost -> 200.
+18:33:44 Navegador integrado: "Duna · Travesía · región inicial del rover", destino en la zona de 5,5°
+         (-0.29344, -74.75939), buscada con body.surface_height cada 40 m.
+         "Ruta KSP lista." · "259 m · +0.0 m · ~3 min a 2 m/s" · "En 260 metros · Llegarás a
+         Destino 1. Fin del recorrido".
+
+== Giro y aproximación
+18:34-18:36 Giro en marcha atrás con ajuste de dirección (Alt+A, ws 0,25) para no volcar; Alt+X lo
+         anula. El banner bajó de 5 en 5 m (260 -> 200 m).
+18:37:36 browser-driving-advice "Reduce velocidad: 11.8 m/s; destino próximo."
+18:37:42 "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta." (mínimo ~20 m, a 15 m/s
+         cuesta abajo; un clic en la acción de frenos no se registró). Evento
+         browser-destination-passed a las 18:37:43. El rover acabó 306 m más allá.
+18:38-18:39 Regreso cuesta arriba: 3 m del destino a 4,2 m/s; los frenos no entraron a tiempo y
+         rodó hacia atrás.
+18:39:10 "Reduce velocidad: 6.5 m/s; destino próximo."
+18:39:14 "Dentro del radio: detente para confirmar llegada (3 s)."
+18:39:19 "Destino sobrepasado. …" (browser-destination-passed)
+
+== Llegada (aproximación final de FULLY4425)
+18:40:18  7,0 m · 2,58 m/s
+18:40:21  4,7 m · 0,28 m/s
+18:40:23  4,7 m · 0,01 m/s (frenos activados)
+18:40:25 "Destino alcanzado y vehículo detenido." -> evento browser-arrival-confirmed 00:40:26 UTC
+         Rover de pie (roll 0), a 4,7-5 m del destino.
+
+== Vista
+El panel del navegador integrado se ocultó y volvió 5 veces entre 18:33 y 18:35 (cambios de
+ventana): "Vista oculta: guía pausada…" / "KSP 1 conectado…". La guía se reanudó cada vez.
+No hubo frases de voz registradas (speechSynthesis.speak no se llamó en esta página).
+
+== Telemetría
+522 muestras (18:32-18:42), velocidad máxima 18,6 m/s, sin vuelcos.

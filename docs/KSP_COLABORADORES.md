@@ -156,6 +156,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, voz audible confirmada por el usuario | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
 | 2026-11-02 | FULLY4425 (conducción del usuario; registro asistido por IA) | `b83dcae` (v1.7.2) | Duna Explorador en Firefox: conector local, mapa SCANsat importado, travesía de ~14 km, diagnóstico del PC | Parcial; conexión, rutas y diagnóstico correctos; sin llegada confirmada (mínimo 152 m del destino a 21,7 m/s) | [Leer sesión](#2026-11-02--fully4425--duna-explorador-v172-en-firefox) |
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `fa3ff97` (v1.7.5) | Guía de precisión: misma celda, avisos como eventos, paso de largo, cambio de escena, salida de región | Parcial; correcciones de v1.7.5 confirmadas salvo la salida de región; llegada no alcanzada por dos vuelcos | [Leer sesión](#2026-11-02--fully4425--guía-de-precisión-v175-en-ksp-real) |
+| 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `403c127` (v1.7.7) | Llegada confirmada, paso de largo, avisos y seguridad del conector | Funcionó; `browser-arrival-confirmed` a 4,7 m; salida de región sin repetir | [Leer sesión](#2026-11-02--fully4425--llegada-confirmada-con-v177) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -811,6 +812,79 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
   - Probar v1.7.6 y v1.7.7.
 - Respuesta o revisión de otro colaborador: pendiente.
 - Nueva versión probada y resultado: v1.7.5 (este registro).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Llegada confirmada con v1.7.7
+
+> Claude (IA) condujo con teclado y ratón; FULLY4425 hizo la aproximación final (18:39–18:40). kRPC solo se usó para leer datos. Los textos del mapa se leyeron del DOM del navegador integrado.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425 (subido con ucchaconamir-hub).
+- Fecha, hora y zona horaria: 2026-11-02, 18:32–18:42, UTC−6.
+- Aplicación: versión y commit probado: v1.7.7 `403c127`. Después se publicó v1.7.8, que no se probó.
+- KSP: KSP 1.12.5, Steam. kRPC: 0.7.0 / `krpc==0.7.0`.
+- Python / sistema operativo / navegador: 3.13 / Windows 10 Pro / navegador integrado de la app de Claude.
+- Equipo: i5-11400H, 23,7 GB de RAM, RTX 3050 Laptop.
+- Mods relevantes y versiones (o stock): SCANsat 21.1, kRPC 0.7.0.
+- Área probada: mapa nativo con mapa SCANsat incluido y conector.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; Crater Crawler, de −0,235° −74,767° a −0,293° −74,759°.
+- Duración aproximada de la sesión: 10 min.
+- Resultado general: funcionó / parcial / bloqueado: funcionó (llegada, paso de largo y avisos); la salida de región no se repitió.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- **Pruebas:** 91 de 92 en Python. Falla `test_get_and_head_deny_private_paths_and_symlinks`: Windows no deja crear enlaces simbólicos sin privilegios (`WinError 1314`). Es un fallo del entorno de pruebas, no de la aplicación.
+- **Seguridad v1.7.6:** `GET /api/ksp` con `Host: evil.example` devuelve **403**; `localhost` funciona.
+- **Destino:** zona de 5,5° buscada con `body.surface_height` cada 40 m. Región "Duna · Travesía · región inicial del rover". Ruta de 259 m.
+
+### Resultado observado y experiencia de uso
+
+- **Llegada (correcto):**
+  - 18:39:14: "Dentro del radio: detente para confirmar llegada (3 s)."
+  - 18:40:21: el rover entró a 4,7 m a 0,28 m/s y se detuvo (0,01 m/s, frenos activados).
+  - 18:40:25: **"Destino alcanzado y vehículo detenido."**, con el evento `browser-arrival-confirmed`. Es la primera llegada confirmada desde v1.4.0.
+- **Paso de largo (correcto):** "Destino sobrepasado…" a las 18:37:42 (pasando a ~20 m y 15 m/s cuesta abajo) y a las 18:39:19. Las dos quedaron como `browser-destination-passed`.
+- **Avisos de velocidad (correcto):** "Reduce velocidad: 11.8 m/s; destino próximo." y "Reduce velocidad: 6.5 m/s; destino próximo.".
+- **Banner:** bajó de 5 en 5 m, de 260 m a 20 m, y volvió a subir al alejarse el rover.
+- **Vista oculta (correcto):** 5 pausas y reanudaciones al cambiar de ventana.
+- **Voz:** no se llamó a `speechSynthesis.speak` en esta página. No comprobada.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | Lectura de 25,8 ms de media (p95 141 ms). |
+| Destinos y cálculo de ruta | Correcto | 259 m sobre el mapa SCANsat incluido. |
+| Llegada y paso de largo | Correcto | `browser-arrival-confirmed` a 4,7 m y parado 3 s; dos `browser-destination-passed`. |
+| Indicaciones y voz | Parcial | Avisos correctos; voz no comprobada. |
+| Pausa por vista oculta | Correcto | |
+| Salida de región | No probado | Sigue pendiente desde v1.7.5. |
+| Seguridad del conector (v1.7.6) | Correcto | Host ajeno → 403. |
+| Métricas de repintado (v1.7.7) | No observado | El último resumen solo incluía `httpRequest` (807 consultas, máx. 45 ms). |
+| Fluidez y consumo de recursos | Medido parcialmente | KSP ~293 % de un núcleo y 7,8 GB; conector 68 MB; FPS no disponibles. |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-v177.txt](ksp-logs/2026-11-02-FULLY4425-v177/registro-v177.txt).
+- **ZIP del conector:** [conector-sesion-v177.zip](ksp-logs/2026-11-02-FULLY4425-v177/conector-sesion-v177.zip). Contiene eventos (`browser-arrival-confirmed`, `browser-destination-passed`, `browser-driving-advice`), telemetría, PC y misiones; se sustituyó el usuario de Windows.
+
+### Errores encontrados
+
+1. **Prueba de enlaces simbólicos en Windows.** Falla sin privilegios de administrador o modo desarrollador. Conviene omitirla (`skipUnless`) cuando no se pueden crear enlaces.
+2. **Frenos por botón poco fiables con latencia.** Con la IA conduciendo, el clic en la acción de frenos a veces no se aplicó a tiempo. Es una limitación de manejar KSP desde fuera, no de la aplicación.
+
+### Lecciones para conducir con IA
+
+- Para girar el Crater Crawler sin volcar: ir en marcha atrás con ajuste de dirección (`Alt+A`/`Alt+D`) y anularlo con `Alt+X`.
+- Acercarse **cuesta arriba**: la pendiente frena el rover y facilita parar dentro de los 8 m.
+
+### Seguimiento
+
+- Pendientes: salida de región con evento, voz, métricas de repintado de v1.7.7 y v1.7.8.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.7 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes
