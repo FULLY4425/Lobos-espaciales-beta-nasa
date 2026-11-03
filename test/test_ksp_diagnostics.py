@@ -45,6 +45,38 @@ class DiagnosticsTests(unittest.TestCase):
             m=ComputerMonitor(storage_path=root);m.provider=None;data=m.collect()
         self.assertEqual(data['status'],'partial');self.assertIsNone(data['cpuPercent']);self.assertIsNone(data['kspDetected'])
 
+    def test_export_refreshes_stale_summary_and_keeps_counts_immutable(self):
+        from unittest.mock import patch
+        from integrations.ksp_session import make_archive
+        with tempfile.TemporaryDirectory() as root:
+            r=SessionRecorder(root);r.write_analysis()
+            r.sample(dict(body='Duna',speed=2));r.diagnostic('flight',dict(situation='landed'))
+            def concurrent_activity(files,manifest):
+                r.diagnostic('flight',dict(situation='landed'))
+                return make_archive(files,manifest)
+            with patch('integrations.ksp_session.make_archive',side_effect=concurrent_activity):
+                bundle=zipfile.ZipFile(io.BytesIO(r.export()))
+            manifest=json.loads(bundle.read('session.json'));summary=json.loads(bundle.read('analysis.json'))
+            self.assertEqual(manifest['telemetrySamples'],summary['telemetrySamples'])
+            self.assertEqual(summary['telemetrySamples'],1)
+            self.assertEqual(manifest['diagnosticSamples'],summary['diagnosticSamples'])
+            self.assertEqual(summary['diagnosticSamples']['flight'],1)
+            self.assertEqual(r.diagnostic_counts['flight'],2)
+
+    def test_browser_summary_distinguishes_spike_from_sustained_cost(self):
+        with tempfile.TemporaryDirectory() as root:
+            r=SessionRecorder(root)
+            def snapshot(count,total,maximum,over,p95):
+                r.event('browser-performance-snapshot',dict(text=json.dumps(dict(renderCpu=dict(count=count,totalMs=total,maxMs=maximum,over50Ms=over,p95RecentMs=p95)))))
+            snapshot(200,1200,162,1,5)
+            a=r.analysis();self.assertEqual(a['browserPerformance']['renderCpu']['meanMs'],6)
+            self.assertTrue(any('Pico aislado' in message for message in a['recommendations']))
+            self.assertFalse(any('costoso repetido' in message for message in a['recommendations']))
+            snapshot(200,6000,162,50,60)
+            self.assertTrue(any('costoso repetido' in message for message in r.analysis()['recommendations']))
+            snapshot(-1,100,100,1,50)
+            self.assertEqual(r.analysis()['browserPerformance']['renderCpu']['count'],200)
+
     def test_summary_and_zip_include_computer_flight_without_private_files(self):
         with tempfile.TemporaryDirectory() as root:
             r=SessionRecorder(root);r.diagnostic('computer',dict(cpuPercent=95,ramPercent=91));r.diagnostic('flight',dict(meanAltitude=1000,verticalSpeed=20));r.event('krpc-unavailable',{});r.event('browser-performance-snapshot',dict(text=json.dumps(dict(renderCpu=dict(maxMs=150)))))

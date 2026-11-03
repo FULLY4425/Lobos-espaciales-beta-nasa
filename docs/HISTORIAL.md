@@ -2,6 +2,14 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.7 «Datos en acción» — 2 de noviembre de 2026 (hora de México)
+
+- Revisión de dos sesiones reales recibidas en Supabase: máximo de repintado de 162 ms en v1.7.5 y diferencia de 33 muestras entre índice y resumen en v1.7.4. La prueba sintética se excluye del análisis del juego.
+- Modo ligero conserva geometría, objetivos y navegación; reduce la resolución visual de región/atlas. El dibujo 3D reutiliza el tamaño del lienzo y la proyección mientras no cambien dimensiones o densidad de píxeles.
+- Medias, p95 reciente y número de repintados de más de 50 ms, con separación por vista. El resumen diferencia un pico aislado de coste repetido y muestra métricas disponibles en KSP Map.
+- Exportación de resumen y manifiesto bajo una misma instantánea; copia independiente de contadores para evitar cambios durante la compresión.
+- Validación: 92 pruebas Python, 51 JavaScript y recorrido de navegador. No se afirma mejora medida en el PC del colaborador; [análisis y protocolo](KSP_ANALISIS_SUPABASE.md).
+
 ## v1.7.6 «Conexión protegida» — 2 de noviembre de 2026 (hora de México)
 
 - Protección del conector contra Host externo, DNS rebinding y solicitudes de origen cruzado, incluidas lecturas y exportación.

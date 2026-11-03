@@ -21,5 +21,6 @@ try:
   assert f.locator('aside').is_visible();page.set_viewport_size({'width':390,'height':844});page.wait_for_timeout(300)
   assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
   assert not f.locator('html').evaluate('(e)=>e.scrollWidth>innerWidth')
+  page.set_viewport_size({'width':1450,'height':1000});f.locator('#lightweightMode').check();assert f.locator('#lightweightMode').is_checked();f.locator('#globalGlobe').click();f.locator('#atlas3d').wait_for(state='visible');page.wait_for_timeout(300);f.locator('#closeAtlas').click();f.locator('#lightweightMode').uncheck()
   assert not errors,errors;print('Duna full atlas/globe, source texture, objectives, mixed layer, cameras, weather reroute, rehearsal, HUD, AR fallback and compact layout passed.',errors);b.close()
 finally:server.shutdown();server.server_close()

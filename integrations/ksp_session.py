@@ -11,7 +11,7 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION='1.7.6'
+VERSION='1.7.7'
 MAX_EXTERNAL_LOG=16*1024*1024
 GENERATED=re.compile(r'^(session\.json|KSP\.log|Player\.log|events\.jsonl|telemetry\.jsonl|computer\.jsonl|flight\.jsonl|analysis\.json|connector\.log(?:\.[12])?|(?:terrain|mission)-[a-f0-9]{32}\.json)$')
 
@@ -46,8 +46,8 @@ class SessionRecorder:
         self.path=Path(root)/self.id
         self.started_at=datetime.now(timezone.utc).isoformat();self.stopped_at=None;self.samples=0;self.external_summary={}
         self.external_logs={k:Path(v) for k,v in (external_logs or {}).items() if k in ('KSP.log','Player.log') and v}
-        self.computer_info=None;self.situations={};self.diagnostic_counts={'computer':0,'flight':0};self.peaks={};self.event_counts={};self.last_analysis=0
-        self.limit=max_bytes;self.bytes=0;self.dropped=0;self.error=None;self.last_sample=0;self.lock=threading.Lock()
+        self.browser_performance={};self.computer_info=None;self.situations={};self.diagnostic_counts={'computer':0,'flight':0};self.peaks={};self.event_counts={};self.last_analysis=0
+        self.limit=max_bytes;self.bytes=0;self.dropped=0;self.error=None;self.last_sample=0;self.lock=threading.RLock()
         try:self.path.mkdir(parents=True,exist_ok=False)
         except OSError as error:self.error=str(error)
         self.event('start',dict(appVersion=VERSION,readOnly=True))
@@ -56,7 +56,7 @@ class SessionRecorder:
         with self.lock:return dict(id=self.id,bytes=self.bytes,limitBytes=self.limit,dropped=self.dropped,error=self.error,appVersion=VERSION,telemetrySamples=self.samples)
 
     def _manifest(self):
-        return dict(schema='ksp-connector-session-v1',id=self.id,appVersion=VERSION,readOnly=True,startedAt=self.started_at,stoppedAt=self.stopped_at,bytes=self.bytes,dropped=self.dropped,error=self.error,telemetrySamples=self.samples,externalLogs=self.external_summary,diagnosticSamples=self.diagnostic_counts,notice='Evidencias de una sesión local. La presencia de telemetría no certifica todas las pruebas. Los logs externos solo se incluyen si se configuran sus rutas.')
+        return dict(schema='ksp-connector-session-v1',id=self.id,appVersion=VERSION,readOnly=True,startedAt=self.started_at,stoppedAt=self.stopped_at,bytes=self.bytes,dropped=self.dropped,error=self.error,telemetrySamples=self.samples,externalLogs=self.external_summary,diagnosticSamples=dict(self.diagnostic_counts),notice='Evidencias de una sesión local. La presencia de telemetría no certifica todas las pruebas. Los logs externos solo se incluyen si se configuran sus rutas.')
 
     def _save_metadata(self):
         try:
@@ -84,6 +84,16 @@ class SessionRecorder:
             if kind=='browser-performance-snapshot':
                 try:
                     stats=json.loads(data.get('text','{}'))
+                    for key in ('renderCpu','render2d','render3d','atlas2d','atlas3d','httpRequest'):
+                        item=stats.get(key)
+                        if not isinstance(item,dict):continue
+                        count,total,maximum=item.get('count'),item.get('totalMs'),item.get('maxMs')
+                        if not all(isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) and 0<=v<=1e12 for v in (count,total,maximum)) or not 0<count<=1e9:continue
+                        value=dict(count=count,totalMs=total,maxMs=maximum,meanMs=round(total/count,2))
+                        for field in ('p95RecentMs','over50Ms'):
+                            v=item.get(field)
+                            if isinstance(v,(int,float)) and not isinstance(v,bool) and math.isfinite(v) and 0<=v<=(count if field=='over50Ms' else maximum):value[field]=v
+                        self.browser_performance[key]=value
                     for source,target in [('renderCpu','browserRenderMaxMs'),('httpRequest','httpRequestMaxMs')]:
                         value=stats.get(source,{}).get('maxMs')
                         if isinstance(value,(int,float)) and not isinstance(value,bool) and 0<=value<=1e9:self.peaks[target]=max(self.peaks.get(target,0),value)
@@ -126,11 +136,13 @@ class SessionRecorder:
             if self.peaks.get('ramPercent',0)>=90:recommendations.append('RAM elevada: revisar consumo de KSP y otros programas; no se registra su listado.')
             losses=self.event_counts.get('krpc-unavailable',0)
             if losses:recommendations.append('Revisar desconexiones kRPC y cambios de escena con sus marcas de tiempo.')
-            if self.peaks.get('browserRenderMaxMs',0)>100:recommendations.append('Repintados lentos del navegador: comparar 2D, detalle del globo y curvas; no equivale a FPS de KSP.')
+            render=self.browser_performance.get('renderCpu',{})
+            if render.get('count',0)>=30 and (render.get('meanMs',0)>20 or render.get('over50Ms',0)/render['count']>=.1):recommendations.append('Repintado costoso repetido: prueba Modo ligero y compara 2D/3D en la misma escena; no mide FPS de KSP.')
+            elif self.peaks.get('browserRenderMaxMs',0)>100:recommendations.append('Pico aislado de repintado: revisar media y p95 antes de concluir lentitud sostenida; no mide FPS de KSP.')
             if self.peaks.get('rpcReadMaxMs',0)>500:recommendations.append('Lectura kRPC lenta: comparar RPC, cambios de escena y diagnóstico adicional antes de atribuir fallos al mapa.')
             if self.peaks.get('httpRequestMaxMs',0)>2000:recommendations.append('Peticiones locales lentas: comparar carga del conector, muestreo y registro.')
             if not self.samples:recommendations.append('No hay telemetría de juego: comprobar kRPC antes de evaluar rutas.')
-            return dict(schema='ksp-session-analysis-v1',generatedAt=datetime.now(timezone.utc).isoformat(),telemetrySamples=self.samples,diagnosticSamples=dict(self.diagnostic_counts),peaks=dict(self.peaks),computer=self.computer_info,situations=dict(self.situations),events=dict(self.event_counts),recommendations=recommendations,notice='Resumen automático por reglas; no modifica el código ni demuestra causas. FPS no disponible por kRPC.')
+            return dict(schema='ksp-session-analysis-v1',generatedAt=datetime.now(timezone.utc).isoformat(),telemetrySamples=self.samples,diagnosticSamples=dict(self.diagnostic_counts),peaks=dict(self.peaks),browserPerformance={k:dict(v) for k,v in self.browser_performance.items()},computer=self.computer_info,situations=dict(self.situations),events=dict(self.event_counts),recommendations=recommendations,notice='Resumen automático por reglas; no modifica el código ni demuestra causas. FPS no disponible por kRPC.')
 
     def write_analysis(self):
         self.last_analysis=time.monotonic()
@@ -167,4 +179,7 @@ class SessionRecorder:
                 for p in evidence_files(self.path):
                     try:files.append((p.name,p.read_bytes()))
                     except OSError:continue
+            # Summary and manifest must describe the exact same locked snapshot.
+            files=[(name,data) for name,data in files if name!='analysis.json']
+            files.append(('analysis.json',json.dumps(self.analysis(),ensure_ascii=False,allow_nan=False).encode()))
         return make_archive(files,manifest)

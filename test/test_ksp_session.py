@@ -39,5 +39,5 @@ class KspSessionTests(unittest.TestCase):
             self.assertTrue(a.status()['error'])
             telemetry=Telemetry(recorder=a)
             self.assertEqual(telemetry.snapshot()[0],503)
-            self.assertEqual(telemetry.info()['version'],'1.7.6')
+            self.assertEqual(telemetry.info()['version'],'1.7.7')
             self.assertTrue(telemetry.info()['recording']['error'])
