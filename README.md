@@ -1,6 +1,6 @@
 # Lobos Espaciales · Ojo de Marte
 
-**Versión actual: v1.7.7 «Datos en acción» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
+**Versión actual: v1.7.8 «Vientos de Duna» · 2 de noviembre de 2026 (hora de México).** [Historial completo de actualizaciones](docs/HISTORIAL.md).
 
 **Explorador educativo de Marte con fotografía orbital real, terreno 3D y planificación de caminatas científicas.** Reúne datos de MRO/HiRISE y Curiosity/ChemCam para explorar **Glen Torridon, en el cráter Gale**, estudiar evidencias de agua antigua y planear recorridos sobre un modelo de elevación.
 
@@ -41,6 +41,10 @@ La versión v1.2.0 «Atlas KSP» permite guardar regiones de kRPC e importar alt
 ## Mapas 2D/3D y orientación (v1.6.0)
 
 La página principal abre tu escaneo completo de Duna, con atlas 2D, globo 3D y regiones de relieve. Incluye objetivos documentados y propios, cámaras de superficie/seguimiento, explorador y recorridos virtuales, polvo/tormenta de entrenamiento con recálculo, voz, HUD y maqueta WebXR con la textura de Duna. [Guía y límites](docs/DUNA_EXPLORADOR.md). [PNG completo original](public/imagery/duna-global.png) · [Alturas completas](public/data/duna-global.json) · [Metadatos](public/imagery/duna-global-metadata.json). Marte queda disponible en el botón secundario. Incluye el espacio KSP, con el mapa real de Duna del catálogo SCANsat, texturas georreferenciadas, curvas de nivel, escala vertical visual, malla, norte y seguimiento del vehículo. Marte conserva sus funciones y añade capas de altura/fotografía. [Uso, fuentes y formato de texturas](docs/KSP_MAPAS_3D.md). El escaneo de Duna tiene 2 km por muestra; para conducir usa kRPC local con una región más fina.
+
+## Viento, ráfagas y tormentas KSP (v1.7.8)
+
+Simulación de viento con dirección, ráfagas y visibilidad, flechas en 2D/3D, polvo y rutas de entrenamiento. Se incluye el código de un mod opcional para efectos dentro de KSP 1.12.x, con controles separados para visuales y fuerzas sobre el rover. El instalador compila en Windows usando las bibliotecas de tu propio KSP; no se incluye una DLL compilada ni se afirma que se haya probado el mod en el juego. [Instalación, activación y límites](docs/KSP_CLIMA.md).
 
 ## Mejoras basadas en las sesiones de Supabase (v1.7.7)
 

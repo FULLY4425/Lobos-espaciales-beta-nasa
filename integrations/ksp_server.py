@@ -21,6 +21,7 @@ from integrations.ksp_session import SessionRecorder, VERSION
 from integrations.ksp_diagnostics import ComputerMonitor,read_flight
 from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG, PROJECT_PROFILE,read_json,validate_config,atomic_json
 from integrations.ksp_consent import UploadConsent
+from integrations.ksp_environment import training_environment
 
 
 def validate_sample(sample):
@@ -73,6 +74,8 @@ class Telemetry:
         self.lock = threading.Lock()
         self.browser_event_lock=threading.Lock()
         self.browser_batches={}
+        self.weather_updated=0
+        self.weather_state=dict(schema='ksp-training-weather-v1',enabled=False,scenario='clear',windDirection=90)
         self.sample = None
         self.stopped = threading.Event()
         self.message = 'Conectando a kRPC en este equipo…'
@@ -285,6 +288,11 @@ def create_handler(telemetry):
 
         def do_GET(self):
             path=urlsplit(self.path).path
+            if path=='/api/ksp/weather':
+                with telemetry.lock:
+                    state=dict(telemetry.weather_state)
+                    if time.monotonic()-telemetry.weather_updated>15:state['enabled']=False
+                return self.reply(200,state)
             if path=='/api/ksp/info':return self.reply(200,telemetry.info())
             if path=='/api/ksp/cloud':return self.reply(200,telemetry.info()['cloud'])
             if path=='/api/ksp/session':return self.reply(200,telemetry.recorder.status() if telemetry.recorder else dict(enabled=False))
@@ -309,7 +317,7 @@ def create_handler(telemetry):
             origin=self.headers.get('Origin')
             if path.startswith('/api/ksp/') and origin and urlsplit(origin).netloc!=self.headers.get('Host'):
                 return self.reply(403,dict(error='Origen no permitido.'))
-            if path not in ('/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/session/events','/api/ksp/cloud/control'):
+            if path not in ('/api/ksp/weather','/api/ksp/terrain','/api/ksp/terrain/cancel','/api/ksp/plan','/api/ksp/session/events','/api/ksp/cloud/control'):
                 return super().do_POST()
             try:
                 length=int(self.headers.get('Content-Length','0'))
@@ -318,6 +326,15 @@ def create_handler(telemetry):
                 payload=json.loads(self.rfile.read(length))
                 if not isinstance(payload,dict):
                     raise ValueError('Se requiere un objeto JSON.')
+                if path=='/api/ksp/weather':
+                    scenario=payload.get('scenario');direction=payload.get('windDirection',90);enabled=payload.get('enabled')
+                    if not isinstance(enabled,bool):raise ValueError('Activacion no valida.')
+                    training_environment(dict(width=3,height=3),scenario,direction)
+                    state=dict(schema='ksp-training-weather-v1',enabled=enabled,scenario=scenario,windDirection=direction)
+                    with telemetry.lock:
+                        changed=state!=telemetry.weather_state;telemetry.weather_state=state;telemetry.weather_updated=time.monotonic()
+                    if changed:telemetry.record('training-weather-shared',state)
+                    return self.reply(200,dict(shared=True,notice='Configuracion local disponible; el mod debe activarse dentro de KSP.'))
                 if path=='/api/ksp/cloud/control':
                     if not telemetry.cloud:
                         if payload.get('action')=='revoke' and telemetry.upload_consent:

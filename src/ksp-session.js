@@ -1,4 +1,4 @@
-export const KSP_VERSION='1.7.7';
+export const KSP_VERSION='1.7.8';
 export function createSession(mode){return {schema:'ksp-test-session-v1',id:`${new Date().toISOString().replace(/[:.]/g,'-')}-${crypto.randomUUID()}`,appVersion:KSP_VERSION,mode,browser:globalThis.navigator?.userAgent||'unknown',startedAt:new Date().toISOString(),readOnly:true,samples:[],events:[],terrains:[],missions:[],dropped:{samples:0,events:0,terrains:0,missions:0},notice:'Registro local; revisa datos antes de compartir. Las sesiones demo/offline no prueban KSP real.'};}
 export function appendRecord(session,kind,value,limit){const list=session[kind];list.push(value);if(list.length>limit){list.shift();session.dropped[kind]++;}}
 export class SessionJournal{

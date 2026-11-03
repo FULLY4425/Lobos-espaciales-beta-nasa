@@ -56,3 +56,13 @@ class LocalBoundaryTests(unittest.TestCase):
         self.telemetry.recorder.event.assert_called_once()
         body['instanceId']='other'
         self.assertEqual(self.request('/api/ksp/session/events','POST',{'Content-Type':'application/json'},json.dumps(body))[0],409)
+
+    def test_weather_bridge_requires_valid_presets_and_remains_local(self):
+        def send(body,headers=None):return self.request('/api/ksp/weather','POST',headers or {'Content-Type':'application/json'},json.dumps(body))[0]
+        self.assertEqual(send(dict(enabled=True,scenario='wind',windDirection=270)),200)
+        state=json.loads(self.request('/api/ksp/weather')[2]);self.assertEqual(state['scenario'],'wind');self.assertTrue(state['enabled'])
+        self.telemetry.weather_updated-=16
+        self.assertFalse(json.loads(self.request('/api/ksp/weather')[2])['enabled'])
+        for body in [dict(enabled=True,scenario='unknown'),dict(enabled=True,scenario='storm',windDirection=999),dict(enabled='yes',scenario='wind')]:self.assertEqual(send(body),400)
+        self.assertEqual(send(dict(enabled=True,scenario='storm'),{'Origin':'https://attacker.example'}),403)
+        self.assertEqual(send(dict(enabled=False,scenario='clear',windDirection=90)),200)

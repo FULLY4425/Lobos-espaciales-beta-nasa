@@ -96,7 +96,7 @@ def plan_ksp_mission(terrain, payload):
     if not isinstance(avoid_water, bool):
         raise ValueError('La opción de agua debe ser booleana.')
     blocked = {(i % terrain['width'], i // terrain['width']) for i, water in enumerate(terrain['water']) if water and avoid_water}
-    environment, weather_blocks = training_environment(terrain, payload.get('weather','clear'))
+    environment, weather_blocks = training_environment(terrain, payload.get('weather','clear'),payload.get('windDirection',90))
     blocked.update(weather_blocks)
     stops, names = [], set()
     for entry in entries:

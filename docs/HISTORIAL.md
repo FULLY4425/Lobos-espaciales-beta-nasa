@@ -2,6 +2,14 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.8 «Vientos de Duna» — 2 de noviembre de 2026 (hora de México)
+
+- Escenario de viento con ráfagas, dirección y visibilidad; escenarios de polvo/tormenta con valores explícitos de entrenamiento. Flechas 2D/3D y franjas visuales discretas; modo ligero y HUD limitan los efectos.
+- Rutas, ETA, voz y evidencias incluyen el escenario y viento. Se conserva el recálculo ante cambios y la restricción local de tormenta.
+- Puente local de escenario hacia un mod opcional, protegido por las mismas comprobaciones de Host/origen y validación de parámetros. No da órdenes de pilotaje.
+- Código C# y compilador/instalador Windows del mod de clima para KSP 1.12.x: polvo visual, ráfagas y fuerzas incrementales limitadas, desactivadas por defecto; interfaz propia y seguimiento opcional del mapa.
+- 95 pruebas Python, 52 JavaScript, navegador y análisis sintáctico C#. **Pendientes:** compilación con bibliotecas reales de KSP y ensayo del mod dentro del juego. [Guía](KSP_CLIMA.md).
+
 ## v1.7.7 «Datos en acción» — 2 de noviembre de 2026 (hora de México)
 
 - Revisión de dos sesiones reales recibidas en Supabase: máximo de repintado de 162 ms en v1.7.5 y diferencia de 33 muestras entre índice y resumen en v1.7.4. La prueba sintética se excluye del análisis del juego.

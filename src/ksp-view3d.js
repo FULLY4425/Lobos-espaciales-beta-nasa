@@ -14,7 +14,7 @@ export function createKspRelief(canvas,{onView=()=>{},onPick=()=>{},onMove=()=>{
   follow=!!next.follow;
   if(current!==t.id){dispose(vehicle);roverMarker=null;current=t.id;distance=span*1.4;yaw=0;pitch=.9;target.set(0,(range.max-range.min)*state.exaggeration/2,0);camera.near=Math.max(.1,span/10000);camera.far=Math.max(10000,span*20,(range.max-range.min)*10);signature='';}
   scene.fog=next.weather?.scenario==='clear'?null:new THREE.FogExp2('#9f7955',next.weather?.scenario==='storm'?1/span*.7:1/span*.25);
-  const key=[t.id,next.weather?.scenario,next.style,state.exaggeration,next.contours,next.contourStep,next.wireframe,next.textureVersion].join('|');
+  const key=[t.id,next.weather?.scenario,next.weather?.wind?.fromDegrees,next.style,state.exaggeration,next.contours,next.contourStep,next.wireframe,next.textureVersion].join('|');
   if(key!==signature){signature=key;dispose(surface);dispose(decor);const vertices=[],colors=[],uv=[],indices=[];
    for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++){const i=y*t.width+x,z=t.elevations[i];vertices.push(...xyz(x,y).toArray());const c=new THREE.Color(`rgb(${elevationRGB(z??range.min,range.min,range.max).join(',')})`);colors.push(c.r,c.g,c.b);uv.push(x/(t.width-1),1-y/(t.height-1));}
    for(let y=0;y<t.height-1;y++)for(let x=0;x<t.width-1;x++){const a=y*t.width+x,b=a+1,c=a+t.width,d=c+1;if([a,c,b].every(i=>t.elevations[i]!==null))indices.push(a,c,b);if([b,c,d].every(i=>t.elevations[i]!==null))indices.push(b,c,d);}
@@ -23,6 +23,7 @@ export function createKspRelief(canvas,{onView=()=>{},onPick=()=>{},onMove=()=>{
    mesh=new THREE.Mesh(g,new THREE.MeshLambertMaterial({map:texture,vertexColors:!texture,side:THREE.DoubleSide,wireframe:!!next.wireframe}));surface.add(mesh);
    if(next.contours){const lines=contourSegments(t,Number(next.contourStep)||25).segments.flatMap(([a,b])=>[xyz(a.x,a.y,Math.max(.2,t.cellMeters*.005),a.z),xyz(b.x,b.y,Math.max(.2,t.cellMeters*.005),b.z)]);decor.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lines),new THREE.LineBasicMaterial({color:'#f9ead1',transparent:true,opacity:.65})));}
    for(const zone of next.weather?.zones||[]){const center=xyz(zone.x,zone.y,Math.max(1,t.cellMeters*.04)),ring=new THREE.Mesh(new THREE.RingGeometry(zone.radiusCells*t.cellMeters*.97,zone.radiusCells*t.cellMeters,64),new THREE.MeshBasicMaterial({color:'#ff9a62',side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.copy(center);decor.add(ring);}
+   if(next.weather?.wind?.speedMS){const angle=(next.weather.wind.fromDegrees+180)*Math.PI/180,arrow=new THREE.ArrowHelper(new THREE.Vector3(Math.sin(angle),0,-Math.cos(angle)),new THREE.Vector3(-span*.35,(range.max-range.min)*state.exaggeration+span*.08,span*.3),span*.18,0xffce8e,span*.035,span*.025);decor.add(arrow);}
    const grid=new THREE.GridHelper(span,Math.min(20,Math.max(t.width-1,t.height-1)),0x76918b,0x304a48);grid.position.y=-Math.max(1,span*.002);decor.add(grid);
    for(const [text,x,y,z] of [['N ↑',0,0,-span*.58],['E →',span*.58,0,0],['S',0,0,span*.58],['O',-span*.58,0,0]]){const label=textSprite(text,'#c9e7db',span*.025);label.position.set(x,y,z);decor.add(label);}
   }
