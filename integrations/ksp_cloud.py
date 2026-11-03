@@ -324,7 +324,10 @@ class CloudUploader:
                     if bundle.getinfo('analysis.json').file_size>65536:raise ValueError('Summary too large')
                     summary=json.loads(bundle.read('analysis.json'))
                 if not isinstance(summary,dict) or summary.get('schema')!='ksp-session-analysis-v1':raise ValueError('Invalid summary')
-                json.dumps(summary,allow_nan=False);row['diagnostic_summary']=summary
+                json.dumps(summary,allow_nan=False)
+                source_count=summary.get('telemetrySamples');index_count=row['telemetry_samples'];valid=type(source_count) is int and source_count>=0 and type(index_count) is int and index_count>=0
+                summary['dataQuality']=dict(comparison='index-vs-summary',indexTelemetrySamples=index_count,summaryTelemetrySamples=source_count,telemetryCountMatches=(index_count==source_count) if valid else None,status=('consistent' if index_count==source_count else 'stale-summary') if valid else 'unknown')
+                row['diagnostic_summary']=summary
             except (KeyError,ValueError,TypeError,zipfile.BadZipFile):row['diagnostic_summary']=None
             self._require_consent()
             if (path/'.cloud-revoked').exists():return False

@@ -14,6 +14,7 @@ TERRAIN = json.loads((ROOT/'public/data/terrain.json').read_text())
 TARGETS = json.loads((ROOT/'public/data/targets.json').read_text())
 
 class Handler(SimpleHTTPRequestHandler):
+    disable_nagle_algorithm=True
     def __init__(self,*args,**kwargs):
         super().__init__(*args,directory=str(ROOT),**kwargs)
 

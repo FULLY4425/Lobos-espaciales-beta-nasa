@@ -1,5 +1,8 @@
 # Aprendizajes de las pruebas KSP reales (v1.1.0 – v1.7.5)
 
+> **Seguimiento v1.7.10:** las bitácoras v1.7.9 y tormenta se cruzaron con Supabase y sus ZIP. Caché integrada desde PR #4; nuevo umbral de desvío, registro de cobertura y clasificación de peticiones. Los resúmenes históricos desfasados están anotados sin reescribir muestras. Consulta [la revisión vigente](KSP_REVISION_V1710.md); el texto siguiente conserva el contexto de las pruebas anteriores.
+
+
 Resumen de lo que se aprendió en las sesiones del 1 y 2 de noviembre de 2026 (FULLY4425, con ayuda de Claude). Sirve para preparar los próximos experimentos sin repetir los mismos tropiezos. Los detalles y las evidencias de cada sesión están en [la bitácora](KSP_COLABORADORES.md#registro-de-sesiones); aquí solo se resumen. Los valores son medidas de un equipo y una partida concretos, no garantías.
 
 ## 1. Puesta en marcha que funciona

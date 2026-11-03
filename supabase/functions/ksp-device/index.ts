@@ -1,4 +1,4 @@
-import {VERSION,MAX_ZIP,registration,archivePath,digest,validateZip} from './core.mjs';
+import {VERSION,MAX_ZIP,registration,archivePath,digest,validateZip,diagnosticQuality} from './core.mjs';
 import publicKey from './public-key.json' with {type:'json'};
 const base=Deno.env.get('SUPABASE_URL')!,service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -55,7 +55,7 @@ Deno.serve(async req=>{
    const body=await readJSON(req,65536),path=archivePath(body.archive_path,uid),archive=await rpc('archive',{user_id:uid,path});
    if(body.user_id!==uid||body.id!==path.split('/')[1]||body.sha256!==path.split('/')[2].slice(0,-4)||body.archive_bytes!==archive.bytes)throw new Failure(400,'index');
    if(typeof body.app_version!=='string'||body.app_version.length>40||!Number.isFinite(Date.parse(body.captured_at)))throw new Failure(400,'index');
-   const row={id:body.id,user_id:uid,app_version:body.app_version,archive_path:path,sha256:body.sha256,archive_bytes:archive.bytes,captured_at:body.captured_at,started_at:body.started_at??null,telemetry_samples:body.telemetry_samples??null,stopped_at:body.stopped_at??null,diagnostic_summary:body.diagnostic_summary??null};
+   const row={id:body.id,user_id:uid,app_version:body.app_version,archive_path:path,sha256:body.sha256,archive_bytes:archive.bytes,captured_at:body.captured_at,started_at:body.started_at??null,telemetry_samples:body.telemetry_samples??null,stopped_at:body.stopped_at??null,diagnostic_summary:diagnosticQuality(body.diagnostic_summary,body.telemetry_samples)};
    await rpc('index',{user_id:uid,path,row});return json({ok:true});
   }
   if(action==='delete'&&req.method==='POST'){

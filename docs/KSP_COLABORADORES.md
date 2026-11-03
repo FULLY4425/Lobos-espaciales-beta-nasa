@@ -942,7 +942,7 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 ### Seguimiento
 
 - Pendientes: salida de región con evento, voz, escenarios de viento y tormenta, mod de clima dentro de KSP.
-- Respuesta o revisión de otro colaborador: pendiente.
+- Respuesta o revisión de otro colaborador: revisada junto con Supabase en [v1.7.10](KSP_REVISION_V1710.md). Correcciones automatizadas; pendiente repetir desvío/cobertura en el PC del juego.
 - Nueva versión probada y resultado: v1.7.9 (este registro).
 - Estado: en revisión.
 
@@ -1009,7 +1009,7 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 ### Seguimiento
 
 - Pendientes: fusionar la PR #4, salida de región, voz, mod de clima en KSP, recálculo por desvío en rutas largas.
-- Respuesta o revisión de otro colaborador: pendiente.
+- Respuesta o revisión de otro colaborador: revisada junto con Supabase en [v1.7.10](KSP_REVISION_V1710.md). Correcciones automatizadas; pendiente repetir desvío/cobertura en el PC del juego.
 - Nueva versión probada y resultado: v1.7.9 con la PR #4 (este registro).
 - Estado: en revisión.
 

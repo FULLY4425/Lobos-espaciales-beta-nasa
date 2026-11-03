@@ -1,3 +1,4 @@
+import {diagnosticQuality} from '../supabase/functions/ksp-device/core.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {registration,archivePath,digest,validateZip,VERSION} from '../supabase/functions/ksp-device/core.mjs';
 const id='12345678-1234-4234-8234-123456789abc',uid='12345678-1234-1234-1234-123456789abc';
@@ -7,3 +8,5 @@ test('archive paths are restricted to the authenticated installation and format'
 test('original ZIP structure is accepted but missing manifest is rejected',()=>{assert(validateZip(fixture()));assert.throws(()=>validateZip(new ArrayBuffer(30)));const b=new Uint8Array(fixture());b[30]=120;assert.throws(()=>validateZip(b.buffer));});
 test('encrypted, symlink and oversized expanded archives are rejected',()=>{for(const mutate of [v=>v.setUint16(44+8,1,true),v=>v.setUint32(44+38,0xa0000000,true),v=>v.setUint32(44+24,129*1024*1024,true)]){const b=fixture();mutate(new DataView(b));assert.throws(()=>validateZip(b));}});
 test('archive SHA-256 is computed from bytes',async()=>{assert.equal(await digest(new TextEncoder().encode('abc')),'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');});
+
+test('index annotates stale summaries without rewriting original sample counts',()=>{const raw={schema:'ksp-session-analysis-v1',telemetrySamples:515},q=diagnosticQuality(raw,553);assert.equal(q.telemetrySamples,515);assert.equal(q.dataQuality.telemetryCountMatches,false);assert.equal(raw.dataQuality,undefined);assert.equal(diagnosticQuality(raw,515).dataQuality.status,'consistent');assert.equal(diagnosticQuality(raw,null).dataQuality.status,'unknown');assert.equal(diagnosticQuality([],1),null);});

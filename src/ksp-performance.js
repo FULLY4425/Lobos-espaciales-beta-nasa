@@ -12,3 +12,4 @@ export function recordTiming(stats,kind,ms){
  value.meanMs=Math.round(value.totalMs/value.count*100)/100;const sorted=[...value.recent].sort((a,b)=>a-b);value.p95RecentMs=Math.round(sorted[Math.ceil(sorted.length*.95)-1]*100)/100;
 }
 export function timingSnapshot(stats){return Object.fromEntries(Object.entries(stats).map(([key,{recent,...value}])=>[key,value]));}
+export function requestMetric({aborted=false,reason,ok=false}){return aborted?(reason==='timeout'?'httpTimeout':'httpCancelled'):ok?'httpRequest':'httpError';}

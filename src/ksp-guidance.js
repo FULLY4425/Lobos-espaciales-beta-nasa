@@ -31,6 +31,21 @@ export function arrivalState(previous,{distance,speed,now,eligible=true,radius=8
 export function cleanError(message){return String(message||'Error desconocido').trim().replace(/[.\s]+$/,'');}
 export function surfaceContext(t,sample,grid){
  const outside=!grid||!Number.isFinite(grid.x)||!Number.isFinite(grid.y)||grid.x<0||grid.y<0||grid.x>t.width-1||grid.y>t.height-1;
- const airborne=sample.surfaceAltitude>Math.max(30,Math.min(100,t.cellMeters*2));
+ const airborne=['flying','sub_orbital','orbiting','escaping'].includes(sample.flight?.situation)||sample.surfaceAltitude>Math.max(30,Math.min(100,t.cellMeters*2));
  return {usable:!outside&&!airborne,outside,airborne,message:airborne?`Vehículo en vuelo; esta guía es de superficie${outside?' y su posición queda fuera de la región':''}. Selecciona un rover en la región o carga cobertura al aterrizar.`:outside?'Vehículo fuera de la región muestreada. Carga una región que incluya el vehículo y sus destinos.':'Posición dentro de la región; guía de superficie disponible.'};
+}
+
+// Meter tolerance is independent of terrain sampling; persistence/cooldown avoid reroute storms.
+export function deviationState(previous,{crossTrack,now,tolerance=75}){
+ const state={outsideSince:null,lastReplanAt:-Infinity,...previous,shouldReplan:false};
+ const limit=Math.max(15,Math.min(250,Number(tolerance)||75));
+ if(!Number.isFinite(crossTrack)||crossTrack<=limit){state.outsideSince=null;return state;}
+ state.outsideSince??=now;
+ if(now-state.outsideSince>=1500&&now-state.lastReplanAt>=10000){state.shouldReplan=true;state.lastReplanAt=now;state.outsideSince=null;}
+ return state;
+}
+export function nearestReachableCell(t,reach,target,origin){
+ let best=null,distance=Infinity;
+ for(let i=0;i<reach.reachable.length;i++)if(reach.reachable[i]){const x=i%t.width,y=Math.floor(i/t.width);if(Math.hypot(x-origin.x,y-origin.y)<.75)continue;const d=Math.hypot(x-target.x,y-target.y);if(d<distance){best={x,y};distance=d;}}
+ return best;
 }

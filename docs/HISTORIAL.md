@@ -2,6 +2,16 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.10 «Ruta atenta» — 2 de noviembre de 2026 (hora de México)
+
+- Revisión cruzada de las dos bitácoras nuevas de Claude, sus ZIP y cinco sesiones reales en Supabase. Llegadas/tormenta confirmadas; se conservan las evidencias originales.
+- Integración de PR #4: estáticos revalidados con `no-cache`; API privada conserva `no-store`.
+- Desvío por distancia configurable (75 m por defecto), persistencia de 1,5 s y espera de 10 s entre recálculos. Registro de salida de cobertura aunque no haya una misión activa o la guía esté bloqueada.
+- Coordenadas/radio de la zona de tormenta y propuesta explícita de punto conectado; no cambia destinos automáticamente. Pausa de guía con estado de vuelo real incluso sobre mapas de celdas gruesas.
+- Métricas separadas para peticiones correctas, fallidas, canceladas y timeout; menor espera potencial en TCP local. Los datos históricos no permiten atribuir una causa única a los picos.
+- Calidad del resumen anotada en Supabase y en subidas nuevas; cuatro resúmenes históricos desfasados se identifican, sin editar muestras ni ZIP. Edge Function actualizada manteniendo sus controles de acceso.
+- 103 pruebas Python y 57 JavaScript; navegador y caché 200/304. La prueba de symlinks se omite explícitamente cuando el sistema no permite crearlos, manteniendo las demás comprobaciones. [Detalle](KSP_REVISION_V1710.md).
+
 ## v1.7.9 «Siempre al día» — 2 de noviembre de 2026 (hora de México)
 
 - Comprobación de la versión oficial de GitHub al iniciar y cada hora, con revisión fijada por SHA, HTTPS, límites de respuesta y tiempos de espera. Sin conexión, el programa sigue funcionando.

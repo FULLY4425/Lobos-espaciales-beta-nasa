@@ -31,3 +31,9 @@ export function validateZip(data){
  }
  if(!manifest||at!==end)throw Error('zip');return true;
 }
+
+export function diagnosticQuality(summary,indexCount){
+ if(!summary||Array.isArray(summary)||summary.schema!=='ksp-session-analysis-v1')return null;
+ const summaryCount=summary.telemetrySamples,valid=Number.isSafeInteger(indexCount)&&indexCount>=0&&Number.isSafeInteger(summaryCount)&&summaryCount>=0;
+ return {...summary,dataQuality:{comparison:'index-vs-summary',indexTelemetrySamples:Number.isSafeInteger(indexCount)?indexCount:null,summaryTelemetrySamples:Number.isSafeInteger(summaryCount)?summaryCount:null,telemetryCountMatches:valid?indexCount===summaryCount:null,status:valid?(indexCount===summaryCount?'consistent':'stale-summary'):'unknown'}};
+}

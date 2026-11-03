@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {reachableTerrain,edgeDistance,drivingAdvice,arrivalState,cleanError,surfaceContext} from '../src/ksp-guidance.js';
+import {reachableTerrain,edgeDistance,drivingAdvice,arrivalState,cleanError,surfaceContext,deviationState,nearestReachableCell} from '../src/ksp-guidance.js';
 import {createSpeechQueue} from '../src/speech-queue.js';
 import {createSession,appendRecord} from '../src/ksp-session.js';
 function flat(){return {width:9,height:9,cellMeters:25,elevations:Array(81).fill(100),water:Array(81).fill(false)};}
@@ -14,3 +14,8 @@ test('sessions have unique IDs, explicit source and visible retention counters',
 test('error message punctuation is normalized without altering meaning',()=>{assert.equal(cleanError('Sin paso.. '),'Sin paso');});
 
 test('orbital vehicle on a coarse SCANsat map has an explicit surface/context message',()=>{const t={...flat(),cellMeters:2000};const orbital=surfaceContext(t,{surfaceAltitude:325000},{x:50,y:50});assert.equal(orbital.usable,false);assert.ok(orbital.message.includes('en vuelo'));assert.ok(orbital.message.includes('fuera de la región'));assert.equal(surfaceContext(t,{surfaceAltitude:1},{x:4,y:4}).usable,true);assert.equal(surfaceContext(t,{surfaceAltitude:500},{x:4,y:4}).usable,false);});
+
+test('coarse-cell deviation uses meters with persistence and cooldown',()=>{let s=deviationState({}, {crossTrack:120,now:0,tolerance:75});assert.equal(s.shouldReplan,false);s=deviationState(s,{crossTrack:120,now:1600,tolerance:75});assert.equal(s.shouldReplan,true);s=deviationState(s,{crossTrack:120,now:5000,tolerance:75});assert.equal(s.shouldReplan,false);s=deviationState(s,{crossTrack:120,now:11601,tolerance:75});assert.equal(s.shouldReplan,true);s=deviationState(s,{crossTrack:50,now:12000,tolerance:75});assert.equal(s.outsideSince,null);});
+test('suggestion stays in connected cells outside restrictions',()=>{const t=flat(),blocked=new Set([4*9+4]),reach=reachableTerrain(t,{x:2,y:4},15,true,blocked),p=nearestReachableCell(t,reach,{x:4,y:4},{x:2,y:4});assert.ok(p);assert.equal(reach.reachable[p.y*9+p.x],1);assert.ok(!blocked.has(p.y*9+p.x));});
+
+test('actual airborne flight state pauses surface guidance even below coarse altitude threshold',()=>{const t={...flat(),cellMeters:2000};assert.equal(surfaceContext(t,{surfaceAltitude:84,flight:{situation:'flying'}},{x:4,y:4}).usable,false);assert.equal(surfaceContext(t,{surfaceAltitude:1,flight:{situation:'landed'}},{x:4,y:4}).usable,true);});

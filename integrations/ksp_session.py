@@ -11,7 +11,7 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-VERSION='1.7.9'
+VERSION='1.7.10'
 MAX_EXTERNAL_LOG=16*1024*1024
 GENERATED=re.compile(r'^(session\.json|KSP\.log|Player\.log|events\.jsonl|telemetry\.jsonl|computer\.jsonl|flight\.jsonl|analysis\.json|connector\.log(?:\.[12])?|(?:terrain|mission)-[a-f0-9]{32}\.json)$')
 
@@ -84,7 +84,7 @@ class SessionRecorder:
             if kind=='browser-performance-snapshot':
                 try:
                     stats=json.loads(data.get('text','{}'))
-                    for key in ('renderCpu','render2d','render3d','atlas2d','atlas3d','httpRequest'):
+                    for key in ('renderCpu','render2d','render3d','atlas2d','atlas3d','httpRequest','httpTimeout','httpCancelled','httpError'):
                         item=stats.get(key)
                         if not isinstance(item,dict):continue
                         count,total,maximum=item.get('count'),item.get('totalMs'),item.get('maxMs')

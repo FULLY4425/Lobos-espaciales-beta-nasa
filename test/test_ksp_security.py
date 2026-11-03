@@ -37,13 +37,21 @@ class LocalBoundaryTests(unittest.TestCase):
     def test_get_and_head_deny_private_paths_and_symlinks(self):
         with tempfile.TemporaryDirectory() as tmp,patch('server.ROOT',Path(tmp)):
             root=Path(tmp);(root/'.ksp-cloud').mkdir();(root/'.ksp-cloud/auth.json').write_text('SECRET')
-            (root/'docs').mkdir();(root/'docs/private.json').symlink_to(root/'.ksp-cloud/auth.json')
+            (root/'docs').mkdir()
             (root/'docs/guide.md').write_text('Public guide')
             for method in ['GET','HEAD']:
-                for path in ['/.ksp-cloud/auth.json','/%2eksp-cloud/auth.json','/docs/private.json','/integrations/ksp_server.py']:
+                for path in ['/.ksp-cloud/auth.json','/%2eksp-cloud/auth.json','/integrations/ksp_server.py']:
                     with self.subTest(method=method,path=path):
                         status,_,body=self.request(path,method);self.assertEqual(status,404);self.assertNotIn(b'SECRET',body)
                 self.assertEqual(self.request('/docs/guide.md',method)[0],200)
+
+
+    def test_symlink_target_is_private_when_os_allows_symlinks(self):
+        with tempfile.TemporaryDirectory() as tmp,patch('server.ROOT',Path(tmp)):
+            root=Path(tmp);(root/'.ksp-cloud').mkdir();(root/'.ksp-cloud/auth.json').write_text('SECRET');(root/'docs').mkdir()
+            try:(root/'docs/private.json').symlink_to(root/'.ksp-cloud/auth.json')
+            except (OSError,NotImplementedError):self.skipTest('El sistema no permite crear symlinks sin permisos adicionales; se mantienen las otras pruebas de acceso.')
+            for method in ['GET','HEAD']:self.assertEqual(self.request('/docs/private.json',method)[0],404)
 
     def test_static_modules_are_revalidated_and_api_stays_uncached(self):
         status,headers,_=self.request('/src/ksp-map.js')
