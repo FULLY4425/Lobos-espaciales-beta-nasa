@@ -5,7 +5,7 @@ export function createEventQueue(send,{id=()=>crypto.randomUUID(),limit=200}={})
   if(running)return running;
   if(pending&&pending.instanceId!==instanceId)pending=null;
   while(queue.length&&queue[0].instanceId!==undefined&&queue[0].instanceId!==instanceId)queue.shift();
-  if(!pending&&queue.length){const events=[];while(queue.length&&events.length<20){if(queue[0].instanceId!==undefined&&queue[0].instanceId!==instanceId)break;const next=queue[0].event;if(events.length&&new TextEncoder().encode(JSON.stringify({events:[...events,next]})).length>12000)break;events.push(queue.shift());}pending={batchId:id(),instanceId,events};}
+  if(!pending&&queue.length){const events=[];while(queue.length&&events.length<20){if(queue[0].instanceId!==undefined&&queue[0].instanceId!==instanceId)break;const next=queue[0].event;if(events.length&&new TextEncoder().encode(JSON.stringify({events:[...events,next]})).length>12000)break;queue.shift();events.push(next);}pending={batchId:id(),instanceId,events};}
   if(!pending)return Promise.resolve(true);
   running=(async()=>{try{const response=await send(pending);if(response.ok){pending=null;return true;}if(response.status===409)pending=null;return false;}catch{return false;}finally{running=null;}})();return running;
  }};
