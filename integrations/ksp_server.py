@@ -20,6 +20,7 @@ from integrations.ksp_navigation import terrain_request, grid_to_geo, plan_ksp_m
 from integrations.ksp_session import SessionRecorder, VERSION
 from integrations.ksp_diagnostics import ComputerMonitor,read_flight
 from integrations.ksp_cloud import CloudUploader, CloudError, DEFAULT_CONFIG, PROJECT_PROFILE,read_json,validate_config,atomic_json
+from integrations.ksp_updates import UpdateChecker,InstallLock,UpdateError
 from integrations.ksp_consent import UploadConsent
 from integrations.ksp_environment import training_environment
 
@@ -67,6 +68,7 @@ class Telemetry:
         self.upload_consent=None
         self.computer=None
         self.last_flight_read=0
+        self.updates=None
         self.cloud=None
         self.cloud_error=None
         self.instance_id=uuid.uuid4().hex
@@ -85,7 +87,7 @@ class Telemetry:
 
     def info(self):
         current=self.sample
-        return dict(uploadConsent=self.upload_consent.status() if self.upload_consent else dict(allowed=False,reason='not-requested'),computer=self.computer.status() if self.computer else dict(enabled=False),flight=current.get('flight') if current else None,analysis=self.recorder.analysis() if self.recorder else None,version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
+        return dict(updates=self.updates.status() if self.updates else dict(status='disabled',available=False),uploadConsent=self.upload_consent.status() if self.upload_consent else dict(allowed=False,reason='not-requested'),computer=self.computer.status() if self.computer else dict(enabled=False),flight=current.get('flight') if current else None,analysis=self.recorder.analysis() if self.recorder else None,version=VERSION,instanceId=self.instance_id,startedAt=self.started_at,rpcPort=self.rpc_port,streamPort=self.stream_port,readOnly=True,recording=self.recorder.status() if self.recorder else None,cloud=self.cloud.status() if self.cloud else dict(configured=False,status='disabled',error=self.cloud_error))
 
     def record(self, kind, data):
         if self.recorder:self.recorder.event(kind,data)
@@ -396,7 +398,10 @@ def main():
     parser.add_argument('--cloud-include-history',action='store_true',help='Enviar también sesiones anteriores de la carpeta elegida')
     parser.add_argument('--ksp-log',type=Path,help='KSP.log a incluir en las evidencias (opcional)')
     parser.add_argument('--player-log',type=Path,help='Player.log a incluir en las evidencias (opcional)')
+    parser.add_argument('--no-update-check',action='store_true',help='No contactar con GitHub para comprobar versiones')
     args = parser.parse_args()
+    try:install_guard=InstallLock()
+    except (UpdateError,OSError) as error:parser.exit(1,'No se pudo bloquear esta instalación: '+str(error)+'\n')
     def graceful_stop(signum,frame):raise KeyboardInterrupt
     signal.signal(signal.SIGTERM,graceful_stop)
     if hasattr(signal,'SIGBREAK'):signal.signal(signal.SIGBREAK,graceful_stop)
@@ -441,6 +446,8 @@ def main():
             logging.warning(telemetry.cloud_error)
     if telemetry.upload_consent.allowed and not args.cloud_config.exists():
         logging.warning('Permiso aceptado, pero falta configurar el envío: ejecuta ksp_cloud.py configure-project, login y doctor. No se ha enviado información.')
+    if not args.no_update_check:
+        telemetry.updates=UpdateChecker(VERSION);telemetry.updates.start(notify=True)
     worker = threading.Thread(target=telemetry.run, daemon=True)
     worker.start()
     try:
@@ -456,7 +463,9 @@ def main():
         telemetry.computer.close()
         if recorder:recorder.event('stop',dict(reason='server-stop'))
         if telemetry.cloud:telemetry.cloud.close()
+        if telemetry.updates:telemetry.updates.close()
         httpd.server_close()
+        install_guard.close()
 
 
 if __name__ == '__main__':

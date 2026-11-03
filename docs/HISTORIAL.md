@@ -2,6 +2,13 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.9 «Siempre al día» — 2 de noviembre de 2026 (hora de México)
+
+- Comprobación de la versión oficial de GitHub al iniciar y cada hora, con revisión fijada por SHA, HTTPS, límites de respuesta y tiempos de espera. Sin conexión, el programa sigue funcionando.
+- Aviso en el mapa y aviso inicial de Windows que ofrece instrucciones; no instala ni ejecuta código descargado automáticamente. Opción `--no-update-check`.
+- Actualizador explícito para clones Git: bloqueo compartido con el conector, origen oficial HTTPS, copia limpia, revisión/version verificadas y avance rápido únicamente; sin reset, clean, stash o hooks de repositorio.
+- Lanzador Windows `actualizar-ksp.cmd`, instrucciones para ZIP y mod, y pruebas de versiones, red caída, bloqueo y protección de cambios locales. [Guía](KSP_ACTUALIZAR.md).
+
 ## v1.7.8 «Vientos de Duna» — 2 de noviembre de 2026 (hora de México)
 
 - Escenario de viento con ráfagas, dirección y visibilidad; escenarios de polvo/tormenta con valores explícitos de entrenamiento. Flechas 2D/3D y franjas visuales discretas; modo ligero y HUD limitan los efectos.

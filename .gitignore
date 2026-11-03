@@ -15,3 +15,5 @@ ksp-sessions/
 **/.cloud-pending.tmp
 
 /integrations/ksp-weather-mod/build/
+
+.ksp-updates/
