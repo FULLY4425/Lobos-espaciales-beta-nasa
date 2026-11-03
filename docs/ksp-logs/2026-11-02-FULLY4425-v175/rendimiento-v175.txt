@@ -1,0 +1,18 @@
+Rendimiento · sesión 2026-11-02 (v1.7.5), hora local UTC-6
+Equipo: Intel Core i5-11400H (12 hilos), 23,7 GB RAM, RTX 3050 Laptop, Windows 10 Pro.
+Origen: computer.jsonl (544 muestras), telemetry.jsonl y browser-performance-snapshot.
+
+== PC (17:43-18:28)
+CPU total: media 30,5 %, máximo 41,4 %
+KSP_x64: media 298 % de un núcleo (≈25 % de 12 hilos), máximo 378 %; memoria máx. 8429 MB
+Conector Python v1.7.5: memoria máx. 70 MB
+FPS de KSP: no disponibles por kRPC.
+
+== kRPC
+rpcReadMs: media 17,5 ms, p95 27 ms, máximo 2161 ms (durante la carga de partida).
+
+== Navegador (último resumen, 00:28:55 UTC; páginas de Firefox y del navegador integrado)
+Repintado CPU: 2965 veces, 6484 ms en total (2,2 ms de media), máximo 162 ms.
+  v1.7.2 en Firefox: 9,6 ms de media, 173 ms de máximo. v1.4.0: 0,74 ms de media.
+  El resumen no distingue qué página lo envió; la comparación es orientativa.
+Consultas HTTP: 2491, 20 295 ms en total (8,1 ms de media), máximo 65 ms.

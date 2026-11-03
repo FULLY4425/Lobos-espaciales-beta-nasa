@@ -155,6 +155,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-01 | FULLY4425 (asistida por IA) | `8b63480` (v1.3.1) | Satélite SCANsat en Duna · CSV real importado al mapa | Funcionó; importación y ruta sobre alturas SCANsat reales | [Leer sesión](#2026-11-01--fully4425--mapa-scansat-real-de-duna) |
 | 2026-11-01 | FULLY4425 (asistida por IA) | `2cb6daa` (v1.4.0) | Travesía: rover sobre mapa SCANsat, llegada, paso de largo, desconexión, voz y rendimiento | Parcial; llegada y paso de largo correctos, recuperación requiere reimportar el mapa, voz audible confirmada por el usuario | [Leer sesión](#2026-11-01--fully4425--travesía-v140-sobre-mapa-scansat) |
 | 2026-11-02 | FULLY4425 (conducción del usuario; registro asistido por IA) | `b83dcae` (v1.7.2) | Duna Explorador en Firefox: conector local, mapa SCANsat importado, travesía de ~14 km, diagnóstico del PC | Parcial; conexión, rutas y diagnóstico correctos; sin llegada confirmada (mínimo 152 m del destino a 21,7 m/s) | [Leer sesión](#2026-11-02--fully4425--duna-explorador-v172-en-firefox) |
+| 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `fa3ff97` (v1.7.5) | Guía de precisión: misma celda, avisos como eventos, paso de largo, cambio de escena, salida de región | Parcial; correcciones de v1.7.5 confirmadas salvo la salida de región; llegada no alcanzada por dos vuelcos | [Leer sesión](#2026-11-02--fully4425--guía-de-precisión-v175-en-ksp-real) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -708,6 +709,108 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
   - Medir los FPS de KSP con una herramienta externa.
 - Respuesta o revisión de otro colaborador: correcciones revisadas en [v1.7.5](KSP_REVISION_V175.md); validación automatizada, pendiente repetir en KSP/Firefox.
 - Nueva versión probada y resultado: v1.7.2 (este registro; no se ha probado v1.7.5 en este PC).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Guía de precisión v1.7.5 en KSP real
+
+> Claude (IA) condujo con teclado y ratón entre las 17:58 y las 18:25; FULLY4425 condujo el tramo final (18:25–18:28). kRPC solo se usó para leer datos. Los textos del mapa se leyeron del DOM en el navegador integrado de la app; los de Firefox, a través de los eventos que guarda el conector.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425 (subido con la cuenta colaboradora ucchaconamir-hub).
+- Fecha, hora y zona horaria: 2026-11-02, 17:43–18:28, UTC−6.
+- Aplicación: versión y commit probado: v1.7.5 `fa3ff97`. Durante la prueba se publicaron v1.7.6 y v1.7.7, que no se probaron.
+- KSP: versión y distribución: KSP 1.12.5, Steam.
+- kRPC: versión del mod y del cliente Python: 0.7.0 / `krpc==0.7.0`.
+- Python / sistema operativo / navegador: 3.13 / Windows 10 Pro / navegador integrado de la app de Claude y Firefox.
+- Equipo: CPU, RAM y GPU: i5-11400H (12 hilos), 23,7 GB de RAM, RTX 3050 Laptop.
+- Mods relevantes y versiones (o stock): SCANsat 21.1, kRPC 0.7.0.
+- Área probada: mapa nativo / HUD con KSP / mapas importados / conector: mapa nativo con mapas SCANsat incluidos y conector.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; rover Crater Crawler (2,04° −73,92° → 2,51° −73,85°; después de cargar una partida, −0,16° −74,79°).
+- Duración aproximada de la sesión: 45 min.
+- Resultado general: funcionó / parcial / bloqueado: parcial.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Configuración y preparación
+
+- **Conector:** v1.7.5, con consentimiento de subida concedido por el usuario. La sesión anterior (v1.7.4) se subió a Supabase a las 17:43:45: primera subida real confirmada desde el PC de un colaborador.
+- **Mapas:** "Duna · Travesía · última región del rover" y "Duna · Travesía · región inicial del rover", incluidos en la página; no hizo falta importar archivos.
+- **Clima:** despejado; el ciclo de 20 s quedó desactivado.
+- **Protocolo:** el de [aprendizajes](KSP_APRENDIZAJES.md#5-protocolo-propuesto-para-el-próximo-experimento-v175-o-posterior).
+
+### Resultado observado y experiencia de uso
+
+- **Misma celda (corregido):**
+  - Dos destinos a 150 m y 750 m dentro de la celda del rover dieron "750 m · ~7 min" y el banner "En 150 metros · Llegarás a Destino 1". Antes salía "0 m".
+  - Otra ruta de 77 m en Firefox salió con 76,8 m.
+- **Aviso de velocidad (corregido, ahora es evento):**
+  - `browser-driving-advice` "Reduce velocidad: 22.7 m/s; destino próximo." (18:10:46).
+  - "Reduce velocidad: 5.1 m/s; destino próximo." (18:27:14).
+- **Paso de largo (correcto):**
+  - El rover pasó a 9,9 m del destino a 6,9 m/s.
+  - A las 18:27:17 se registró `browser-destination-passed` con "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta.".
+- **Cambio de escena (corregido):**
+  - Al cargar una partida se registró un solo `scene-transition`: "Cambio de escena: esperando vehículo; guía en pausa.".
+  - No hubo reconexiones: un solo `krpc-connected` en toda la sesión, frente a 5 en 15 s con v1.7.2.
+- **Vista oculta (correcto):** con el panel oculto, "Vista oculta: guía pausada…"; al mostrarlo, "KSP 1 conectado".
+- **Salida de la región (fallo):**
+  - El rover llegó a 2,51° (la región termina en 2,32°) y no hubo evento `browser-region-exit`.
+  - Firefox siguió mostrando "En 345 metros · Llegarás a Destino 1 · 945 metros hasta el destino".
+- **Destino intermedio:**
+  - Pasar a ~10 m de Destino 1 no produjo aviso ni evento.
+  - El banner siguió en "Llegarás a Destino 1"; el contador de llegada solo mide la distancia al destino final.
+- **Llegada:** no se confirmó. El rover volcó dos veces en pendientes de 11–18° y nunca se detuvo a 8 m o menos.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Conexión y reconexión kRPC | Correcto | Una sola sesión kRPC; la carga de partida generó un único `scene-transition`. |
+| Posición y cuerpo correctos | Correcto | Duna, Crater Crawler. Durante los vuelcos el rumbo de kRPC saltó (110°, 320°, 44°, 242°). |
+| Rumbo frente a la navball | No probado | |
+| Muestreo de alturas | No probado | Se usaron mapas SCANsat incluidos; las pendientes se leyeron con `surface_height`. |
+| Destinos y cálculo de ruta | Correcto | Rutas de 750 m y 77 m dentro de una celda. |
+| Recálculo al desviarse | No probado | |
+| Pausa por desconexión / salida de región | Parcial | La pausa por vista oculta y por cambio de escena funciona; la salida de región no generó evento. |
+| Llegada y paso de largo | Parcial | Paso de largo correcto (9,9 m a 6,9 m/s); la llegada no se alcanzó. |
+| Indicaciones y voz | Parcial | Avisos guardados como eventos. La voz no se comprobó. |
+| Importación / exportación de mapas | Correcto | Mapas incluidos abiertos y conectados sin importar archivos. |
+| Fluidez y consumo de recursos | Medido parcialmente | Repintado de 2,2 ms de media (162 ms de máximo; v1.7.2 en Firefox: 9,6 ms). KSP hasta 8,4 GB y ≈25 % de CPU. FPS no disponibles ([rendimiento](ksp-logs/2026-11-02-FULLY4425-v175/rendimiento-v175.txt)). |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-v175.txt](ksp-logs/2026-11-02-FULLY4425-v175/registro-v175.txt).
+- **Rendimiento:** [rendimiento-v175.txt](ksp-logs/2026-11-02-FULLY4425-v175/rendimiento-v175.txt).
+- **ZIP del conector:** [conector-sesion-v175.zip](ksp-logs/2026-11-02-FULLY4425-v175/conector-sesion-v175.zip). Contiene telemetría, vuelo, PC, eventos (incluidos `browser-destination-passed`, `browser-driving-advice` y `scene-transition`), misiones y terrenos. Se sustituyó el usuario de Windows en las rutas.
+- **Evidencias que faltan:** capturas, voz y FPS.
+
+### Errores encontrados
+
+1. **Sin evento al salir de la región importada.** Con el rover 21 km fuera de la región, no se registró `browser-region-exit`, y el banner de Firefox mantuvo una distancia antigua (945 m frente a ~1,8 km reales). Ocurrió una vez; impacto medio, porque la guía parece válida cuando no lo es.
+2. **Los destinos intermedios no avisan.** Pasar junto a Destino 1 no produce aviso ni evento, y el banner no avanza al siguiente destino. Impacto bajo o medio.
+3. **Rumbo de kRPC inestable con el rover volcado** (de la lectura, no de la aplicación). Conviene ocultar el rumbo o avisar cuando el `roll` supera unos 60°.
+
+### Mejoras y sugerencias
+
+- **Avisar de vuelco** (prioridad media): si `roll` pasa de 60°, mostrar "Vehículo volcado; la guía no es fiable" y registrarlo.
+- **Avanzar el banner al pasar un destino intermedio** (prioridad media).
+- **Evento y aviso al salir de la región** (prioridad media), como prometía v1.7.5.
+
+### Lecciones para conducir con IA
+
+- Si otra ventana (Firefox o la app de Claude) pasa a ser la activa, la IA pierde el teclado y el rover sigue moviéndose. Conviene dejar KSP activo durante toda la conducción.
+- El Crater Crawler (11,5–12,7 t) vuelca en pendientes de más de 10° al girar fuerte o alternar avance y reversa. Las ruedas de reacción no lo enderezan.
+- Mantener B y soltarlo desactiva también los frenos activados con el botón.
+
+### Seguimiento
+
+- Pendientes:
+  - Confirmar `browser-arrival-confirmed` en una zona de menos de 5°.
+  - Repetir la salida de región.
+  - Comprobar la voz.
+  - Probar v1.7.6 y v1.7.7.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.5 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes

@@ -1,0 +1,62 @@
+Prueba v1.7.5 «Guía de precisión» con KSP real · rover Crater Crawler en Duna
+Sesión 2026-11-02 (UTC 2026-11-02 23:43 – 2026-11-03 00:28), FULLY4425 con Claude (IA). Hora local UTC-6.
+Conductores: Claude con teclado y ratón (17:58-18:25) y FULLY4425 (18:25-18:28). kRPC solo para leer.
+Orígenes: textos del mapa en el navegador integrado leídos del DOM cada 0,5 s (17:57-18:08);
+events.jsonl y telemetry.jsonl del conector (Firefox y navegador integrado); scripts kRPC de lectura
+(posición, rumbo, distancia, pendiente con body.surface_height). Recortes de líneas repetidas.
+
+== Preparación
+17:43:35 Conector v1.7.5 (fa3ff97) desde el clon; aviso de consentimiento: Permitir (usuario).
+         Subida a Supabase confirmada para la sesión anterior (v1.7.4) a las 17:43:45.
+17:57:49 Navegador integrado: "Duna · Travesía · última región del rover" (SCANsat 17 x 17 · 2000 m) ->
+         "Posición dentro de la región; guía de superficie disponible." · clima "clear".
+
+== Dos destinos en la misma celda de 2 km (corrección de v1.7.5)
+17:58:03 Destino 1 (2.06699, -73.91003) a 150 m y Destino 2 (2.17442, -73.91003) 600 m más al norte,
+         todos en la celda del rover. Métrica "750 m · +0.0 m · ~7 min a 2 m/s" y banner
+         "En 150 metros / Llegarás a Destino 1 / 750 metros hasta el destino". (v1.7.2 daba "0 m".)
+00:22 UTC Firefox: destino a 77 m en la misma celda -> ruta de 76,8 m.
+
+== Destino intermedio
+17:59:3x El rover pasó a unos 10 m de Destino 1 a ~6 m/s. Sin aviso ni evento; el banner siguió en
+         "Llegarás a Destino 1" y arrivalStatus mide solo la distancia al destino final.
+
+== Vista oculta
+18:00:33 Panel del navegador integrado oculto -> "Vista oculta: guía pausada. Se comprobará la
+         conexión al volver." (evento browser-visibility). Al volver: "KSP 1 conectado".
+         Mientras el panel estuvo oculto, Firefox (abierto por el usuario) siguió como guía.
+
+== Pérdida de control (lección de uso)
+18:00-18:02 Firefox pasó a primer plano y bloqueó el teclado de la IA; el rover retrocedió cuesta
+         abajo ~1 km a 19-21 m/s. Frenado con la acción de frenos y B.
+18:09-18:12 Segunda vez: el rover saltó a 22,9-27,8 m/s y pasó ~100 m al lado de Destino 2.
+         Mantener B y soltarlo desactiva también los frenos activados con el botón.
+
+== Aviso de velocidad (corrección de v1.7.5: ahora es evento)
+18:10:46 browser-driving-advice {"code":"speed","text":"Reduce velocidad: 22.7 m/s; destino próximo."}
+
+== Salida de la región
+18:12-18:13 El rover llegó a 2,5075°, -73,8494° (la región llega a 2,319°): no hubo evento
+         browser-region-exit. Firefox seguía mostrando "En 345 metros · Llegarás a Destino 1 ·
+         945 metros hasta el destino".
+
+== Vuelcos
+18:15:13 Primer vuelco en pendiente de 18,5° al girar mientras se deslizaba (roll -107/-129°);
+         masa sin cambios (11 512 kg). Las ruedas de reacción (Q/E) no lo enderezaron.
+18:18:30 El usuario cargó una partida: un solo evento scene-transition ("Cambio de escena:
+         esperando vehículo; guía en pausa.") y ninguna sesión kRPC nueva (krpc-connected: 1 en
+         toda la sesión). En v1.7.2 hubo 5 reconexiones en 15 s.
+18:22-18:25 Segundo vuelco a 20 m del destino (pendiente ~11°) al alternar avance, reversa y frenos.
+         Durante el vuelco kRPC dio rumbos 110°, 320°, 44° y 242° en segundos.
+
+== Paso de largo (conducción de FULLY4425)
+18:27:11-15 El rover se enderezó al bajar la pendiente (roll -112 -> -52) y pasó a 9,9 m del
+         destino a 6,9 m/s.
+18:27:14 browser-driving-advice {"code":"speed","text":"Reduce velocidad: 5.1 m/s; destino próximo."}
+18:27:17 browser-destination-passed "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta."
+18:27:24 browser-driving-advice {"code":"passed", ...}
+18:28:31 Rover de pie (roll -7°) en -0,20434°, -74,77929°, a ~160 m del destino.
+
+== Resultado
+No hubo browser-arrival-confirmed: el rover nunca estuvo parado a 8 m o menos.
+Telemetría 2398 muestras (17:43-18:28), rover recorrió ~7,4 km, máximo 31,2 m/s.
