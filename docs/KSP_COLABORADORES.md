@@ -159,6 +159,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `403c127` (v1.7.7) | Llegada confirmada, paso de largo, avisos y seguridad del conector | Funcionó; `browser-arrival-confirmed` a 4,7 m; salida de región sin repetir | [Leer sesión](#2026-11-02--fully4425--llegada-confirmada-con-v177) |
 | 2026-11-02 | FULLY4425 (conducción de IA) | `fb6ebb1` (v1.7.9) | Misma prueba desde el último punto: paso de largo y llegada; comprobación de versiones | Funcionó; llegada a 6,4 m; fallo de caché de módulos al actualizar | [Leer sesión](#2026-11-02--fully4425--repetición-con-v179-desde-el-último-punto) |
 | 2026-11-02 | FULLY4425 (conducción de IA) | `fb6ebb1` (v1.7.9) + PR #4 | Tormenta local simulada y 1,2 km cuesta abajo; corrección de caché | Funcionó; paso de largo y llegada a 7,2 m; sin recálculo por desvío | [Leer sesión](#2026-11-02--fully4425--tormenta-local-y-12-km-con-v179) |
+| 2026-11-02 | FULLY4425 (IA autónoma) | `40a406a` (v1.7.10) | Prueba rutinaria de 500 m: arranque de KSP, muestreo kRPC, paso de largo, llegada y voz | Funcionó; llegada a 7,1 m; voz enviada en la página | [Leer sesión](#2026-11-02--fully4425--prueba-rutinaria-de-500-m-con-v1710-autonomía) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -1011,6 +1012,67 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 - Pendientes: fusionar la PR #4, salida de región, voz, mod de clima en KSP, recálculo por desvío en rutas largas.
 - Respuesta o revisión de otro colaborador: revisada junto con Supabase en [v1.7.10](KSP_REVISION_V1710.md). Correcciones automatizadas; pendiente repetir desvío/cobertura en el PC del juego.
 - Nueva versión probada y resultado: v1.7.9 con la PR #4 (este registro).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Prueba rutinaria de 500 m con v1.7.10 (autonomía)
+
+> Prueba de autonomía. Claude (IA) abrió KSP, cargó la partida, inició kRPC, eligió el rover, preparó el mapa y condujo con teclado y ratón, sin ayuda del usuario. kRPC solo se usó para leer datos.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425 (subido con ucchaconamir-hub).
+- Fecha, hora y zona horaria: 2026-11-02, 22:49–23:01, UTC−6.
+- Aplicación: versión y commit probado: v1.7.10 `40a406a` (incluye la PR #4). 103 pruebas Python correctas; la de enlaces simbólicos se omite en Windows.
+- KSP, kRPC, equipo y mods: igual que en las sesiones anteriores.
+- Conector: `--no-cloud-upload`, para que la IA no decidiera por el usuario el consentimiento de subida a Supabase. La evidencia local se guardó igual.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; Crater Crawler, de −0,4668° −74,8337° a −0,4035° −74,7704°.
+- Duración aproximada de la sesión: 12 min, de ellos 5 de conducción.
+- Resultado general: funcionó / parcial / bloqueado: funcionó.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Resultado observado y experiencia de uso
+
+- **Arranque autónomo (correcto):**
+  - El lanzamiento por `steam://` falló; KSP se abrió ejecutando `KSP_x64.exe` directamente.
+  - Después: Iniciar Juego → Continuar Guardado → partida "q" → kRPC Start server → Estación de seguimiento → Crater Crawler → Volar.
+- **Región:** muestreo kRPC de 41 × 41 celdas de 25 m (1 km); 1436/1681 celdas conectadas.
+- **Ruta:** "500 m · +20.9 m · ~5 min a 2 m/s"; el destino se eligió con pendientes medidas por kRPC (máximo 8,1°).
+- **Paso de largo (correcto):** el rover pasó a 13,7 m a 4,4 m/s; hubo voz y evento `browser-destination-passed`.
+- **Llegada (correcto):**
+  - Marcha atrás con ajuste de dirección y pulsos de frenos. El rover quedó a 7,1 m, a 0,01 m/s.
+  - A las 23:00:21: **"Destino alcanzado y vehículo detenido."** (`browser-arrival-confirmed`).
+- **Voz (comprobada en la página):** `speechSynthesis.speak` dijo "En 500 / 45 / 40 / 30 / 20 metros, llegarás a destino 1…", "Destino sobrepasado…", "Destino alcanzado y vehículo detenido." y "Llegaste a Destino 1. Fin del recorrido". La IA no puede confirmar que se oyera.
+- **Desvío:** no hubo eventos; el recorrido no se separó más de 75 m de la ruta.
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Arranque de KSP y kRPC sin el usuario | Correcto | 51 `krpc-unavailable` antes de Start server, como se esperaba. |
+| Muestreo de alturas kRPC | Correcto | 41 × 41 · 25 m. |
+| Ruta de 500 m | Correcto | 500,1 m planificados. |
+| Paso de largo y llegada | Correcto | 13,7 m; llegada a 7,1 m. |
+| Indicaciones y voz | Correcto en la página | Frases enviadas a `speechSynthesis`; no se comprobó que se oyeran. |
+| Recálculo por desvío (v1.7.10) | No provocado | El desvío nunca superó 75 m. |
+| Salida de región | No probado | |
+| Subida a Supabase | No aplica | Desactivada a propósito (`--no-cloud-upload`). |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-500m.txt](ksp-logs/2026-11-02-FULLY4425-500m/registro-500m.txt).
+- **ZIP del conector:** [conector-sesion-500m.zip](ksp-logs/2026-11-02-FULLY4425-500m/conector-sesion-500m.zip).
+
+### Lecciones para conducir con IA
+
+- Si `open_application`/`steam://` falla, se puede lanzar `KSP_x64.exe` desde su carpeta de instalación.
+- La lista de la Estación de seguimiento no responde a la rueda del ratón: hay que arrastrar la barra de desplazamiento.
+- `Alt+X` a veces no se aplica justo después de mantener `Alt+A`/`Alt+D`. Conviene repetirlo y comprobar `wheel_steering` con kRPC.
+
+### Seguimiento
+
+- Pendientes: provocar un desvío de más de 75 m para probar el recálculo de v1.7.10, salida de región, voz audible confirmada por una persona.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.10 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes

@@ -1,0 +1,40 @@
+Prueba rutinaria de 500 m con KSP real · v1.7.10 · Crater Crawler en Duna · prueba de autonomía
+Sesión 2026-11-02 (UTC 2026-11-03 04:50-05:01), FULLY4425 con Claude (IA). Hora local UTC-6.
+Todo lo hizo Claude con teclado y ratón: abrir KSP, cargar la partida, iniciar kRPC, elegir el
+vehículo, preparar el mapa y conducir. kRPC solo para leer. Textos del mapa leídos del DOM del
+navegador integrado; llamadas a speechSynthesis.speak interceptadas.
+
+== Preparación autónoma
+22:49 Repositorio actualizado a v1.7.10 (40a406a, incluye la PR #4). 103 pruebas Python: OK
+      (la de enlaces simbólicos se omite en Windows).
+22:50 KSP_x64.exe lanzado desde su carpeta (el lanzamiento por steam:// falló). Conector v1.7.10
+      con --no-cloud-upload: la IA no decide el consentimiento de subida del usuario.
+22:52 Menú: Iniciar Juego -> Continuar Guardado -> partida "q" (Año 31) -> Cargar.
+22:53 kRPC: Start server; el conector se conectó ("Ojo de Marte · solo lectura").
+22:54 Estación de seguimiento -> Crater Crawler (aterrizado en Duna) -> Volar. Rover de pie en
+      -0.46680, -74.83373 (llegada de la prueba de tormenta).
+
+== Ruta
+Elección con kRPC (body.surface_height cada 50 m): 500 m al noreste, pendiente máx. 8,1°, media
+4,3°, destino a 1,5° (-0.40350, -74.77042).
+22:55:58 Muestreo kRPC 41 x 41 · 25 m (1000 m): "1436/1681 celdas conectadas … ≤15°".
+22:56:40 "500 m · +20.9 m · ~5 min a 2 m/s" · "En 500 metros · Llegarás a Destino 1. Fin del recorrido".
+         Escenario despejado.
+
+== Conducción (22:56-23:00)
+Giro de ~110° con ajuste de dirección (Alt+A / Alt+D, Alt+X para anular) y avance; hasta 9,4 m/s.
+22:58:51 Mínimo 13,7 m del destino a 4,4 m/s.
+22:58:56 VOZ "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta." (browser-destination-passed)
+22:59-23:00 Marcha atrás con ajuste y pulsos de frenos; VOZ "En 45 / 40 / 30 / 20 metros, llegarás a
+         destino 1. fin del recorrido".
+23:00:16 7,7 m · 1,44 m/s
+23:00:18 7,1 m · 0,01 m/s (frenos)
+23:00:20 VOZ "Destino alcanzado y vehículo detenido." y "Llegaste a Destino 1. Fin del recorrido"
+23:00:21 "Destino alcanzado y vehículo detenido." -> browser-arrival-confirmed 05:00:21 UTC
+
+== Notas
+La voz se llamó en esta página (speechSynthesis.speak); que se oyera no está comprobado por la IA.
+No hubo eventos de desvío (el recorrido no se separó más de 75 m de la ruta recta).
+Recorrido ~700 m incluido el paso de largo y el regreso; roll máximo 11°; sin vuelcos.
+rpcReadMs media 22,2 ms, p95 28,9 ms; máx. 3130 ms durante la carga de la escena.
+51 eventos krpc-unavailable antes de pulsar Start server (esperado).
