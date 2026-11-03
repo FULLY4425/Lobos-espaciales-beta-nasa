@@ -157,6 +157,7 @@ Añade las experiencias debajo de esta tabla y enlaza aquí su encabezado. Conse
 | 2026-11-02 | FULLY4425 (conducción del usuario; registro asistido por IA) | `b83dcae` (v1.7.2) | Duna Explorador en Firefox: conector local, mapa SCANsat importado, travesía de ~14 km, diagnóstico del PC | Parcial; conexión, rutas y diagnóstico correctos; sin llegada confirmada (mínimo 152 m del destino a 21,7 m/s) | [Leer sesión](#2026-11-02--fully4425--duna-explorador-v172-en-firefox) |
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `fa3ff97` (v1.7.5) | Guía de precisión: misma celda, avisos como eventos, paso de largo, cambio de escena, salida de región | Parcial; correcciones de v1.7.5 confirmadas salvo la salida de región; llegada no alcanzada por dos vuelcos | [Leer sesión](#2026-11-02--fully4425--guía-de-precisión-v175-en-ksp-real) |
 | 2026-11-02 | FULLY4425 (conducción de IA y del usuario) | `403c127` (v1.7.7) | Llegada confirmada, paso de largo, avisos y seguridad del conector | Funcionó; `browser-arrival-confirmed` a 4,7 m; salida de región sin repetir | [Leer sesión](#2026-11-02--fully4425--llegada-confirmada-con-v177) |
+| 2026-11-02 | FULLY4425 (conducción de IA) | `fb6ebb1` (v1.7.9) | Misma prueba desde el último punto: paso de largo y llegada; comprobación de versiones | Funcionó; llegada a 6,4 m; fallo de caché de módulos al actualizar | [Leer sesión](#2026-11-02--fully4425--repetición-con-v179-desde-el-último-punto) |
 
 ## 2026-11-01 · Prueba real del HUD KSP 1.12.5
 
@@ -885,6 +886,63 @@ Importar alturas reales de SCANsat y planificar sobre ellas sin inventar huecos.
 - Pendientes: salida de región con evento, voz, métricas de repintado de v1.7.7 y v1.7.8.
 - Respuesta o revisión de otro colaborador: pendiente.
 - Nueva versión probada y resultado: v1.7.7 (este registro).
+- Estado: en revisión.
+
+## 2026-11-02 · FULLY4425 · Repetición con v1.7.9 desde el último punto
+
+> Conducción completa de Claude (IA) con teclado y ratón. kRPC solo se usó para leer datos. Los textos del mapa se leyeron del DOM del navegador integrado.
+
+### Sesión y entorno
+
+- Colaborador / usuario de GitHub: FULLY4425 (subido con ucchaconamir-hub).
+- Fecha, hora y zona horaria: 2026-11-02, 18:51–18:56, UTC−6.
+- Aplicación: versión y commit probado: v1.7.9 `fb6ebb1`, que incluye v1.7.8.
+- KSP, kRPC, equipo y mods: igual que en la sesión v1.7.7. El mod de clima de v1.7.8 no se compiló ni se instaló.
+- Cuerpo, ubicación y vehículo o astronauta: Duna; Crater Crawler, desde −0,2932° −74,7603° (punto de llegada de v1.7.7).
+- Duración aproximada de la sesión: 5 min de conducción.
+- Resultado general: funcionó / parcial / bloqueado: funcionó tras resolver un problema de caché del navegador.
+- Confirmación: esta experiencia corresponde a una prueba con KSP real: sí.
+
+### Resultado observado y experiencia de uso
+
+- **Comprobación de versión (v1.7.9, correcto):** `current 1.7.9 · latest 1.7.9 · available False · status checked`.
+- **Mapa roto tras actualizar (fallo):**
+  - Al abrir `ksp-map.html` apareció "Sin conexión al juego: Cannot read properties of undefined (reading 'speedMS')", con un `TypeError` en `draw`.
+  - Causa: el navegador mezcló el `ksp-map.js` nuevo con un `ksp-environment.js` antiguo guardado en su caché. Los módulos se sirven sin `Cache-Control` y sin versión en la URL.
+  - Ctrl+Shift+R no lo arregló; hubo que volver a descargar los módulos.
+- **Ruta:** 160 m al norte, cuesta arriba (7,6°): "En 160 metros · Llegarás a Destino 1. Fin del recorrido".
+- **Paso de largo (correcto):** "Reduce velocidad: 8.2 m/s; destino próximo." y después "Destino sobrepasado…" (`browser-destination-passed`), al pasar a 15,3 m a 6,6 m/s.
+- **Llegada (correcto):** marcha atrás con pulsos de frenos. A las 18:55:24 el rover estaba a 6,4 m y 0,06 m/s; a las 18:55:26 apareció **"Destino alcanzado y vehículo detenido."** (`browser-arrival-confirmed`).
+
+### Comprobaciones
+
+| Comprobación | Resultado | Observaciones / evidencia |
+| --- | --- | --- |
+| Comprobación de versiones (v1.7.9) | Correcto | Sin actualización disponible. |
+| Carga del mapa tras actualizar | Fallo | Caché de módulos mezclada; se resolvió volviendo a descargarlos. |
+| Llegada y paso de largo | Correcto | `browser-arrival-confirmed` a 6,4 m; `browser-destination-passed` a 15,3 m. |
+| Avisos de velocidad | Correcto | 8,2 y 5,0 m/s. |
+| Viento/tormenta (v1.7.8) | No probado | Escenario despejado; el mod de clima no se instaló. |
+| Salida de región | No probado | |
+| kRPC | Correcto | 13,4 ms de media, p95 30,5 ms. |
+
+### Logs y evidencias
+
+- **Cronología:** [registro-v179.txt](ksp-logs/2026-11-02-FULLY4425-v179/registro-v179.txt).
+- **ZIP del conector:** [conector-sesion-v179.zip](ksp-logs/2026-11-02-FULLY4425-v179/conector-sesion-v179.zip).
+
+### Errores encontrados
+
+1. **Módulos antiguos en caché tras actualizar** (impacto alto: el mapa no conecta). El servidor local entrega los `.js` sin `Cache-Control: no-cache` ni versión en la URL, y el navegador reutiliza módulos viejos junto a los nuevos.
+   - Sugerencia: añadir `?v=<versión>` a los imports, o enviar `Cache-Control: no-cache` para `src/`.
+   - Mientras tanto, si después de actualizar aparece un error parecido, se puede borrar la caché del sitio `localhost:7173`.
+2. **La prueba de enlaces simbólicos sigue fallando en Windows** sin privilegios (100/101).
+
+### Seguimiento
+
+- Pendientes: salida de región con evento, voz, escenarios de viento y tormenta, mod de clima dentro de KSP.
+- Respuesta o revisión de otro colaborador: pendiente.
+- Nueva versión probada y resultado: v1.7.9 (este registro).
 - Estado: en revisión.
 
 ## Validaciones registradas y pruebas pendientes

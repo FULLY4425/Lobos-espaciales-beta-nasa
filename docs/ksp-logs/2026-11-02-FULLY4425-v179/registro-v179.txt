@@ -1,0 +1,32 @@
+Prueba v1.7.9 «Siempre al día» con KSP real · rover Crater Crawler en Duna · misma prueba desde el último punto
+Sesión 2026-11-02 (UTC 2026-11-03 00:51-00:56), FULLY4425 con Claude (IA). Hora local UTC-6.
+Conducción completa de Claude con teclado y ratón; kRPC solo para leer. Textos del mapa leídos del DOM
+del navegador integrado cada 0,5 s; eventos y telemetría del conector.
+
+== Preparación
+18:51:09 Conector v1.7.9 (fb6ebb1). Consentimiento: Permitir (usuario). Sesión anterior subida.
+         Comprobación de versión: current 1.7.9, latest 1.7.9, available False, status "checked".
+         Pruebas: 100/101 Python; falla la misma prueba de enlaces simbólicos (WinError 1314).
+18:52    Al abrir ksp-map.html tras la actualización: "Sin conexión al juego: Cannot read properties
+         of undefined (reading 'speedMS')". Consola: TypeError en draw (ksp-map.js:148). Causa: el
+         navegador reutilizó un ksp-environment.js anterior desde su caché (trainingWeather sin "wind")
+         junto al ksp-map.js nuevo. El servidor ya entregaba el archivo correcto. Los módulos se sirven
+         sin Cache-Control (solo Last-Modified) y sin versión en la URL. Ctrl+Shift+R no bastó; se
+         resolvió volviendo a descargar los módulos con cache:'reload' y recargando la página.
+18:53:19 Región "Duna · Travesía · región inicial del rover"; destino 160 m al norte, cuesta arriba
+         (-0.26453, -74.76026; pendiente 7,6°, +19 m). "160 m · ~2 min a 2 m/s" · "En 160 metros ·
+         Llegarás a Destino 1. Fin del recorrido". Escenario: despejado.
+
+== Paso de largo
+18:53:53 browser-driving-advice "Reduce velocidad: 8.2 m/s; destino próximo."
+18:53:58 Distancia mínima 15,3 m a 6,6 m/s.
+18:54:02 "Destino sobrepasado. Reduce velocidad y revisa la nueva ruta." (browser-destination-passed)
+
+== Regreso y llegada
+18:54-18:55 Marcha atrás cuesta abajo con pulsos de frenos y ajuste de dirección (Alt+D / Alt+X).
+18:55:22  7,7 m · 1,37 m/s
+18:55:24  6,4 m · 0,06 m/s (frenos activados)
+18:55:26 "Destino alcanzado y vehículo detenido." -> browser-arrival-confirmed 00:55:27 UTC
+
+== Telemetría
+249 muestras; velocidad máxima 9,0 m/s; rpcReadMs media 13,4 ms, p95 30,5 ms, máx. 46,8 ms; sin vuelcos.
