@@ -2,6 +2,13 @@
 
 [Volver al proyecto](../README.md) · [Mapa KSP y configuración](KSP_MAPA.md)
 
+## v1.7.6 «Conexión protegida» — 2 de noviembre de 2026 (hora de México)
+
+- Protección del conector contra Host externo, DNS rebinding y solicitudes de origen cruzado, incluidas lecturas y exportación.
+- GET/HEAD comparten restricciones de archivos y destinos de enlaces simbólicos; cabeceras nosniff, referrer y marcos del mismo origen; tiempo de lectura limitado. El servidor web local escucha loopback por defecto; Render conserva su puerto público.
+- Reintentos acotados de eventos del navegador y deduplicación por lote/instancia. Pruebas de corte tras recepción del ZIP y de archivo pendiente alterado.
+- Auditoría de dependencias Python sin vulnerabilidades conocidas en las versiones resueltas, consulta real de permisos y avisos Supabase y revisión de patrones de secretos. Alcance y pendientes en [SEGURIDAD_KSP.md](SEGURIDAD_KSP.md).
+
 ## v1.7.5 «Guía de precisión» — 2 de noviembre de 2026 (hora de México)
 
 - Correcciones basadas en el reporte real de Firefox: extremos exactos de ruta en celdas grandes, espera de cambios de escena sin conexiones en ráfaga y recálculo solo ante un escenario distinto.

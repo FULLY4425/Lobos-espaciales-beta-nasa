@@ -39,14 +39,31 @@ class Handler(SimpleHTTPRequestHandler):
             return self.reply(503,dict(status='unavailable',error='KSP requiere el conector local integrations/ksp_server.py en el PC del juego.',readOnly=True))
         if pathname=='/api/health':
             return self.reply(200,dict(status='ok',engine='python',targets=len(TARGETS)))
-        # Only serve application assets and public research, never Git metadata or code directories.
+        super().do_GET()
+
+    def send_head(self):
+        # GET and HEAD share the same allowlist, including resolved symlink targets.
+        pathname=unquote(urlsplit(self.path).path)
         resolved=(ROOT/pathname.lstrip('/')).resolve()
         allowed=pathname in ('/','/index.html','/ar.html','/ksp.html','/ksp-map.html','/sw.js') or pathname.startswith(('/src/','/public/','/docs/'))
-        if not allowed or not resolved.is_relative_to(ROOT) or any(p.startswith('.') for p in Path(pathname).parts):
-            return self.send_error(404)
-        if resolved.is_dir() and pathname != "/":
-            return self.send_error(404)
-        super().do_GET()
+        safe_target=resolved.is_relative_to(ROOT) and not any(p.startswith('.') for p in resolved.relative_to(ROOT).parts)
+        allowed_target=resolved==ROOT or resolved.name in ('index.html','ar.html','ksp.html','ksp-map.html','sw.js') and resolved.parent==ROOT or any(resolved.is_relative_to(ROOT/name) for name in ('src','public','docs'))
+        if not allowed or not safe_target or not allowed_target or (resolved.is_dir() and pathname!='/'):
+            self.send_error(404);return None
+        return super().send_head()
+
+    def list_directory(self,path):
+        self.send_error(404);return None
+
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(15)
+
+    def end_headers(self):
+        self.send_header('X-Content-Type-Options','nosniff')
+        self.send_header('Referrer-Policy','no-referrer')
+        self.send_header('X-Frame-Options','SAMEORIGIN')
+        super().end_headers()
 
     def do_POST(self):
         pathname=urlsplit(self.path).path
@@ -77,4 +94,4 @@ class Handler(SimpleHTTPRequestHandler):
 if __name__=='__main__':
     port=int(os.environ.get('PORT','5173'))
     print(f'Lobos Espaciales · Python · port {port}',flush=True)
-    ThreadingHTTPServer(('0.0.0.0',port),Handler).serve_forever()
+    ThreadingHTTPServer((os.environ.get('BIND_HOST','0.0.0.0' if 'PORT' in os.environ else '127.0.0.1'),port),Handler).serve_forever()

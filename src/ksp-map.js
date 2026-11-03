@@ -1,3 +1,4 @@
+import {createEventQueue} from './ksp-events.js';
 import {createDunaAtlas} from './ksp-atlas.js';
 import {trainingWeather} from './ksp-environment.js';
 import {createNavigation} from './navigation.js';
@@ -20,11 +21,12 @@ function weather(){const scenario=$('dunaWeather').value;if(weatherCache?.terrai
 function appearance(){return {weather:weather(),style:$('surfaceStyle').value,textureCanvas:surfaceTexture(),textureVersion,exaggeration:Number($('verticalScale').value),contours:$('showContours').checked,contourStep:Number($('contourStep').value),wireframe:$('showMesh').checked,follow:$('followVehicle').checked};}
 const journal=new SessionJournal(text=>$('sessionStatus').textContent=text);
 function metric(kind,ms){if(!journal.current)return;const stats=journal.current.performance??={};const value=stats[kind]??={count:0,totalMs:0,maxMs:0};value.count++;value.totalMs+=Math.round(ms*100)/100;value.maxMs=Math.max(value.maxMs,Math.round(ms*100)/100);}
-let diskAvailable=false,eventBatch=[],eventTimer=null,reachCache=null,arrival={},arrivalTarget='',arrivalLabel='',adviceKey='',adviceAt=0,recenterPending=false,viewPaused=false,connectorInstance='',lastConnection='',telemetryEpoch=0,advicePriority=0;
+let diskAvailable=false,eventTimer=null,reachCache=null,arrival={},arrivalTarget='',arrivalLabel='',adviceKey='',adviceAt=0,recenterPending=false,viewPaused=false,connectorInstance='',lastConnection='',telemetryEpoch=0,advicePriority=0;
 let mode=null,terrain=null,sample=null,fresh=false,mission=null,points=[],track=[],bodyKey='',progress=0,suspended=false,blocked=false,generation=0,planVersion=0,planRequest=null,telemetryRequest=null,pollTimer=null,jobTimer=null,jobToken=0,demoTimer=null,view={scale:1,x:0,y:0},zoom=1,pan={x:0,y:0},relief=null,is3d=false;
 const STORAGE='ksp-native-waypoints-v1';
-function record(type,text){journal.event(type,{text});if(mode==='live'&&diskAvailable){eventBatch.push({type,text:String(text).slice(0,2000)});if(!eventTimer)eventTimer=setTimeout(flushEvents,1000);}}
-function flushEvents(){clearTimeout(eventTimer);eventTimer=null;if(!eventBatch.length)return;const events=[];while(eventBatch.length&&events.length<20){const next=eventBatch[0];if(events.length&&new TextEncoder().encode(JSON.stringify({events:[...events,next]})).length>12000)break;events.push(eventBatch.shift());}if(eventBatch.length)eventTimer=setTimeout(flushEvents,1000);fetch('/api/ksp/session/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({events}),keepalive:true}).catch(()=>{});}
+const browserEvents=createEventQueue(body=>fetch('/api/ksp/session/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true,signal:AbortSignal.timeout(5000)}));
+function record(type,text){journal.event(type,{text});if(mode==='live'&&diskAvailable){browserEvents.push({type,text:String(text).slice(0,2000)},connectorInstance);if(!eventTimer)eventTimer=setTimeout(flushEvents,1000);}}
+async function flushEvents(){clearTimeout(eventTimer);eventTimer=null;if(!browserEvents.size)return;const instance=connectorInstance;const ok=await browserEvents.flush(instance);if(browserEvents.size&&instance===connectorInstance&&!eventTimer)eventTimer=setTimeout(flushEvents,ok?1000:5000);}
 function say(text){if($('routeState').textContent!==text)record('guide-status',text);$('routeState').textContent=text;}
 function beginSession(source){journal.begin(source);$('sessionStatus').textContent=`Sesión ${source} iniciada · guardado local cada 5 s. No se publica automáticamente.`;}
 function reachability(){if(!terrain||!compatible())return null;const origin=vesselGrid(),key=[terrain.id,Math.round(origin.x),Math.round(origin.y),$('kspSlope').value,$('avoidWater').checked,$('dunaWeather').value].join('|');if(reachCache?.key!==key)reachCache={key,...reachableTerrain(terrain,origin,Number($('kspSlope').value),$('avoidWater').checked,weather().blocked)};return reachCache;}

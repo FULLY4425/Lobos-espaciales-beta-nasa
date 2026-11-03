@@ -71,6 +71,8 @@ class Telemetry:
         self.instance_id=uuid.uuid4().hex
         self.started_at=datetime.now(timezone.utc).isoformat()
         self.lock = threading.Lock()
+        self.browser_event_lock=threading.Lock()
+        self.browser_batches={}
         self.sample = None
         self.stopped = threading.Event()
         self.message = 'Conectando a kRPC en este equipo…'
@@ -259,6 +261,22 @@ class Telemetry:
 
 def create_handler(telemetry):
     class LocalHandler(Handler):
+        def parse_request(self):
+            if not super().parse_request():return False
+            # A local socket alone does not stop browser DNS rebinding.
+            hosts=self.headers.get_all('Host',[])
+            expected_port=self.server.server_port
+            accepted={f'localhost:{expected_port}',f'127.0.0.1:{expected_port}',f'[::1]:{expected_port}'}
+            if expected_port==80:accepted.update(('localhost','127.0.0.1','[::1]'))
+            host=hosts[0].lower() if len(hosts)==1 else ''
+            origin=self.headers.get('Origin')
+            valid_origin=not origin or origin in {f'http://{value}' for value in accepted}
+            if host not in accepted or not valid_origin or self.headers.get('Sec-Fetch-Site')=='cross-site':
+                self.reply(403,dict(error='Acceso local no permitido. Abre localhost en el PC del juego.'))
+                self.close_connection=True
+                return False
+            return True
+
         def record_ksp_artifact(self, kind, data):
             if telemetry.recorder:telemetry.recorder.artifact(kind,data)
 
@@ -315,7 +333,17 @@ def create_handler(telemetry):
                     if not isinstance(events,list) or len(events)>20:raise ValueError('Lote de eventos no válido.')
                     for event in events:
                         if not isinstance(event,dict) or not isinstance(event.get('type'),str) or len(event['type'])>60 or not isinstance(event.get('text'),str) or len(event['text'])>2000:raise ValueError('Evento no válido.')
-                    for event in events:telemetry.record('browser-'+event['type'],dict(text=event['text']))
+                    batch_id=payload.get('batchId')
+                    if batch_id is not None:
+                        try:uuid.UUID(batch_id)
+                        except (ValueError,TypeError,AttributeError):raise ValueError('Identificador de lote no válido.')
+                        if payload.get('instanceId')!=telemetry.instance_id:return self.reply(409,dict(error='Cambió la instancia; eventos conservados en el navegador.'))
+                    with telemetry.browser_event_lock:
+                        if batch_id and batch_id in telemetry.browser_batches:return self.reply(200,dict(recorded=bool(telemetry.recorder),duplicate=True))
+                        for event in events:telemetry.record('browser-'+event['type'],dict(text=event['text']))
+                        if batch_id:
+                            telemetry.browser_batches[batch_id]=True
+                            if len(telemetry.browser_batches)>512:del telemetry.browser_batches[next(iter(telemetry.browser_batches))]
                     if any(e['type']=='pagehide' or (e['type']=='visibility' and e['text'].startswith('hidden')) for e in events):
                         if telemetry.recorder:telemetry.recorder.write_analysis()
                         if telemetry.cloud:telemetry.cloud.request_sync()

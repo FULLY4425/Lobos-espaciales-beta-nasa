@@ -60,6 +60,33 @@ class CloudEvidenceTests(unittest.TestCase):
             self.assertEqual(len(client.rows),1);self.assertEqual(len(client.objects),1)
             self.assertTrue((recorder.path/'events.jsonl').exists())
 
+    def test_lost_upload_ack_retries_identical_object_without_losing_data(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as root:
+            recorder,client,uploader=self.make(root)
+            original=client.upload
+            def lost_ack(path,data,auth):
+                original(path,data,auth)
+                raise CloudError('Simulated connection reset after server accepted upload')
+            with patch.object(client,'upload',side_effect=lost_ack):
+                with self.assertRaises(CloudError):uploader.sync_once()
+            self.assertEqual(len(client.objects),1)
+            self.assertTrue((recorder.path/'.cloud-pending.zip').exists())
+            uploader.sync_once()
+            self.assertEqual(client.uploads[0],client.uploads[1])
+            self.assertEqual(len(client.objects),1);self.assertEqual(len(client.rows),1)
+
+    def test_corrupted_pending_zip_is_blocked_before_network_upload(self):
+        with tempfile.TemporaryDirectory() as root:
+            recorder,client,uploader=self.make(root);client.fail_upload=True
+            with self.assertRaises(CloudError):uploader.sync_once()
+            before=len(client.uploads)
+            (recorder.path/'.cloud-pending.zip').write_bytes(b'corrupt')
+            client.fail_upload=False
+            with self.assertRaises(CloudError):uploader.sync_once()
+            self.assertEqual(len(client.uploads),before)
+            self.assertTrue((recorder.path/'session.json').exists())
+
     def test_index_failure_preserves_pending_archive_until_acknowledged(self):
         with tempfile.TemporaryDirectory() as root:
             recorder,client,uploader=self.make(root);client.fail_index=True
