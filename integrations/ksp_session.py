@@ -138,7 +138,7 @@ class SessionRecorder:
             if losses:recommendations.append('Revisar desconexiones kRPC y cambios de escena con sus marcas de tiempo.')
             render=self.browser_performance.get('renderCpu',{})
             if render.get('count',0)>=30 and (render.get('meanMs',0)>20 or render.get('over50Ms',0)/render['count']>=.1):recommendations.append('Repintado costoso repetido: prueba Modo ligero y compara 2D/3D en la misma escena; no mide FPS de KSP.')
-            elif self.peaks.get('browserRenderMaxMs',0)>100:recommendations.append('Pico aislado de repintado: revisar media y p95 antes de concluir lentitud sostenida; no mide FPS de KSP.')
+            elif self.peaks.get('browserRenderMaxMs',0)>100:recommendations.append('Pico aislado de repintado: revisar media y p95 antes de concluir lentitud sostenida; no mide FPS de KSP.' if render.get('count',0)>=30 else 'Pico de repintado: faltan suficientes mediciones de media y p95 para evaluar si es sostenido; no mide FPS de KSP.')
             if self.peaks.get('rpcReadMaxMs',0)>500:recommendations.append('Lectura kRPC lenta: comparar RPC, cambios de escena y diagnóstico adicional antes de atribuir fallos al mapa.')
             if self.peaks.get('httpRequestMaxMs',0)>2000:recommendations.append('Peticiones locales lentas: comparar carga del conector, muestreo y registro.')
             if not self.samples:recommendations.append('No hay telemetría de juego: comprobar kRPC antes de evaluar rutas.')
