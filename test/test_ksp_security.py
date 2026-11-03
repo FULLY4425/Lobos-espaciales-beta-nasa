@@ -45,6 +45,14 @@ class LocalBoundaryTests(unittest.TestCase):
                         status,_,body=self.request(path,method);self.assertEqual(status,404);self.assertNotIn(b'SECRET',body)
                 self.assertEqual(self.request('/docs/guide.md',method)[0],200)
 
+    def test_static_modules_are_revalidated_and_api_stays_uncached(self):
+        status,headers,_=self.request('/src/ksp-map.js')
+        self.assertEqual((status,headers.get('Cache-Control')),(200,'no-cache'))
+        modified=headers['Last-Modified']
+        status,headers,_=self.request('/src/ksp-map.js',headers={'If-Modified-Since':modified})
+        self.assertEqual((status,headers.get('Cache-Control')),(304,'no-cache'))
+        self.assertEqual(self.request('/api/ksp/info')[1].get('Cache-Control'),'no-store')
+
     def test_cross_site_post_cannot_revoke_or_record_events(self):
         for path in ['/api/ksp/cloud/control','/api/ksp/session/events','/api/ksp/maps/plan']:
             self.assertEqual(self.request(path,'POST',{'Origin':'https://attacker.example'})[0],403)
